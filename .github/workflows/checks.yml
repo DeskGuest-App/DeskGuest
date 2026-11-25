@@ -1,0 +1,56 @@
+name: Checks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  workflow-lint:
+    name: Workflow lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Lint the workflows
+        uses: rhysd/actionlint@v1
+
+  secret-scan:
+    name: Secret scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Scan for secrets
+        uses: gitleaks/gitleaks-action@v2
+        with:
+          args: dir . --redact
+
+  docs-lint:
+    name: Docs lint (reporting)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Set up reviewdog
+        uses: reviewdog/action-setup@v1
+      - name: Lint the markdown and report on the PR
+        env:
+          REVIEWDOG_GITHUB_API_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          npm install --no-save markdownlint-cli2
+          npx markdownlint-cli2 "**/*.md" "#node_modules" 2>&1 \
+            | reviewdog -efm='%f:%l:%c %m' -name=markdownlint \
+                -reporter=github-pr-review -filter-mode=diff_context -fail-on-error=false || true
