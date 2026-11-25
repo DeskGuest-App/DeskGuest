@@ -1,7 +1,10 @@
-/* DeskGuest website — design system v2 (rebuild, 2026-11-24).
-   Palette of record: Deep Trust Navy #0F2537 · Guest Blue #2F8BC9 ·
-   Friendly Teal #438E8E · Wave Gold #E5A93B (warmth/hello/Report only) ·
-   Calm Light Gray #F2F6F9 · Red #DC2626 (STOP/danger only).
+/* DeskGuest website — design system v3 (Gemini-edition rebuild, 2026-11-25).
+   Built to Gemini's website paintings: a pale-blue field, white rounded
+   cards, navy ink, the Greeter in the hero, and the presence box as the
+   product's portrait. Palette of record: Deep Trust Navy #0F2537 ·
+   Guest Blue #2F8BC9 (the only blue) · Friendly Teal #438E8E ·
+   Wave Gold #E5A93B (warmth/hello only) · Calm Light Gray #F2F6F9 ·
+   Red #DC2626 (STOP/danger only).
    Type: Plus Jakarta Sans (self-hosted, OFL) + JetBrains Mono for codes.
    No external fonts, no CDN assets, no trackers — everything self-hosted. */
 @font-face{font-family:"Plus Jakarta Sans";src:url("assets/fonts/jakarta.woff2") format("woff2");
@@ -10,28 +13,39 @@
   font-weight:400;font-style:normal;font-display:swap}
 
 :root{
-  --navy:#0F2537; --navy-2:#183654; --navy-3:#3B4F66; --abyss:#0A1B29;
+  --navy:#0F2537; --navy-2:#183654; --navy-3:#3B4F66; --abyss:#081A2B;
   --blue:#2F8BC9; --blue-dark:#2273A8; --blue-soft:#7FBCE4;
   --teal:#438E8E; --teal-dark:#357373; --gold:#E5A93B; --gold-dark:#C78F27;
   --red:#DC2626; --red-dark:#B91C1C;
-  --bg:#F2F6F9; --surface:#FFFFFF; --subtle:#E6EEF4;
-  --text:#0F2537; --text-2:#486175; --border:#D5E1EA;
+  --bg:#E9F2F8; --surface:#FFFFFF; --subtle:#DCE9F2;
+  --text:#0F2537; --text-2:#486175; --border:#D3E0EA; --border-strong:#B9CFDF;
+  --chip:#E2EFEA;
   --on-navy:#F2F6F9; --on-navy-2:#A8C0D4;
   --r-lg:20px; --r-xl:28px; --r-sm:12px;
   --font:"Plus Jakarta Sans","Segoe UI Variable","Segoe UI",system-ui,-apple-system,sans-serif;
   --mono:"JetBrains Mono","Cascadia Mono",Consolas,ui-monospace,monospace;
   --ease:cubic-bezier(.22,.8,.32,1); --dur-fast:140ms; --dur-med:260ms;
-  --shadow-lg:0 24px 60px -18px rgba(15,37,55,.35),0 4px 16px rgba(15,37,55,.12);
-  --shadow-md:0 14px 34px -14px rgba(15,37,55,.28);
+  --shadow-lg:0 24px 60px -18px rgba(15,37,55,.28),0 4px 16px rgba(15,37,55,.10);
+  --shadow-md:0 14px 34px -14px rgba(15,37,55,.22);
+  --shadow-sm:0 8px 22px -10px rgba(15,37,55,.18);
 }
 @media (prefers-color-scheme: dark){
-  :root{ --bg:#0B1E2E; --surface:#183654; --subtle:#234663;
-    --text:#F2F6F9; --text-2:#A8C0D4; --border:#234663; }
+  :root{ --bg:#0A1F31; --surface:#14334E; --subtle:#1B4062;
+    --text:#F2F6F9; --text-2:#A8C0D4; --border:#274B68; --border-strong:#356284;
+    --chip:#173F3F;
+    --shadow-lg:0 24px 60px -18px rgba(0,0,0,.55),0 4px 16px rgba(0,0,0,.35);
+    --shadow-md:0 14px 34px -14px rgba(0,0,0,.5);
+    --shadow-sm:0 8px 22px -10px rgba(0,0,0,.45); }
 }
 *{box-sizing:border-box}
 html{scroll-behavior:smooth}
-body{margin:0;font-family:var(--font);background:var(--bg);color:var(--text);
+body{margin:0;font-family:var(--font);color:var(--text);
+  background:linear-gradient(180deg,#F2F7FA 0%,#E2EEF6 340px,#E9F2F8 100%);
+  background-color:var(--bg);
   font-size:16.5px;line-height:1.6;-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}
+@media (prefers-color-scheme: dark){
+  body{background:linear-gradient(180deg,#0E2740 0%,#0A1F31 340px,#081A2B 100%)}
+}
 img{max-width:100%;height:auto}
 a{color:var(--blue-dark)}
 @media (prefers-color-scheme: dark){ a{color:var(--blue-soft)} }
@@ -42,79 +56,102 @@ a{color:var(--blue-dark)}
   font-weight:800;padding:10px 18px;border-radius:9999px;text-decoration:none;transition:top var(--dur-fast) ease}
 .skip-link:focus{top:12px;color:var(--navy)}
 
-/* ---------- Header: a navy bar on every page (every page opens on navy) ---------- */
-.site-header{position:sticky;top:0;z-index:100;background:rgba(10,27,41,.88);
+/* ---------- Header: the paintings' chrome — Greeter + wordmark on the
+   pale field, the six-link nav, and the blue Download pill. ---------- */
+.site-header{position:sticky;top:0;z-index:100;
+  background:rgba(242,247,250,.88);
   backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  border-bottom:1px solid rgba(255,255,255,.09)}
-.site-header .wrap{display:flex;align-items:center;gap:18px;min-height:72px}
-.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:#fff;flex:none;
-  font-weight:800;font-size:23px;letter-spacing:-.02em}
+  border-bottom:1px solid rgba(15,37,55,.07)}
+@media (prefers-color-scheme: dark){
+  .site-header{background:rgba(9,26,41,.88);border-bottom-color:rgba(255,255,255,.08)}
+}
+.site-header .wrap{display:flex;align-items:center;gap:26px;min-height:76px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--text);flex:none;
+  font-weight:800;font-size:24px;letter-spacing:-.02em}
 .site-header .btn{flex:none}
-.brand img{width:46px;height:auto}
-.main-nav{display:flex;gap:2px;margin-left:auto;flex-wrap:nowrap}
-.main-nav a{color:var(--on-navy-2);text-decoration:none;font-weight:600;font-size:15px;
-  padding:8px 10px;border-radius:9999px;white-space:nowrap;transition:color var(--dur-fast) ease,background var(--dur-fast) ease}
-.main-nav a:hover{color:#fff;background:rgba(255,255,255,.08)}
-.main-nav a[aria-current="page"]{color:#fff;background:rgba(47,139,201,.35)}
-.nav-toggle{display:none;margin-left:auto;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.25);
-  border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer;color:#fff;font-family:inherit}
+.brand img{width:48px;height:auto}
+.main-nav{display:flex;gap:4px;margin-left:auto;flex-wrap:nowrap}
+.main-nav a{position:relative;color:var(--text);text-decoration:none;font-weight:600;font-size:16px;
+  padding:9px 11px;border-radius:8px;white-space:nowrap;transition:color var(--dur-fast) ease,background var(--dur-fast) ease}
+.main-nav a:hover{color:var(--blue-dark);background:rgba(47,139,201,.10)}
+@media (prefers-color-scheme: dark){ .main-nav a:hover{color:var(--blue-soft)} }
+.main-nav a[aria-current="page"]{color:var(--blue-dark);font-weight:800}
+@media (prefers-color-scheme: dark){ .main-nav a[aria-current="page"]{color:var(--blue-soft)} }
+.main-nav a[aria-current="page"]::after{content:"";position:absolute;left:11px;right:11px;bottom:1px;
+  height:3px;border-radius:99px;background:var(--blue)}
+.nav-toggle{display:none;margin-left:auto;background:var(--surface);border:1px solid var(--border-strong);
+  border-radius:10px;padding:9px 16px;font-weight:700;cursor:pointer;color:var(--text);font-family:inherit}
 
 /* ---------- Buttons ---------- */
 .btn{display:inline-block;border:0;cursor:pointer;text-decoration:none;font-weight:700;white-space:nowrap;
-  font-size:16.5px;padding:14px 30px;border-radius:9999px;background:var(--blue);color:#fff;
-  box-shadow:0 10px 24px -10px rgba(47,139,201,.65);
+  font-size:16.5px;padding:14px 30px;border-radius:14px;background:var(--blue);color:#fff;
+  box-shadow:0 10px 24px -10px rgba(47,139,201,.55);
   transition:background var(--dur-fast) ease,transform var(--dur-fast) var(--ease),box-shadow var(--dur-fast) ease}
 .btn:hover{background:var(--blue-dark);transform:translateY(-2px)}
 .btn:active{transform:translateY(0)}
-.btn.small{padding:10px 22px;font-size:15px}
-.btn.large{padding:17px 38px;font-size:18px}
-.btn.teal{background:var(--teal);box-shadow:0 10px 24px -10px rgba(67,142,142,.6)} .btn.teal:hover{background:var(--teal-dark)}
-.btn.gold{background:var(--gold);color:var(--navy);box-shadow:0 10px 24px -10px rgba(229,169,59,.65)} .btn.gold:hover{background:var(--gold-dark)}
-.btn.ghost-light{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.45);box-shadow:none}
-.btn.ghost-light:hover{background:rgba(255,255,255,.1);border-color:#fff}
-.btn.ghost{background:transparent;color:var(--blue-dark);border:2px solid var(--blue);box-shadow:none}
+.btn.small{padding:11px 24px;font-size:15.5px;border-radius:9999px}
+.btn.large{padding:16px 34px;font-size:17.5px}
+.btn.teal{background:var(--teal);box-shadow:0 10px 24px -10px rgba(67,142,142,.55)} .btn.teal:hover{background:var(--teal-dark)}
+.btn.gold{background:var(--gold);color:var(--navy);box-shadow:0 10px 24px -10px rgba(229,169,59,.6)} .btn.gold:hover{background:var(--gold-dark)}
+.btn.ghost-light{background:var(--surface);color:var(--blue-dark);border:1.5px solid var(--border-strong);box-shadow:var(--shadow-sm)}
+.btn.ghost-light:hover{background:var(--subtle);border-color:var(--blue)}
+@media (prefers-color-scheme: dark){ .btn.ghost-light{color:var(--blue-soft)} }
+.btn.ghost{background:var(--surface);color:var(--blue-dark);border:1.5px solid var(--blue);box-shadow:none}
 .btn.ghost:hover{background:var(--subtle)}
+@media (prefers-color-scheme: dark){ .btn.ghost{color:var(--blue-soft)} }
 .btn.disabled{opacity:.5;cursor:default;pointer-events:none;box-shadow:none}
 
-/* ---------- The Stage (home hero): navy, aurora light, the product alive ---------- */
-.stage{position:relative;overflow:hidden;background:
-  radial-gradient(1100px 520px at 85% -10%,rgba(47,139,201,.38),transparent 60%),
-  radial-gradient(900px 600px at -10% 110%,rgba(67,142,142,.32),transparent 55%),
-  linear-gradient(160deg,#12314A 0%,var(--navy) 46%,var(--abyss) 100%);
-  color:var(--on-navy)}
-.stage::before{content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
-  background-image:radial-gradient(rgba(127,188,228,.16) 1.2px,transparent 1.3px);
-  background-size:26px 26px;
-  -webkit-mask-image:linear-gradient(180deg,transparent,#000 18%,#000 70%,transparent);
-          mask-image:linear-gradient(180deg,transparent,#000 18%,#000 70%,transparent)}
+/* ---------- The Stage (home hero): the pale field, the Greeter, and the
+   live presence box overlapping him — the paintings' composition. ---------- */
+.stage{position:relative;overflow:hidden}
 .stage .wrap{position:relative;z-index:1}
-.stage-grid{display:grid;grid-template-columns:1.02fr .98fr;gap:48px;align-items:center;
-  padding:84px 0 30px}
-.display{font-size:clamp(2.85rem,5.6vw,4.35rem);line-height:1.05;font-weight:800;
-  letter-spacing:-.03em;margin:0 0 22px;color:#fff}
-.lede{font-size:clamp(1.15rem,1.6vw,1.32rem);line-height:1.55;color:var(--on-navy-2);
-  margin:0 0 32px;max-width:32em}
+.stage-grid{display:grid;grid-template-columns:1.06fr .94fr;gap:26px;align-items:center;
+  padding:52px 0 26px}
+.display{font-size:clamp(2.7rem,5.2vw,4.15rem);line-height:1.06;font-weight:800;
+  letter-spacing:-.03em;margin:18px 0 20px;color:var(--text)}
+.lede{font-size:clamp(1.12rem,1.55vw,1.28rem);line-height:1.55;color:#2E5069;
+  margin:0 0 30px;max-width:32em}
 .hero-ctas{display:flex;gap:14px;flex-wrap:wrap;align-items:center}
-.hero-note{margin-top:20px;font-size:14.5px;color:var(--on-navy-2);max-width:36em}
-.hero-note a{color:var(--blue-soft)}
-.trust-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin-top:56px;
-  border-top:1px solid rgba(255,255,255,.14);padding:26px 0 40px}
-.trust-strip div{padding:0 26px;border-left:1px solid rgba(255,255,255,.14)}
-.trust-strip div:first-child{padding-left:0;border-left:0}
-.trust-strip strong{display:block;color:#fff;font-size:17px;margin-bottom:3px}
-.trust-strip span{color:var(--on-navy-2);font-size:14.5px}
+.hero-note{margin-top:20px;font-size:14.5px;color:var(--text-2);max-width:36em}
+.trust-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:52px;padding:6px 0 44px}
+.trust-strip div{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  padding:22px 24px;box-shadow:var(--shadow-sm)}
+.trust-strip strong{display:block;color:var(--text);font-size:16.5px;margin-bottom:3px}
+.trust-strip span{color:var(--text-2);font-size:14.5px}
 
-/* The session window — a live depiction of the product, built in pure HTML/CSS.
-   Composition per the presence law: the Box names the driver and carries STOP;
-   the Ghost travels; the Glow rims the screen. */
-.stage-visual{position:relative;min-height:420px}
+/* Hero visual: the waving Greeter with the presence box riding his
+   right side — on the pale field, no window chrome, per the painting. */
+.stage-visual{position:relative;min-height:400px;display:flex;align-items:center;justify-content:flex-start;padding-left:6px}
+.hero-art{width:min(272px,80%);height:auto;position:relative;z-index:2;
+  filter:drop-shadow(0 22px 28px rgba(15,37,55,.20));animation:floaty 7s ease-in-out infinite alternate}
+@keyframes floaty{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-9px) rotate(1.2deg)}}
+.presence-card{position:absolute;z-index:3;right:0;top:96px;width:326px;background:var(--surface);
+  border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-lg);overflow:hidden}
+.presence-card .pc-head{padding:13px 18px;font-weight:800;font-size:15px;color:var(--text);
+  border-bottom:1px solid var(--border)}
+.presence-card .pc-body{padding:15px 18px 17px}
+.presence-card .pc-who{margin:0 0 13px;font-size:15.5px;line-height:1.45;color:var(--text-2)}
+.presence-card .pc-who strong{color:var(--text)}
+.presence-card .pc-stop{display:block;text-align:center;background:var(--red);color:#fff;font-weight:800;
+  border-radius:9px;padding:11px 0;font-size:15px;letter-spacing:.02em;text-decoration:none}
+.presence-card .pc-label{display:none}
+/* The 1021-1180 band: the two-column stage is at its narrowest here —
+   shrink the pair so the card overlaps only the Greeter's right side,
+   as in the painting, instead of swallowing his face. */
+@media (min-width:1021px) and (max-width:1180px){
+  .hero-art{width:228px}
+  .presence-card{width:302px;top:108px}
+}
+
+/* Legacy session-window depiction (kept for pages that still carry it):
+   its surfaces are the product's own light interface, pinned light. */
 .session-window{position:relative;background:#EAF2F8;border-radius:20px;overflow:hidden;
   box-shadow:0 0 0 3px rgba(47,139,201,.55),0 0 46px 10px rgba(47,139,201,.35),var(--shadow-lg)}
 .sw-chrome{display:flex;align-items:center;gap:8px;background:#fff;padding:11px 16px;
   border-bottom:1px solid var(--border)}
 .sw-chrome .dot{width:11px;height:11px;border-radius:50%;background:var(--border)}
 .sw-chrome .dot.r{background:#F0A3A3}.sw-chrome .dot.y{background:#F3D189}.sw-chrome .dot.g{background:#9FD3B4}
-.sw-chrome .title{margin-left:8px;font-size:13.5px;font-weight:700;color:var(--text-2)}
+.sw-chrome .title{margin-left:8px;font-size:13.5px;font-weight:700;color:#486175}
 .sw-screen{position:relative;padding:20px 20px 26px;min-height:308px;
   background:linear-gradient(165deg,#F4F9FC,#DCE9F2)}
 .presence-box{background:var(--navy);color:#F2F6F9;border-radius:16px;padding:14px 16px;
@@ -129,10 +166,10 @@ a{color:var(--blue-dark)}
 .presence-box .stop{margin-left:auto;background:var(--red);color:#fff;font-weight:800;
   border-radius:9999px;padding:10px 18px;white-space:nowrap;font-size:13.5px;letter-spacing:.01em}
 .sw-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:16px}
-.sw-card{background:#fff;border:1px solid var(--border);border-radius:12px;padding:12px 14px}
-.sw-card .t{margin:0 0 4px;font-size:13.5px;font-weight:700;color:var(--text)}
-.sw-card p{margin:0;font-size:13px;color:var(--text-2);line-height:1.45}
-.sw-card .bar{height:7px;border-radius:99px;background:var(--subtle);margin-top:9px;overflow:hidden}
+.sw-card{background:#fff;border:1px solid #D5E1EA;border-radius:12px;padding:12px 14px}
+.sw-card .t{margin:0 0 4px;font-size:13.5px;font-weight:700;color:#0F2537}
+.sw-card p{margin:0;font-size:13px;color:#3D5A73;line-height:1.45}
+.sw-card .bar{height:7px;border-radius:99px;background:#E6EEF4;margin-top:9px;overflow:hidden}
 .sw-card .bar i{display:block;height:100%;width:64%;background:var(--teal);border-radius:99px}
 .ghost{position:absolute;left:0;top:0;z-index:5;display:flex;align-items:center;gap:7px;
   pointer-events:none;will-change:transform}
@@ -148,82 +185,81 @@ a{color:var(--blue-dark)}
 @keyframes ripple{0%{opacity:.9;transform:scale(.4)}100%{opacity:0;transform:scale(2.6)}}
 .hero-mascot{position:absolute;z-index:6;left:-38px;bottom:-30px;width:196px;
   filter:drop-shadow(0 18px 24px rgba(4,15,24,.45));animation:floaty 7s ease-in-out infinite alternate}
-@keyframes floaty{from{transform:translateY(0) rotate(-1deg)}to{transform:translateY(-9px) rotate(1.2deg)}}
-/* The consent moment, floating over the session window: sensitive actions
-   arrive as a card, and the person's tap is the approval. */
 .consent-chip{position:absolute;z-index:7;right:-16px;top:238px;width:252px;background:#fff;
-  color:var(--text);border-radius:16px;border-top:4px solid var(--gold);
+  color:#0F2537;border-radius:16px;border-top:4px solid var(--gold);
   box-shadow:var(--shadow-lg);padding:15px 17px}
-.consent-chip .cc-what{font-weight:800;font-size:14.5px;line-height:1.35;margin:0 0 3px}
-.consent-chip .cc-detail{font-size:13px;color:var(--text-2);margin:0 0 11px;line-height:1.45}
+.consent-chip .cc-what{font-weight:800;font-size:14.5px;line-height:1.35;margin:0 0 3px;color:#0F2537}
+.consent-chip .cc-detail{font-size:13px;color:#486175;margin:0 0 11px;line-height:1.45}
 .consent-chip .cc-row{display:flex;gap:8px}
 .consent-chip .cc-approve{background:var(--teal);color:#fff;font-weight:800;font-size:13px;
   border-radius:9999px;padding:7px 15px}
-.consent-chip .cc-deny{border:2px solid var(--border);color:var(--text-2);font-weight:700;
+.consent-chip .cc-deny{border:2px solid #D5E1EA;color:#486175;font-weight:700;
   font-size:13px;border-radius:9999px;padding:5px 13px}
-/* The session window and the consent chip depict the product's own light
-   interface: their surfaces are fixed light, so their text is pinned to the
-   light palette and never follows the page's dark colour scheme. */
 .session-window,.consent-chip{color-scheme:light;color:#0F2537}
-.sw-chrome .title{color:#486175}
-.sw-card{border-color:#D5E1EA}
-.sw-card .t{color:#0F2537}
-.sw-card p{color:#3D5A73}
-.sw-card .bar{background:#E6EEF4}
-.consent-chip .cc-what{color:#0F2537}
-.consent-chip .cc-detail{color:#486175}
-.consent-chip .cc-deny{border-color:#D5E1EA;color:#486175}
 @media (max-width:1180px){ .consent-chip{display:none} }
 
 /* ---------- Sections & page heroes ---------- */
-.section{padding:104px 0}
-.section.tight{padding:72px 0}
-.section--navy{background:linear-gradient(165deg,#12314A,var(--navy) 55%,var(--abyss));color:var(--on-navy)}
-.section--navy h2,.section--navy h3{color:#fff}
-.section--navy p{color:var(--on-navy-2)}
-/* Cards keep their own light surface inside navy sections — their headings
-   and text stay in card ink, never the section's on-navy white. */
+.section{padding:88px 0}
+.section.tight{padding:64px 0}
+/* Formerly the navy bands: in the paintings' language every band sits on
+   the pale field and the cards carry the contrast. */
+.section--navy{background:transparent;color:var(--text)}
+.section--navy h2,.section--navy h3{color:var(--text)}
+.section--navy p{color:var(--text-2)}
+.section--navy .sec-head p{color:var(--text-2)}
 .section--navy .card h3{color:var(--text)}
 .section--navy .card p,.section--navy .card li{color:var(--text-2)}
+.on-dark .fact{background:var(--surface);border-color:var(--border);color:var(--text)}
+.on-dark .fact p{color:var(--text-2)}
 .section--tint{background:var(--subtle)}
 @media (prefers-color-scheme: dark){ .section--tint{background:#10293F} }
 .sec-head{max-width:47em;margin-bottom:44px}
+.sec-head.center{margin-left:auto;margin-right:auto;text-align:center}
+.sec-head.center p{margin-left:auto;margin-right:auto}
 .sec-head h2,.page-title{font-size:clamp(2rem,3.6vw,2.9rem);font-weight:800;
   letter-spacing:-.025em;line-height:1.14;margin:0 0 14px}
 .sec-head p{font-size:1.13rem;color:var(--text-2);margin:0;max-width:44em}
-.section--navy .sec-head p{color:var(--on-navy-2)}
-.page-hero{position:relative;overflow:hidden;color:var(--on-navy);
-  background:radial-gradient(800px 380px at 88% -20%,rgba(47,139,201,.4),transparent 60%),
-  linear-gradient(160deg,#12314A,var(--navy) 55%,var(--abyss))}
-.page-hero .wrap{position:relative;z-index:1;padding-top:76px;padding-bottom:64px}
-.page-hero .page-title{color:#fff;margin:0 0 14px}
-.page-hero .page-sub{font-size:1.18rem;color:var(--on-navy-2);margin:0;max-width:42em}
-.page-hero .wm{position:absolute;right:-30px;top:50%;transform:translateY(-50%) rotate(6deg);
-  width:300px;opacity:.07;pointer-events:none}
+.page-hero{position:relative;overflow:hidden}
+.page-hero .wrap{position:relative;z-index:1;padding-top:64px;padding-bottom:26px;text-align:center}
+.page-hero .page-title{color:var(--text);margin:0 0 14px}
+.page-hero .page-sub{font-size:1.18rem;color:var(--text-2);margin:0 auto;max-width:44em}
+.page-hero .wm{display:none}
 
-/* ---------- Presence panel (the teal showpiece) ---------- */
-.presence-panel{position:relative;border-radius:var(--r-xl);overflow:hidden;color:#fff;
-  padding:52px;background:
-  radial-gradient(700px 340px at 90% -10%,rgba(229,169,59,.22),transparent 55%),
-  linear-gradient(140deg,var(--teal) 0%,var(--teal-dark) 48%,var(--navy) 115%);
-  box-shadow:var(--shadow-lg)}
-.presence-panel h2{font-size:clamp(1.9rem,3.2vw,2.6rem);letter-spacing:-.02em;margin:0 0 12px;color:#fff}
-.presence-panel .sub{font-size:1.12rem;color:#E4F2F2;max-width:44em;margin:0}
+/* ---------- Presence panel: now a white showpiece card in the
+   paintings' language, teal carried by its icon chips. ---------- */
+.presence-panel{position:relative;border-radius:var(--r-xl);overflow:hidden;color:var(--text);
+  padding:52px;background:var(--surface);border:1px solid var(--border);
+  box-shadow:var(--shadow-md)}
+.presence-panel h2{font-size:clamp(1.9rem,3.2vw,2.6rem);letter-spacing:-.02em;margin:0 0 12px;color:var(--text)}
+.presence-panel .sub{font-size:1.12rem;color:var(--text-2);max-width:44em;margin:0}
 .presence-panel .trio{margin-top:36px}
+.presence-panel .fact{background:var(--bg);border-color:var(--border);color:var(--text)}
+.presence-panel .fact p{color:var(--text-2)}
+
+/* ---------- Icon chips (the paintings' pale-teal squares) ---------- */
+.ic{flex:none;width:52px;height:52px;border-radius:14px;background:var(--chip);
+  display:flex;align-items:center;justify-content:center;color:var(--teal-dark)}
+@media (prefers-color-scheme: dark){ .ic{color:#8FD0D0} }
+.ic svg{width:28px;height:28px}
+.ic.blue{background:#E1EEF7;color:var(--blue-dark)}
+@media (prefers-color-scheme: dark){ .ic.blue{background:#1B4062;color:var(--blue-soft)} }
+.ic.gold{background:#F8EDD2;color:var(--gold-dark)}
+.fact-head{display:flex;gap:15px;align-items:flex-start}
+.fact-head h3{padding-top:11px}
 
 /* ---------- Fact trios & cards ---------- */
 .trio{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
 .fact{border-radius:var(--r-lg);padding:26px;background:var(--surface);
-  border:1px solid var(--border)}
+  border:1px solid var(--border);box-shadow:var(--shadow-sm)}
 .fact h3{margin:0 0 7px;font-size:18.5px}
 .fact p{margin:0;color:var(--text-2);font-size:15.5px}
-.on-dark .fact,.presence-panel .fact{background:rgba(255,255,255,.09);
-  border-color:rgba(255,255,255,.2);color:#fff}
-.on-dark .fact p,.presence-panel .fact p{color:#D9E9EC}
+.fact .more{font-weight:700;text-decoration:none}
+.fact .more:hover{text-decoration:underline}
 .cards{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 .cards.three{grid-template-columns:repeat(3,1fr)}
 .card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:30px;transition:transform var(--dur-med) var(--ease),box-shadow var(--dur-med) ease}
+  padding:30px;box-shadow:var(--shadow-sm);
+  transition:transform var(--dur-med) var(--ease),box-shadow var(--dur-med) ease}
 .card:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
 .card h3{margin:0 0 9px;font-size:20px;letter-spacing:-.01em}
 .card p,.card li{color:var(--text-2);font-size:15.5px}
@@ -234,24 +270,80 @@ a{color:var(--blue-dark)}
 .card .more{font-weight:700;text-decoration:none}
 .card .more:hover{text-decoration:underline}
 
+/* ---------- Feature showcase cards (Features fold, per the painting):
+   title, a line of copy, and a small product vignette on the right. ---------- */
+.showcase{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+.show{display:flex;flex-direction:column;background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:26px;box-shadow:var(--shadow-sm);
+  transition:transform var(--dur-med) var(--ease),box-shadow var(--dur-med) ease}
+.show:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
+.show h3{margin:0 0 8px;font-size:21px;letter-spacing:-.015em;line-height:1.25}
+.show p{margin:0 0 16px;color:var(--text-2);font-size:15.5px}
+.show .viz{margin-top:auto}
+.viz-presence{display:flex;align-items:center;gap:10px;background:var(--bg);
+  border:1px solid var(--border);border-radius:9999px;padding:8px 10px}
+.viz-presence .vp-face{flex:none;width:30px;height:30px;border-radius:50%;background:var(--teal);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:14px}
+.viz-presence .vp-who{font-size:13.5px;font-weight:700;color:var(--text);white-space:nowrap;overflow:hidden}
+.viz-presence .vp-stop{margin-left:auto;background:var(--red);color:#fff;font-weight:800;font-size:12.5px;
+  border-radius:9999px;padding:6px 15px}
+.viz-slider{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:13px 15px}
+.viz-slider .vs-cap{font-size:12px;font-weight:700;color:var(--text-2);text-align:center;margin-bottom:8px}
+.viz-slider .vs-track{position:relative;height:6px;border-radius:99px;background:var(--border)}
+.viz-slider .vs-fill{position:absolute;left:0;top:0;height:100%;width:52%;border-radius:99px;background:var(--blue)}
+.viz-slider .vs-knob{position:absolute;left:52%;top:50%;width:17px;height:17px;border-radius:50%;
+  background:var(--blue);border:2.5px solid #fff;box-shadow:0 2px 7px rgba(15,37,55,.3);transform:translate(-50%,-50%)}
+.viz-slider .vs-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text-2);margin-top:8px;font-weight:600}
+.viz-approve{display:flex;align-items:center;gap:9px;margin-top:11px;background:var(--bg);
+  border:1px solid var(--border);border-radius:10px;padding:8px 13px;font-size:13.5px;font-weight:700;color:var(--text)}
+.viz-approve svg{width:19px;height:19px;color:var(--gold-dark);flex:none}
+.viz-code{background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px 15px;text-align:center}
+.viz-code .vc-cap{font-size:12px;font-weight:700;color:var(--text-2);margin-bottom:5px}
+.viz-code .vc-num{font-family:var(--mono);font-size:29px;font-weight:700;color:var(--blue-dark);letter-spacing:.04em;line-height:1.15}
+@media (prefers-color-scheme: dark){ .viz-code .vc-num{color:var(--blue-soft)} }
+.viz-code .vc-exp{font-size:12.5px;color:var(--text-2);margin-top:5px}
+.viz-code .vc-exp strong{color:var(--gold-dark)}
+.viz-rooms .vr-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:11px}
+.viz-pill{display:inline-flex;align-items:center;gap:6px;background:var(--blue);color:#fff;
+  font-size:12.5px;font-weight:700;border-radius:9999px;padding:5px 13px}
+.viz-pill.soft{background:var(--bg);color:var(--text-2);border:1px solid var(--border)}
+.viz-pill svg{width:14px;height:14px}
+.viz-admit{background:var(--surface);border:1px solid var(--border);border-radius:12px;
+  box-shadow:var(--shadow-sm);padding:11px 14px}
+.viz-admit .va-t{font-size:12.5px;font-weight:800;color:var(--text);margin-bottom:8px}
+.viz-admit .va-btn{display:block;text-align:center;background:var(--blue);color:#fff;font-weight:700;
+  font-size:13px;border-radius:8px;padding:6px 0}
+.viz-lan{background:var(--navy);border-radius:14px;padding:16px;display:flex;align-items:center;justify-content:center}
+.viz-lan svg{width:78%;height:auto}
+.viz-receipt{display:flex;gap:12px;align-items:flex-start}
+.viz-slip{flex:1;background:var(--bg);border:1px solid var(--border);border-radius:10px;
+  padding:11px 13px;font-size:12.5px;color:var(--text-2);line-height:1.5;
+  border-bottom-style:dashed}
+.viz-words{flex:1}
+.viz-words .vw-cap{font-size:11.5px;font-weight:800;color:var(--text);margin-bottom:7px}
+.viz-words .vw-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;margin-bottom:10px}
+.viz-words .vw-grid i{display:block;height:9px;border-radius:99px;background:var(--border)}
+.viz-save{display:block;text-align:center;background:var(--teal);color:#fff;font-weight:700;
+  font-size:13px;border-radius:8px;padding:7px 0}
+
 /* ---------- Steps (a real sequence — numbered because it is one) ---------- */
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:22px;position:relative}
 .step{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
-  padding:30px;text-align:center}
+  padding:30px;text-align:center;box-shadow:var(--shadow-sm)}
 .step img{width:158px;height:158px;object-fit:contain;display:block;margin:0 auto 16px}
 .step .n{display:inline-block;background:var(--navy);color:#fff;font-weight:800;
   border-radius:9999px;padding:3px 14px;font-size:13px;margin-bottom:12px;letter-spacing:.02em}
+@media (prefers-color-scheme: dark){ .step .n{background:var(--blue);color:#fff} }
 .step h3{margin:0 0 8px;font-size:20px}
 .step p{margin:0;color:var(--text-2);font-size:15.5px}
 
 /* ---------- Bento highlights (home) ---------- */
 .bento{display:grid;grid-template-columns:repeat(2,1fr);gap:20px}
 .bcard{position:relative;border-radius:var(--r-xl);padding:38px;overflow:hidden;
-  background:var(--surface);border:1px solid var(--border);
+  background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-sm);
   transition:transform var(--dur-med) var(--ease),box-shadow var(--dur-med) ease}
 .bcard:hover{transform:translateY(-4px);box-shadow:var(--shadow-md)}
 .bcard.wide{grid-column:span 2;display:grid;grid-template-columns:1.15fr .85fr;gap:30px;align-items:center}
-.bcard h3{margin:0 0 10px;font-size:24px;letter-spacing:-.015em}
+.bcard h3{margin:0 0 10px;font-size:24px;letter-spacing:-.015em;color:var(--text)}
 .bcard p{margin:0 0 14px;color:var(--text-2);font-size:16px;max-width:36em}
 .bcard img{width:230px;height:230px;object-fit:contain;margin:0 auto;display:block}
 .bcard .more{font-weight:700;text-decoration:none}
@@ -262,18 +354,17 @@ a{color:var(--blue-dark)}
 .uhoh img.pose{width:300px;height:300px;object-fit:contain;display:block;margin:0 auto}
 .uhoh h2{font-size:clamp(1.8rem,3vw,2.5rem);letter-spacing:-.02em;margin:0 0 12px}
 .uhoh p{color:var(--text-2);font-size:1.08rem;max-width:38em}
-.cta-band{position:relative;border-radius:var(--r-xl);overflow:hidden;text-align:center;color:#fff;
-  padding:64px 40px;background:
-  radial-gradient(700px 300px at 50% -30%,rgba(47,139,201,.5),transparent 65%),
-  linear-gradient(160deg,#12314A,var(--navy) 60%,var(--abyss));box-shadow:var(--shadow-lg)}
-.cta-band h2{font-size:clamp(1.9rem,3.4vw,2.7rem);letter-spacing:-.02em;margin:0 0 12px;color:#fff}
-.cta-band p{color:var(--on-navy-2);margin:0 auto 28px;max-width:36em;font-size:1.1rem}
+.cta-band{position:relative;border-radius:var(--r-xl);overflow:hidden;text-align:center;color:var(--text);
+  padding:64px 40px;background:var(--surface);border:1px solid var(--border);box-shadow:var(--shadow-md)}
+.cta-band h2{font-size:clamp(1.9rem,3.4vw,2.7rem);letter-spacing:-.02em;margin:0 0 12px;color:var(--text)}
+.cta-band p{color:var(--text-2);margin:0 auto 28px;max-width:36em;font-size:1.1rem}
 
 /* ---------- Content components ---------- */
 .pill{display:inline-block;border-radius:9999px;padding:4px 14px;font-size:13.5px;font-weight:700}
 .pill.teal{background:var(--teal);color:#fff}
 .pill.gold{background:var(--gold);color:var(--navy)}
 .pill.subtle{background:var(--subtle);color:var(--text)}
+.pill.hero-tag{padding:8px 20px;font-size:15px;box-shadow:var(--shadow-sm)}
 code,.mono{font-family:var(--mono)}
 .hash{font-family:var(--mono);font-size:13px;word-break:break-all;background:var(--subtle);
   border-radius:10px;padding:12px 14px;display:block}
@@ -319,17 +410,19 @@ table.matrix tr:last-child td{border-bottom:0}
 .os-head h2{font-size:27px;margin:0;letter-spacing:-.015em}
 .dl-stack{display:grid;gap:18px}
 
-/* ---------- Footer ---------- */
-.site-footer{background:var(--abyss);color:var(--on-navy-2);padding:64px 0 44px;margin-top:0}
+/* ---------- Footer: quiet, on the field, per the paintings ---------- */
+.site-footer{color:var(--text-2);padding:58px 0 42px;margin-top:0;
+  border-top:1px solid var(--border)}
 .site-footer .cols{display:grid;grid-template-columns:1.3fr 1fr 1fr;gap:40px}
-.site-footer .brand{color:#fff;font-size:27px}
-.site-footer .brand img{width:58px}
+.site-footer .brand{color:var(--text);font-size:26px}
+.site-footer .brand img{width:56px}
 .site-footer .blurb{font-size:15px;max-width:30em;margin:14px 0 0}
-.site-footer .fh{color:#fff;margin:6px 0 14px;font-size:15px;font-weight:800;letter-spacing:.02em}
+.site-footer .fh{color:var(--text);margin:6px 0 14px;font-size:15px;font-weight:800;letter-spacing:.02em}
 .site-footer nav{display:grid;gap:9px}
-.site-footer a{color:var(--on-navy-2);text-decoration:none;font-size:15px}
-.site-footer a:hover{color:#fff}
-.site-footer .fineprint{color:#7E97AC;border-top:1px solid rgba(255,255,255,.1);
+.site-footer a{color:var(--text-2);text-decoration:none;font-size:15px}
+.site-footer a:hover{color:var(--blue-dark)}
+@media (prefers-color-scheme: dark){ .site-footer a:hover{color:var(--blue-soft)} }
+.site-footer .fineprint{color:var(--text-2);border-top:1px solid var(--border);
   margin-top:44px;padding-top:22px;width:100%}
 .site-footer .fineprint a{font-size:14px}
 
@@ -347,39 +440,51 @@ html.js .reveal.in .rv:nth-child(5){transition-delay:.36s}
 html.js .reveal.in .rv:nth-child(6){transition-delay:.45s}
 
 /* ---------- Responsive ---------- */
-/* The wide header row (brand + seven links + CTA) needs ~1210px to sit
-   without squeezing; below that the nav collapses to the menu button. */
 @media (max-width:1200px){
   .main-nav{display:none}
   .main-nav.open{display:flex;flex-direction:column;width:100%;margin:10px 0 16px;gap:2px}
   .main-nav.open a{padding:10px 14px}
+  .main-nav.open a[aria-current="page"]::after{display:none}
   .site-header .wrap{flex-wrap:wrap}
   .nav-toggle{display:inline-block}
 }
-/* Card grids step down a column early so the 980–1120px class gets
-   full-width-feeling cards with air, not three cramped columns. */
 @media (max-width:1120px){
-  .trio,.steps,.cards.three{grid-template-columns:repeat(2,1fr)}
+  .trio,.steps,.cards.three,.showcase{grid-template-columns:repeat(2,1fr)}
   .trio>*:last-child:nth-child(odd),.steps>*:last-child:nth-child(odd),
-  .cards.three>*:last-child:nth-child(odd){grid-column:span 2}
+  .cards.three>*:last-child:nth-child(odd),.showcase>*:last-child:nth-child(odd){grid-column:span 2}
   .card{padding:32px}
+  .presence-card{right:0}
 }
 @media (max-width:1020px){
-  .stage-grid{grid-template-columns:1fr;padding-top:64px}
-  .stage-visual{min-height:0;margin-top:8px}
-  .hero-mascot{width:138px;left:auto;right:6px;bottom:-12px}
+  .stage-grid{grid-template-columns:1fr;padding-top:44px}
+  .stage-visual{min-height:0;margin-top:14px}
+  .hero-art{width:min(340px,78%)}
+  .presence-card{top:auto;bottom:-8px;width:308px}
   .bcard.wide{grid-template-columns:1fr}
   .bcard.wide img{width:190px;height:190px}
 }
 @media (max-width:860px){
-  .section{padding:72px 0}
+  .section{padding:68px 0}
   .trio,.steps,.cards,.cards.three,.bento,.os-grid,.trust-strip,
-  .site-footer .cols,.sw-cards{grid-template-columns:1fr}
-  .trio>*,.steps>*,.cards.three>*{grid-column:auto}
-  .trust-strip div{border-left:0;padding:10px 0}
+  .site-footer .cols,.sw-cards,.showcase{grid-template-columns:1fr}
+  .trio>*,.steps>*,.cards.three>*,.showcase>*{grid-column:auto}
+  /* The span-2 rule in the 1120 block uses :last-child:nth-child(odd)
+     (specificity 0,3,0) and silently outranks the plain reset above,
+     forcing an implicit second column at phone widths. Restate the
+     reset at matching specificity so single-column really is single. */
+  .trio>*:last-child:nth-child(odd),.steps>*:last-child:nth-child(odd),
+  .cards.three>*:last-child:nth-child(odd),.showcase>*:last-child:nth-child(odd){grid-column:auto}
   .presence-panel{padding:36px 26px}
   .uhoh{grid-template-columns:1fr}
   .hero-mascot{display:none}
+}
+@media (max-width:640px){
+  .stage-visual{flex-direction:column;gap:20px}
+  .presence-card{position:static;width:100%;max-width:420px}
+  .presence-card .pc-head{display:none}
+  .presence-card .pc-label{display:block;font-size:11.5px;font-weight:800;letter-spacing:.13em;
+    color:var(--text-2);margin-bottom:7px}
+  .presence-card .pc-body{padding-top:16px}
 }
 @media (prefers-reduced-motion: reduce){
   html{scroll-behavior:auto}
@@ -389,3 +494,13 @@ html.js .reveal.in .rv:nth-child(6){transition-delay:.45s}
 
 .sr-only{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;
   clip:rect(0 0 0 0);white-space:nowrap;border:0}
+@media (prefers-color-scheme: dark){ .lede{color:#C4D6E4} }
+
+/* Phone chrome, per the paintings: the header carries only the brand and
+   the menu button; the gold tag sits on one line. */
+.pill.hero-tag{white-space:nowrap}
+@media (max-width:700px){
+  .site-header .btn.small{display:none}
+  .pill.hero-tag{font-size:13px;padding:7px 13px}
+  .wrap{padding:0 20px}
+}

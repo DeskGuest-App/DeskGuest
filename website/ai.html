@@ -44,6 +44,51 @@
   #main .steps,#main .trio{grid-template-columns:1fr}
   #main .steps>*,#main .trio>*{grid-column:auto}
 }
+.ai-hero{display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:center;
+  padding:52px 0 30px}
+.ai-hero h1{font-size:clamp(2.6rem,4.9vw,3.95rem);line-height:1.07;font-weight:800;
+  letter-spacing:-.03em;margin:18px 0 20px}
+.ai-hero .sub{font-size:clamp(1.1rem,1.5vw,1.26rem);line-height:1.55;color:#2E5069;margin:0;max-width:33em}
+@media (prefers-color-scheme: dark){ .ai-hero .sub{color:#C4D6E4} }
+.ai-stack{display:grid;gap:16px}
+.ai-stack{position:relative}
+.presence-mini{position:relative;display:flex;align-items:center;gap:13px;background:var(--surface);
+  border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md);padding:15px 66px 15px 18px}
+.presence-mini .pm-face{flex:none;width:46px;height:46px;border-radius:50%;background:var(--chip);
+  display:flex;align-items:center;justify-content:center;overflow:hidden}
+.presence-mini .pm-face img{width:40px;height:40px;object-fit:cover}
+.presence-mini .pm-who{font-weight:800;font-size:16.5px;line-height:1.3;color:var(--text)}
+.presence-mini .pm-state{font-size:13.5px;color:var(--text-2);display:flex;align-items:center;gap:7px}
+.presence-mini .pm-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex:none}
+.presence-mini .pm-stop{margin-left:auto;background:var(--red);color:#fff;font-weight:800;
+  border-radius:9px;padding:10px 22px;font-size:14.5px;letter-spacing:.02em}
+.pm-greeter{position:absolute;right:-10px;top:-40px;width:96px;height:auto;z-index:4;pointer-events:none;
+  filter:drop-shadow(0 8px 12px rgba(15,37,55,.25))}
+@media (max-width:640px){ .pm-greeter{display:none} }
+.leash-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;
+  box-shadow:var(--shadow-md);padding:18px 20px 20px}
+.leash-card .lc-labels{display:flex;justify-content:space-between;gap:8px;font-size:14px;
+  font-weight:600;color:var(--text);margin-bottom:13px;flex-wrap:wrap}
+.leash-card .lc-labels .lc-stop{color:var(--red);font-weight:800}
+.leash-card .lc-track{position:relative;height:7px;border-radius:99px;background:var(--border)}
+.leash-card .lc-fill{position:absolute;left:0;top:0;height:100%;width:64%;border-radius:99px;background:var(--blue)}
+.leash-card .lc-knob{position:absolute;left:64%;top:50%;width:23px;height:23px;border-radius:50%;
+  background:var(--blue);border:3px solid #fff;box-shadow:0 3px 9px rgba(15,37,55,.35);transform:translate(-50%,-50%)}
+.gate-card{background:var(--surface);border:1px solid var(--border);border-top:5px solid var(--gold);
+  border-radius:16px;box-shadow:var(--shadow-md);padding:20px 22px}
+.gate-card .gc-row{display:flex;gap:14px;align-items:flex-start}
+.gate-card .gc-ic{flex:none;width:42px;height:42px;color:var(--gold-dark)}
+.gate-card .gc-q{font-weight:800;font-size:18.5px;line-height:1.35;color:var(--text);margin:2px 0 0}
+.gate-card .gc-btns{display:flex;gap:12px;margin-top:17px}
+.gate-card .gc-allow{flex:1;text-align:center;background:var(--blue);color:#fff;font-weight:800;
+  border-radius:10px;padding:13px 0;font-size:16px}
+.gate-card .gc-deny{flex:1;text-align:center;background:var(--red);color:#fff;font-weight:800;
+  border-radius:10px;padding:13px 0;font-size:16px}
+.ai-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:14px 0 6px}
+.ai-trio .fact{display:flex;gap:15px;align-items:flex-start}
+.ai-trio .fact h3{padding-top:10px}
+@media (max-width:1020px){ .ai-hero{grid-template-columns:1fr;padding-top:40px} }
+@media (max-width:860px){ .ai-trio{grid-template-columns:1fr} }
 .matrix-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-lg)}
 table.ai-matrix{border-collapse:separate;border-spacing:0;min-width:840px}
 table.ai-matrix th,table.ai-matrix td{vertical-align:top}
@@ -99,15 +144,30 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <header class="site-header"><div class="wrap">
 <a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html">Features</a><a href="ai.html" aria-current="page">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust</a><a href="support.html">Support</a><a href="workplaces.html">Workplaces</a><a href="it.html">IT</a></nav>
-<a class="btn small" href="download.html">Coming soon</a>
+<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html" aria-current="page">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="trust.html">Trust</a></nav>
+<a class="btn small" href="download.html">Download (Coming Soon)</a>
 </div></header>
 <main id="main">
-<section class="page-hero"><div class="wrap">
-<h1 class="page-title">Your AI, on your devices, under your rules</h1>
-<p class="page-sub">DeskGuest lets you pair your own AI agent with your phone and your computers, so it can genuinely help — see the screen, do the work, fix the problem — inside a frame of presence, permissions, and records that you control.</p>
-<p style="margin:22px 0 0"><a class="btn" href="#worked-example">See one request become a record</a> &nbsp; <a class="btn ghost-light" href="#supported-ais">Which AIs are supported?</a></p>
-</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
+<section><div class="wrap">
+<div class="ai-hero">
+<div>
+<span class="pill teal hero-tag">Core Pillar • Your Own AI, Under Your Control</span>
+<h1>Let your AI agent<br>help on your device<br>— never in secret.</h1>
+<p class="sub">Every AI agent is named on screen with its own face, distinct ghost pointer, stepped permissions, plain-English approval gates, and a red STOP that always works.</p>
+<p class="hero-ctas" style="margin:26px 0 0"><a class="btn" href="#worked-example">See one request become a record</a><a class="btn ghost-light" href="#supported-ais">Which AIs are supported?</a></p>
+</div>
+<div class="ai-stack" role="img" aria-label="How an AI agent's help looks on your device: a presence card naming Claude as the helper with a red STOP button; a control slider set between Watch Only and Full Help; and an approval card asking whether Claude may install a printer driver, with Allow Once and Deny and STOP buttons.">
+<div class="presence-mini"><img class="pm-greeter" src="assets/a3-mark.webp" alt="" width="384" height="244" aria-hidden="true"><span class="pm-face"><img src="assets/a3-mark.webp" alt="" width="384" height="244"></span><div><div class="pm-who">Claude is helping on this computer</div><div class="pm-state"><span class="pm-dot"></span>Active</div></div><span class="pm-stop">STOP</span></div>
+<div class="leash-card"><div class="lc-labels"><span>Watch Only</span><span>Ask Before Clicking</span><span>Full Help with <span class="lc-stop">STOP</span></span></div><div class="lc-track"><span class="lc-fill"></span><span class="lc-knob"></span></div></div>
+<div class="gate-card"><div class="gc-row"><svg class="gc-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5L23 21H1z" opacity=".95"/><path d="M11 9.5h2v5h-2zM11 16.6h2v2h-2z" fill="#fff"/></svg><p class="gc-q">Claude wants to install Brother Printer Driver. Allow this?</p></div><div class="gc-btns"><span class="gc-allow">Allow Once</span><span class="gc-deny">Deny &amp; STOP</span></div></div>
+</div>
+</div>
+<div class="ai-trio">
+<div class="fact"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="13" height="10" rx="2"/><path d="M7 21h7M10.5 14v3.5"/><path d="M13.5 15.5L19 21M19 15.5L13.5 21" stroke-width="1.6"/></svg></span><h3>Named Presence &amp; Ghost Pointer</h3></div>
+<div class="fact"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13M4 16h9"/><rect x="15" y="5.5" width="6" height="5" rx="1.5"/><rect x="11" y="13.5" width="6" height="5" rx="1.5"/></svg></span><h3>Background Work Only &amp; Held-Work Queue</h3></div>
+<div class="fact"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5v11.2c0 .8 1 1.3 1.7.8l2-1.4 1.7 3.9c.3.7 1.3.8 1.8.2l1.2-1.2c.4-.4.4-1 .1-1.5l-1.8-3.4 2.6-.3c.9-.1 1.2-1.2.5-1.8L8.7 3.9c-.6-.6-1.7-.2-1.7.6z" transform="translate(1.5 1)"/></svg></span><h3>Instant Physical Mouse Take-Over</h3></div>
+</div>
+</div></section>
 
 <section class="section" id="worked-example" style="scroll-margin-top:84px"><div class="wrap">
 <div class="sec-head reveal"><h2>From a request to a record</h2>
