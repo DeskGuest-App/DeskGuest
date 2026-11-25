@@ -1,5 +1,5 @@
 <p align="center">
-  <a href="https://deskguest.pages.dev"><img src=".github/assets/readme-hero.png" alt="DeskGuest — a helping hand for your computer, always under your control. Free, private remote help from trusted people or AI. No account, no cloud, instant STOP." width="100%"></a>
+  <a href="https://deskguest.pages.dev"><img src=".github/assets/readme-hero.png" alt="DeskGuest — a helping hand for your device, always under your control. Free, private remote help from trusted people or AI. No account, no cloud, instant STOP." width="100%"></a>
 </p>
 
 <p align="center">
