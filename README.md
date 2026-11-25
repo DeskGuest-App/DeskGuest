@@ -68,7 +68,7 @@ DeskGuest works with any AI agent that uses MCP, the open connection standard. *
 
 | | |
 |---|---|
-| **[Features](https://deskguest.pages.dev/features)** | The whole product, family by family — presence, Quick Fix, rooms, groups, recovery |
+| **[Features](https://deskguest.pages.dev/features)** | The whole product, family by family — presence, Quick Fix, rooms, groups, recovery — and the full feature-by-feature comparison |
 | **[About](https://deskguest.pages.dev/about)** | Why DeskGuest exists — help in the open instead of a black box — and an honest comparison with TeamViewer, AnyDesk, RustDesk and Zoom & Teams |
 | **[How it works](https://deskguest.pages.dev/how-it-works)** | Three steps, and how pairing puts you in charge |
 | **[AI agents](https://deskguest.pages.dev/ai)** | Bring your own agent: the leash, the approvals, and which AIs are fully supported vs not yet tried |
