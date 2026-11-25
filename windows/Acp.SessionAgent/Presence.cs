@@ -147,6 +147,11 @@ public sealed class PresenceLayer
     /// the argument is the actor (TakeoverActors: the owner's Box
     /// control, or the owner's gate approval).</summary>
     public event Action<string>? TakeoverHandedBack;
+    /// <summary>FR-130: a stale owner-driving flag from an earlier
+    /// session was cleared at a session start — the pill had
+    /// latched "paused" while the Core reported no takeover.
+    /// Raised so the correction lands in the audit chain.</summary>
+    public event Action? TakeoverReconciled;
     /// <summary>FR-120 (W73): the active modes changed under the
     /// live layer (a UI save on this device, or a fleet-default
     /// push landing on a device that has not chosen). Arguments:
@@ -369,7 +374,26 @@ public sealed class PresenceLayer
         // (the defect belongs to the refused session, not forever).
         if (sessionActive && !string.IsNullOrWhiteSpace(agentName)) _driverNameDefect = false;
         else if (!sessionActive && !stopInForce) _driverNameDefect = false;
+        var wasSessionActive = _machine.SessionActive;
         _machine.ApplyDirective(sessionActive, agentName, stopInForce);
+        // FR-130: driving ownership never crosses a session
+        // boundary. HideSession's reset carries this rule for the
+        // legacy path, but the live lifecycle arrives HERE, as
+        // directives — and before this fix nothing on this path
+        // reset the takeover machine, so one yield (real or
+        // spurious) latched the pill "paused — you're driving"
+        // through every later session while the Core truthfully
+        // reported takeover_active: false, and every agent input
+        // was gated behind a hand-back nobody local was present
+        // to give. On either edge the machine reconciles; a stale
+        // flag cleared at a session START is a correction the
+        // audit chain must carry, so it is raised, not silent.
+        if (sessionActive != wasSessionActive)
+        {
+            var clearedStale = _takeover.ReconcileAtSessionBoundary();
+            _ownerDriving = _takeover.OwnerDriving;
+            if (clearedStale && sessionActive) TakeoverReconciled?.Invoke();
+        }
         Render();
     }
 
@@ -384,6 +408,13 @@ public sealed class PresenceLayer
     public void ShowSession(string agentName, string narration)
     {
         _narration = narration;
+        // FR-130: the same boundary rule as the directive path —
+        // a session starting here never inherits a stale flag.
+        if (_takeover.ReconcileAtSessionBoundary())
+        {
+            _ownerDriving = false;
+            TakeoverReconciled?.Invoke();
+        }
         _machine.SessionStarted(agentName);
         Render();
     }

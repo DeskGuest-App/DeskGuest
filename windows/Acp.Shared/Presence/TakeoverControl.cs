@@ -4,7 +4,7 @@ namespace Acp.Shared.Presence;
 /// FR-120 (W73) — the tunable-takeover BEHAVIOUR model: one pure
 /// state machine both input classes feed, the session-record
 /// entry vocabulary, and the actor vocabulary the record uses to
-/// distinguish HOW a change arrived (the owner's ownership rule,
+/// distinguish HOW a change arrived (Jacob's ownership rule,
 /// 2026-11-23 22:49 CT: a change made at the machine outside a
 /// session is the owner's local act; a change made through the
 /// device UI while a session is live rode that session and is
@@ -51,6 +51,10 @@ public static class TakeoverActors
     /// <summary>Local input itself (content is never captured —
     /// the class only).</summary>
     public const string LocalInput = "local-input";
+    /// <summary>FR-130: the presence layer's own session-boundary
+    /// reconciliation — a stale owner-driving flag cleared itself
+    /// at a session start. Not a person's act: the record says so.</summary>
+    public const string PresenceReconciliation = "presence-reconciliation";
 }
 
 /// <summary>The session-record entry kinds for FR-120 facts.
@@ -68,6 +72,11 @@ public static class TakeoverRecordKinds
     public const string HandBack = "takeover_handback";
     /// <summary>The takeover hotkey yielded driving.</summary>
     public const string Hotkey = "takeover_hotkey";
+    /// <summary>FR-130: a stale owner-driving flag left over from
+    /// an earlier session was cleared at a session boundary —
+    /// the pill had latched "paused" with no takeover in the
+    /// session that was actually starting.</summary>
+    public const string Reconciled = "takeover_reconciled";
 }
 
 /// <summary>Canonical detail strings for takeover record entries —
@@ -89,6 +98,9 @@ public static class TakeoverRecordDetail
         actor == TakeoverActors.OwnerGateApproval
             ? "owner approved the agent's request for control back on the gate card"
             : "owner handed control back from the presence box";
+
+    public static string Reconciled() =>
+        "stale owner-driving state from a previous session cleared at session start; the pill follows the new session";
 }
 
 /// <summary>The FR-120 hand-back gate identity: an agent asking
@@ -164,4 +176,21 @@ public sealed class TakeoverStateMachine
     /// (STOP ends the session through its own path and lands
     /// here only as part of teardown — the mode never gated it.)</summary>
     public void Reset() => OwnerDriving = false;
+
+    /// <summary>FR-130: session-boundary reconciliation. Driving
+    /// ownership belongs to ONE session: a session that ends
+    /// leaves none behind, and a session that starts always
+    /// starts with the agent driving (the rule HideSession's
+    /// reset was written for — but the live lifecycle runs
+    /// through Core directives, which never called it, so a flag
+    /// set in one session latched the pill "paused" through
+    /// every later session while the Core reported no takeover).
+    /// Returns true when a stale owner-driving flag was cleared,
+    /// so the caller can record the correction.</summary>
+    public bool ReconcileAtSessionBoundary()
+    {
+        if (!OwnerDriving) return false;
+        OwnerDriving = false;
+        return true;
+    }
 }

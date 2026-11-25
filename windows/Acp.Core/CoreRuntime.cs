@@ -5659,8 +5659,15 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
             {
                 // STOP file kill switch (DESIGN §6.6): checked every tick,
                 // enforced host-side before the next call.
+                // FR-137: the transition test compares the file
+                // against the FILE's own recorded state — never
+                // against the combined StopInForce. While a user
+                // stop is latched (no file present), the old
+                // comparison read false != true on every tick and
+                // appended a bogus stop_file_cleared audit entry
+                // roughly once a second, indefinitely.
                 var stopPresent = File.Exists(StopFilePath);
-                if (stopPresent != State.StopInForce)
+                if (stopPresent != State.StopFilePresent)
                 {
                     State.SetStopFilePresent(stopPresent);
                     Audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", null, null, null, null, null,
@@ -5942,12 +5949,13 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
                 if (root.TryGetProperty("kind", out var k) && k.GetString() is { } ks &&
                     ks is Shared.Presence.TakeoverRecordKinds.ModesAtStart or Shared.Presence.TakeoverRecordKinds.ModeChanged
                         or Shared.Presence.TakeoverRecordKinds.Yield or Shared.Presence.TakeoverRecordKinds.HandBack
-                        or Shared.Presence.TakeoverRecordKinds.Hotkey)
+                        or Shared.Presence.TakeoverRecordKinds.Hotkey or Shared.Presence.TakeoverRecordKinds.Reconciled)
                     kind = ks;
                 if (root.TryGetProperty("actor", out var a) && a.GetString() is { } @as &&
                     @as is Shared.Presence.TakeoverActors.OwnerLocal or Shared.Presence.TakeoverActors.InSession
                         or Shared.Presence.TakeoverActors.OwnerHandBackControl or Shared.Presence.TakeoverActors.OwnerGateApproval
-                        or Shared.Presence.TakeoverActors.OwnerHotkey or Shared.Presence.TakeoverActors.LocalInput)
+                        or Shared.Presence.TakeoverActors.OwnerHotkey or Shared.Presence.TakeoverActors.LocalInput
+                        or Shared.Presence.TakeoverActors.PresenceReconciliation)
                     actor = @as;
                 if (root.TryGetProperty("detail", out var d) && d.GetString() is { } ds)
                     detail = ds.Length > 300 ? ds[..300] : ds;
