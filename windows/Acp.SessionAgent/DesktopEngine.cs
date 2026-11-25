@@ -1147,7 +1147,7 @@ public sealed class DesktopEngine
         // now: an already-open dialog is reported as already open
         // and nothing is clicked.
         var matches = _uia.FindMenuCandidates(itemName);
-        var (outcome, index) = MenuDialogResolution.Decide(matches.Select(m => m.Candidate).ToArray());
+        var (outcome, index) = MenuDialogResolution.Decide(matches.Select(m => m.Candidate).ToArray(), itemName);
         switch (outcome)
         {
             case MenuDialogOutcome.NotFound:
