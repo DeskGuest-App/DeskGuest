@@ -17,129 +17,8 @@
 <meta property="og:image" content="https://deskguest.pages.dev/assets/a3-master-lockup.png">
 <meta name="twitter:card" content="summary">
 <script>document.documentElement.className+=' js'</script>
-<style>
-/* AI page only: chapter disclosures + the Supported AIs matrix.
-   Built from the shared tokens; style.css is untouched. */
-.chapter{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
-  margin:0 0 16px;scroll-margin-top:96px}
-.chapter>summary{cursor:pointer;list-style:none;display:flex;align-items:baseline;gap:14px;
-  padding:22px 26px;min-height:56px}
-.chapter>summary::-webkit-details-marker{display:none}
-.chapter>summary::after{content:"+";margin-left:auto;flex:none;font-size:24px;font-weight:800;
-  line-height:1;color:var(--blue-dark)}
-.chapter[open]>summary::after{content:"\2013"}
-.ch-title{font-size:21px;font-weight:800;letter-spacing:-.01em}
-.ch-sub{color:var(--text-2);font-size:15px}
-.chapter-body{padding:2px 26px 28px}
-.chapter-body>p{color:var(--text-2);max-width:46em;margin:0 0 18px}
-.chapter-body .cards,.chapter-body .trio{margin-top:4px}
-@media (max-width:640px){
-  .chapter>summary{flex-wrap:wrap;gap:2px 12px;padding:18px 20px}
-  .chapter-body{padding:2px 20px 24px}
-}
-@media (max-width:860px){
-  /* On this page the step/fact grids stack full-width at phone widths —
-     the same single-column step-down the shared system applies to .cards —
-     instead of squeezing into two skinny columns. Page-local on purpose. */
-  #main .steps,#main .trio{grid-template-columns:1fr}
-  #main .steps>*,#main .trio>*{grid-column:auto}
-}
-.ai-hero{display:grid;grid-template-columns:1.02fr .98fr;gap:44px;align-items:center;
-  padding:52px 0 30px}
-.ai-hero h1{font-size:clamp(2.6rem,4.9vw,3.95rem);line-height:1.07;font-weight:800;
-  letter-spacing:-.03em;margin:18px 0 20px}
-.ai-hero .sub{font-size:clamp(1.1rem,1.5vw,1.26rem);line-height:1.55;color:#2E5069;margin:0;max-width:33em}
-@media (prefers-color-scheme: dark){ .ai-hero .sub{color:#C4D6E4} }
-.ai-stack{display:grid;gap:16px}
-.ai-stack{position:relative}
-.presence-mini{position:relative;display:flex;align-items:center;gap:13px;background:var(--surface);
-  border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow-md);padding:15px 66px 15px 18px}
-.presence-mini .pm-face{flex:none;width:46px;height:46px;border-radius:50%;background:var(--chip);
-  display:flex;align-items:center;justify-content:center;overflow:hidden}
-.presence-mini .pm-face img{width:40px;height:40px;object-fit:cover}
-.presence-mini .pm-who{font-weight:800;font-size:16.5px;line-height:1.3;color:var(--text)}
-.presence-mini .pm-state{font-size:13.5px;color:var(--text-2);display:flex;align-items:center;gap:7px}
-.presence-mini .pm-dot{width:9px;height:9px;border-radius:50%;background:var(--teal);flex:none}
-.presence-mini .pm-stop{margin-left:auto;background:var(--red);color:#fff;font-weight:800;
-  border-radius:9px;padding:10px 22px;font-size:14.5px;letter-spacing:.02em}
-.pm-greeter{position:absolute;right:-10px;top:-40px;width:96px;height:auto;z-index:4;pointer-events:none;
-  filter:drop-shadow(0 8px 12px rgba(15,37,55,.25))}
-@media (max-width:640px){ .pm-greeter{display:none} }
-.leash-card{background:var(--surface);border:1px solid var(--border);border-radius:16px;
-  box-shadow:var(--shadow-md);padding:18px 20px 20px}
-.leash-card .lc-labels{display:flex;justify-content:space-between;gap:8px;font-size:14px;
-  font-weight:600;color:var(--text);margin-bottom:13px;flex-wrap:wrap}
-.leash-card .lc-labels .lc-stop{color:var(--red);font-weight:800}
-.leash-card .lc-track{position:relative;height:7px;border-radius:99px;background:var(--border)}
-.leash-card .lc-fill{position:absolute;left:0;top:0;height:100%;width:64%;border-radius:99px;background:var(--blue)}
-.leash-card .lc-knob{position:absolute;left:64%;top:50%;width:23px;height:23px;border-radius:50%;
-  background:var(--blue);border:3px solid #fff;box-shadow:0 3px 9px rgba(15,37,55,.35);transform:translate(-50%,-50%)}
-.gate-card{background:var(--surface);border:1px solid var(--border);border-top:5px solid var(--gold);
-  border-radius:16px;box-shadow:var(--shadow-md);padding:20px 22px}
-.gate-card .gc-row{display:flex;gap:14px;align-items:flex-start}
-.gate-card .gc-ic{flex:none;width:42px;height:42px;color:var(--gold-dark)}
-.gate-card .gc-q{font-weight:800;font-size:18.5px;line-height:1.35;color:var(--text);margin:2px 0 0}
-.gate-card .gc-btns{display:flex;gap:12px;margin-top:17px}
-.gate-card .gc-allow{flex:1;text-align:center;background:var(--blue);color:#fff;font-weight:800;
-  border-radius:10px;padding:13px 0;font-size:16px}
-.gate-card .gc-deny{flex:1;text-align:center;background:var(--red);color:#fff;font-weight:800;
-  border-radius:10px;padding:13px 0;font-size:16px}
-.ai-trio{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;padding:14px 0 6px}
-.ai-trio .fact{display:flex;gap:15px;align-items:flex-start}
-.ai-trio .fact h3{padding-top:10px}
-@media (max-width:1020px){ .ai-hero{grid-template-columns:1fr;padding-top:40px} }
-@media (max-width:860px){ .ai-trio{grid-template-columns:1fr} }
-.matrix-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-lg)}
-table.ai-matrix{border-collapse:separate;border-spacing:0;min-width:840px}
-table.ai-matrix th,table.ai-matrix td{vertical-align:top}
-table.ai-matrix thead th{font-size:16px;line-height:1.3}
-table.ai-matrix th:first-child,table.ai-matrix td:first-child{position:sticky;left:0;z-index:2;
-  background:var(--surface);font-weight:700;min-width:168px;max-width:210px}
-table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
-.mx-note{display:block;font-size:13px;font-weight:400;color:var(--text-2);margin-top:3px;line-height:1.4}
-.mx-yes{font-weight:800;color:var(--teal-dark);font-size:17px}
-@media (prefers-color-scheme: dark){ .mx-yes{color:#8FD0D0} }
-.mx-no{color:var(--text-2)}
-.mx-status{font-weight:800}
-.mx-status.tested{color:var(--teal-dark)}
-@media (prefers-color-scheme: dark){ .mx-status.tested{color:#8FD0D0} }
-.matrix-notes{font-size:14px;color:var(--text-2);max-width:62em;margin:18px 0 0}
-.matrix-notes li{margin:0 0 7px}
-/* Supported AIs — stacked cards below desktop width. The 7-column table
-   only ever renders where every column has room to breathe (>=1150px);
-   below that, one card per AI with label -> value lines replaces it. */
-.ai-cards{display:none}
-@media (max-width:1149px){
-  .matrix-scroll{display:none}
-  .ai-cards{display:grid;grid-template-columns:1fr;gap:20px}
-}
-.ai-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
-  overflow:hidden;text-align:left}
-.ai-card-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 16px;
-  padding:20px 24px 18px;background:var(--subtle);border-bottom:1px solid var(--border)}
-.ai-card-head h3{margin:0;font-size:21px;line-height:1.25;letter-spacing:-.01em}
-.ai-card-route{margin:4px 0 0;color:var(--text-2);font-size:14.5px;line-height:1.45}
-.ai-pill{margin-left:auto;flex:none;font-size:13px;font-weight:800;line-height:1.35;
-  padding:6px 13px;border-radius:999px;border:1.5px solid var(--text-2);color:var(--text)}
-.ai-pill.tested{border-color:var(--teal-dark);color:var(--teal-dark)}
-@media (prefers-color-scheme: dark){ .ai-pill.tested{border-color:#8FD0D0;color:#8FD0D0} }
-.ai-rows{margin:0;padding:4px 24px 12px}
-.ai-row{display:grid;grid-template-columns:minmax(170px,38%) 1fr;gap:4px 22px;
-  padding:13px 0;border-bottom:1px solid var(--border)}
-.ai-row:last-child{border-bottom:0}
-.ai-row dt{font-weight:700;font-size:15px;line-height:1.45}
-.ai-row dd{margin:0;font-size:15.5px;line-height:1.5}
-.ai-lead{display:block;font-weight:800;font-size:16.5px}
-.ai-note{display:block;font-size:13.5px;font-weight:400;color:var(--text-2);margin-top:4px;line-height:1.5}
-@media (max-width:560px){
-  .ai-card-head{padding:18px 20px 15px}
-  .ai-pill{margin-left:0}
-  .ai-rows{padding:4px 20px 10px}
-  .ai-row{grid-template-columns:1fr;gap:3px;padding:12px 0}
-}
-</style>
 </head>
-<body>
+<body class="pg-ai">
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
 <a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
@@ -154,7 +33,7 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <span class="pill teal hero-tag">Core Pillar • Your Own AI, Under Your Control</span>
 <h1>Let your AI agent<br>help on your device<br>— never in secret.</h1>
 <p class="sub">Every AI agent is named on screen with its own face, distinct ghost pointer, stepped permissions, plain-English approval gates, and a red STOP that always works.</p>
-<p class="hero-ctas" style="margin:26px 0 0"><a class="btn" href="#worked-example">See one request become a record</a><a class="btn ghost-light" href="#supported-ais">Which AIs are supported?</a></p>
+<p class="hero-ctas u-m-26-0-0"><a class="btn" href="#worked-example">See one request become a record</a><a class="btn ghost-light" href="#supported-ais">Which AIs are supported?</a></p>
 </div>
 <div class="ai-stack" role="img" aria-label="How an AI agent's help looks on your device: a presence card naming Claude as the helper with a red STOP button; a control slider set between Watch Only and Full Help; and an approval card asking whether Claude may install a printer driver, with Allow Once and Deny and STOP buttons.">
 <div class="presence-mini"><img class="pm-greeter" src="assets/a3-mark.webp" alt="" width="384" height="244" aria-hidden="true"><span class="pm-face"><img src="assets/a3-mark.webp" alt="" width="384" height="244"></span><div><div class="pm-who">Claude is helping on this computer</div><div class="pm-state"><span class="pm-dot"></span>Active</div></div><span class="pm-stop">STOP</span></div>
@@ -169,7 +48,7 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </div>
 </div></section>
 
-<section class="section" id="worked-example" style="scroll-margin-top:84px"><div class="wrap">
+<section class="section u-scroll84" id="worked-example"><div class="wrap">
 <div class="sec-head reveal"><h2>From a request to a record</h2>
 <p>One worked example — you on your phone, your agent acting on your computer. This sequence is the whole arrangement in miniature: ask, approve, and it's written down.</p></div>
 <div class="steps reveal">
@@ -179,7 +58,7 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </div>
 </div></section>
 
-<section class="section section--tint" id="supported-ais" style="scroll-margin-top:84px"><div class="wrap">
+<section class="section section--tint u-scroll84" id="supported-ais"><div class="wrap">
 <div class="sec-head reveal"><h2>Supported AIs</h2>
 <p>DeskGuest pairs any agent that speaks MCP, the open standard — the same door, the same rules, for all of them. An agent earns <strong>Fully supported</strong> only when it has actually been paired to DeskGuest and passed our nine-step test battery: pairing and Terms acknowledgment, working inside its scopes, observing, a gated action refused and allowed, a drive task, STOP honoured, ending its own session, and a clean record under its own name. Everything else is <strong>Documented but untested</strong> — the maker's own documentation says the route works; our battery hasn't run on it yet. Test dates join this table as trials complete.</p></div>
 <div class="matrix-scroll reveal">
@@ -366,7 +245,7 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <div class="fact"><h3>It connects as itself</h3><p>At pairing, the agent gives its name, and that name is kept on the pairing and shown everywhere the connection appears. With a face you choose for it, name and face ride the pairing as a presentation card — the device being helped always knows exactly who is here.</p></div>
 <div class="fact"><h3>Pairing is always your act</h3><p>Pairing starts on your device, with a one-time code the app shows you. An agent can never pair itself, pair another agent, or widen its own access — not at pairing, not ever. Each pairing gets its own token, held in your device's keystore: one leak compromises one pairing, and you can revoke it in isolation.</p></div>
 </div>
-<div class="cards" style="margin-top:20px">
+<div class="cards u-mt20">
 <div class="card"><h3>No codes carried in your head</h3><p>Where a step happens inside your AI's own app, DeskGuest generates a one-tap copy prompt on your device, from the live pairing state, carrying everything the agent needs. You never compose instructions for your AI, and never carry codes between apps in your head.</p></div>
 <div class="card"><h3>It knows exactly what it may use</h3><p>When an agent connects, DeskGuest tells it precisely which capabilities this device and this pairing support — and why the rest are unavailable. An agent never has to guess at its own reach, and a capability a device can't perform reports unavailable, with a reason.</p></div>
 <div class="card"><h3>Revocation is one tap</h3><p>Remove a pairing and it ends on the agent's next action — not at the next sync, not eventually. Pairings can also carry an expiry and fail closed when it passes. Across a whole fleet, "revoke this agent everywhere" shows you the full list of what changes before you confirm.</p></div>
@@ -384,13 +263,13 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <div class="fact"><h3>Full control</h3><p>One tap grants the working set: driving, files, and system tasks. The sensitive classes — payments, sends, deletions, installs — still stop and ask you first, in every mode, including this one.</p></div>
 <div class="fact"><h3>Custom</h3><p>Four scopes, granted independently: <strong>observe</strong> (see), <strong>drive</strong> (tap, type, gesture), <strong>shell</strong> (commands and system work), and <strong>admin</strong> (the deepest system tasks). Mix them per agent: your phone agent might drive, your work agent might only observe.</p></div>
 </div>
-<div class="cards" style="margin-top:20px">
+<div class="cards u-mt20">
 <div class="card"><h3>How approvals work</h3><p>Per pairing, you choose the rhythm: approve every action, approve a plan and let the steps run, or trust the agent inside its grant. Whichever you choose, the gated classes stay gated — an approval mode can relax the small things, never the things that matter.</p></div>
 <div class="card"><h3>Time-boxed grants</h3><p>Access can be bounded by the clock: this agent, these hours, until Friday. Outside the window the grant doesn't merely sleep — it doesn't exist. Expiry is automatic, written into the record, and never silently extended.</p></div>
 <div class="card"><h3>Sessions end themselves</h3><p>You can time-box a session, and a session with no agent action for a set interval closes itself and says so. When a task is finished, the agent ends the session as its final action — the presence clearing from your screen is your "done" signal.</p></div>
 <div class="card"><h3>Working style, inside the grant</h3><p>You can tune how an agent works without touching what it may do: how much it narrates, whether it asks first or acts first inside its grant, how detailed its session notes are. Style is yours to set; the grant itself only ever changes by your hand.</p></div>
 </div>
-<p style="margin-top:22px;color:var(--text-2)">How the agent reaches you is also part of the pairing: <strong>Auto</strong> works every connection road and fails over silently; <strong>Auto, restricted</strong> works only the subset of roads you allow — never the public ones; <strong>Manual</strong> pins one road. The road an agent is actually on is always shown, and a restricted set with no working road reports that honestly instead of quietly widening. <a href="features.html">The connection roads, in the full tour</a></p>
+<p class="u-mt22 u-c-text2">How the agent reaches you is also part of the pairing: <strong>Auto</strong> works every connection road and fails over silently; <strong>Auto, restricted</strong> works only the subset of roads you allow — never the public ones; <strong>Manual</strong> pins one road. The road an agent is actually on is always shown, and a restricted set with no working road reports that honestly instead of quietly widening. <a href="features.html">The connection roads, in the full tour</a></p>
 </div>
 </details>
 
@@ -456,7 +335,7 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <div class="fact"><h3>A running commentary</h3><p>A persistent activity line states in plain words what the agent is doing as it acts, and session sounds announce the start and the end. A session never begins or ends silently.</p></div>
 <div class="fact"><h3>While you're driving, it doesn't</h3><p>In a vehicle, screen driving is refused outright. Voice-grade interactions — notifying you, reading aloud — remain available. The device reports where it is; an agent gets no tools to make it lie about that, or about anything else.</p></div>
 </div>
-<div class="cards" style="margin-top:20px">
+<div class="cards u-mt20">
 <div class="card"><h3>A voice for your agent</h3><p>Paired agents can speak and listen in a session. By default the voice is built in and local: it runs on the device, works offline, and nothing about it phones home — DeskGuest holds no AI provider keys, ever. You can swap in a different voice pack per agent, and when an agent brings a voice from its own platform, its card says so — you always know whose voice is speaking. The honest expectation: the built-in voice is good and natural, a notch below the best cloud voices; nothing leaves your device to close that gap.</p></div>
 <div class="card"><h3>Saved routines</h3><p>A sequence an agent performs often can be saved as a named routine and replayed on demand — on Windows today. A routine is exactly what its author supplied, step for step; DeskGuest doesn't record your screen sessions into routines, and doesn't claim to.</p></div>
 </div>
@@ -475,7 +354,7 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </div>
 </details>
 
-<p style="margin-top:26px"><a class="btn" href="how-it-works.html">See an agent session, step by step</a> &nbsp; <a class="more" href="features.html"><strong>The full feature tour</strong></a></p>
+<p class="u-mt26"><a class="btn" href="how-it-works.html">See an agent session, step by step</a> &nbsp; <a class="more" href="features.html"><strong>The full feature tour</strong></a></p>
 </div></section>
 
 </main>

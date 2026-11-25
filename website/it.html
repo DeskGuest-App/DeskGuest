@@ -41,7 +41,7 @@
 <tr><td>Mac / Linux hosts</td><td>None. There is no macOS or Linux host, and neither appears as a DeskGuest endpoint.</td></tr>
 <tr><td>Sizing &amp; specs</td><td>Measured and published — see Sizing, below.</td></tr>
 </table>
-<div class="sec-head reveal" style="margin-top:48px"><h2>Sizing — measured</h2></div>
+<div class="sec-head reveal u-mt48"><h2>Sizing — measured</h2></div>
 <table class="matrix reveal" aria-label="Sizing — measured">
 <tr><th>What</th><th>Minimum</th><th>Recommended</th></tr>
 <tr><td>Free disk space</td><td>1 GB free</td><td>2 GB free</td></tr>
@@ -49,7 +49,7 @@
 <tr><td>Processor</td><td>Any modern 4-core x86-64 processor</td><td>6 cores</td></tr>
 </table>
 <div class="notice reveal"><strong>The optional local-model AI pack is a separate spec</strong> and is never folded into the base numbers above: it takes about 31 GB on disk — allow 40 GB free on the pack's drive. How these numbers were derived, stated honestly: they were measured on the proven fleet machine, and each minimum is the measured footprint with headroom added — not a tested weakest-machine floor. During a live session with screen streaming, DeskGuest's own memory use peaked at about 1 GB.</div>
-<div class="cards reveal" style="margin-top:26px">
+<div class="cards reveal u-mt26">
 <div class="card rv"><h3>Architecture in one paragraph</h3><p>No DeskGuest cloud and no DeskGuest account: identity is a key held on the device, with a recovery key (Windows) or a 34-word recovery key sheet (Android) as the only way back in — there is no central reset. Devices pair with one-time codes (10-minute expiry, single use). Some connection paths use a third-party coordination service (for example Tailscale) for device discovery only; it never holds sessions or records.</p></div>
 <div class="card rv"><h3>Consent floor — not configurable</h3><p>Presence (the connected helper is named on every screen), a STOP that always works, refusal to type credentials, and an Activity Record that can't be quietly edited are properties of the product, not settings. Policy governs comfort and scope — it cannot switch the floor off, including any form of unattended access.</p></div>
 <div class="card rv"><h3>Policy &amp; Effective Policy</h3><p>Rules are written as sentences with scope and source, inherited workplace → group → device. The Effective Policy view shows the resolved result for a given device ("what actually applies"), not just the rule stack. Camera viewing, patch approvals, and auto-remediation are policy-governed and audited; patch rollouts are approval-gated and halt themselves on failure.</p></div>
@@ -57,7 +57,7 @@
 <div class="card rv"><h3>Deployment shapes</h3><p>Standalone per device, or a workplace hub run once by the organization with sites enrolling by code. There is no DeskGuest-imposed user limit and no device limit. Offboarding is one removal action with the blast list shown first; removing a fellow admin takes dual control, and the last admin cannot be removed.</p></div>
 <div class="card rv"><h3>Security disclosure</h3><p>Report vulnerabilities privately via GitHub private vulnerability reporting on the DeskGuest project: <a href="https://github.com/DeskGuest-App/DeskGuest/security/advisories/new">open a private security advisory</a>. Downloads — and the File Check Code (SHA-256) for each — live only at <a href="https://github.com/DeskGuest-App/DeskGuest">the DeskGuest project</a>.</p></div>
 </div>
-<p style="margin-top:26px">The full reasoning: <a href="security.html">Security &amp; the threat model</a> · <a href="privacy.html">Privacy</a> · <a href="verify.html">Verify a download</a></p>
+<p class="u-mt26">The full reasoning: <a href="security.html">Security &amp; the threat model</a> · <a href="privacy.html">Privacy</a> · <a href="verify.html">Verify a download</a></p>
 </div></section>
 
 </main>

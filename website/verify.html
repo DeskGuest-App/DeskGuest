@@ -32,12 +32,12 @@
 <p class="page-sub">Drop your installer file or paste its SHA-256 check code to confirm it matches the official release. Runs locally in your browser — the file never leaves your device.</p>
 </div></section>
 
-<section class="section" style="padding-top:26px;padding-bottom:64px"><div class="wrap">
+<section class="section u-p-26-64"><div class="wrap">
 <div class="drop-card reveal">
 <div class="drop-zone" id="dropZone">
 <p class="dz-text">Drop DeskGuest installer here or paste SHA-256 code</p>
 <div class="drop-row">
-<label class="btn" for="fileInput" style="cursor:pointer">Choose File</label>
+<label class="btn u-cursor-pointer" for="fileInput">Choose File</label>
 <input type="file" id="fileInput" class="sr-only" aria-label="Choose the downloaded file to check">
 <input type="text" id="publishedCode" placeholder="Paste the published File Check Code" aria-label="Paste the published File Check Code" autocomplete="off" spellcheck="false">
 <button class="btn teal" id="compareBtn" type="button">Compare</button>
@@ -50,12 +50,12 @@
 
 <section class="section"><div class="wrap">
 <div class="sec-head reveal"><h2>On Windows</h2></div>
-<div class="steps reveal" style="grid-template-columns:repeat(3,1fr)">
+<div class="steps reveal u-grid-3">
 <div class="step rv"><span class="n">Step 1</span><h3>Open PowerShell</h3><p>Press the Windows key, type <code>PowerShell</code>, and open it. No administrator rights are needed.</p></div>
 <div class="step rv"><span class="n">Step 2</span><h3>Run the check</h3><p>Type <code>Get-FileHash</code>, a space, then drag the downloaded file into the window to fill in its path. Press Enter.</p></div>
 <div class="step rv"><span class="n">Step 3</span><h3>Compare</h3><p>PowerShell shows the file's code. Compare it, character for character, with the File Check Code published beside the download. They must match exactly.</p></div>
 </div>
-<div class="sec-head reveal" style="margin-top:48px"><h2>What the result means</h2></div>
+<div class="sec-head reveal u-mt48"><h2>What the result means</h2></div>
 <div class="cards reveal">
 <div class="card rv"><h3>The codes match</h3><p>Your file is byte-for-byte the file that was published. <strong>The file matches the published File Check Code.</strong></p></div>
 <div class="card rv"><h3>The codes don't match</h3><p>Do not install the file. Delete it and download again from this site or the project's releases page — nowhere else. If a fresh download still doesn't match, <a href="support.html">report it</a>: that's exactly the kind of thing we need to hear.</p></div>
