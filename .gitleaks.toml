@@ -1,0 +1,17 @@
+# gitleaks configuration for this repo.
+# The generic-api-key rule matches identifier-shaped strings in two source
+# files and planted fake keys in three test fixtures. Those exact paths are
+# allowlisted for that one rule only; every other rule, and any hit anywhere
+# else, still fails the scan.
+title = "DeskGuest gitleaks config"
+
+[allowlist]
+description = "generic-api-key identifier/fixture matches in named files"
+rules = ["generic-api-key"]
+paths = [
+  "windows/Acp.Shared/AiPack/AiPack.cs",
+  "windows/Acp.Shared/Distribution/P2pDistribution.cs",
+  "windows/Acp.Tests/Rmm18FixTests.cs",
+  "windows/Acp.Tests/Rmm18DestructionTests.cs",
+  "windows/Acp.Tests/Rmm32Tests.cs",
+]
