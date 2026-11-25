@@ -376,18 +376,5 @@
 Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>
 </div></footer>
 <script src="site.js"></script>
-<script>
-// AI page only: a deep link to a chapter opens it on arrival (Astra review).
-(function () {
-  function openFromHash() {
-    var id = location.hash.replace('#', '');
-    if (!id) return;
-    var d = document.getElementById(id);
-    if (d && d.tagName === 'DETAILS') d.open = true;
-  }
-  window.addEventListener('hashchange', openFromHash);
-  openFromHash();
-})();
-</script>
 </body>
 </html>

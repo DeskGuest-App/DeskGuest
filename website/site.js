@@ -130,3 +130,68 @@
     });
   });
 })();
+
+// AI page only: a deep link to a chapter opens it on arrival.
+// (Moved out of ai.html — the live CSP's script-src allows no inline
+// scripts beyond the hashed class script. Guarded to the AI page by
+// its body class; the code below is the page's original, unchanged.)
+if (document.body.classList.contains('pg-ai')) {
+// AI page only: a deep link to a chapter opens it on arrival (Astra review).
+(function () {
+  function openFromHash() {
+    var id = location.hash.replace('#', '');
+    if (!id) return;
+    var d = document.getElementById(id);
+    if (d && d.tagName === 'DETAILS') d.open = true;
+  }
+  window.addEventListener('hashchange', openFromHash);
+  openFromHash();
+})();
+}
+
+// Verify page only: the File Check Code tool — file drop/choose, SHA-256
+// computed locally via WebCrypto, compared against the pasted published
+// code. (Moved out of verify.html for the same CSP reason. Guarded on
+// the tool's own elements, which exist on no other page; the code below
+// is the page's original, unchanged.)
+if (document.getElementById('dropZone') && document.getElementById('fileInput') &&
+    document.getElementById('publishedCode') && document.getElementById('compareBtn') &&
+    document.getElementById('fileStatus') && document.getElementById('resultSlot')) {
+(function(){
+  var zone=document.getElementById('dropZone'), input=document.getElementById('fileInput'),
+      pub=document.getElementById('publishedCode'), btn=document.getElementById('compareBtn'),
+      status=document.getElementById('fileStatus'), slot=document.getElementById('resultSlot'),
+      fileHash=null, fileName='';
+  function clean(s){ return (s||'').replace(/[^0-9a-fA-F]/g,'').toLowerCase(); }
+  function showResult(match){
+    var div=document.createElement('div');
+    div.className='result-card '+(match?'match':'mismatch');
+    div.innerHTML = match
+      ? '<h3><span class="mark">✓</span>Match</h3><p class="ok-line">The file matches the published File Check Code.</p><p>This matches the official release — the file you have is byte-for-byte the file that was published.</p><span class="hash">SHA-256: '+fileHash+'</span>'
+      : '<h3><span class="mark">✗</span>Mismatch</h3><p class="ok-line">This does not match — do not install.</p><p>Delete the file and download again from this site or the project\u2019s releases page — nowhere else.</p><span class="hash">SHA-256: '+fileHash+'</span>';
+    slot.innerHTML=''; slot.appendChild(div);
+  }
+  function hashFile(file){
+    fileName=file.name; slot.innerHTML='';
+    status.textContent='Reading '+fileName+' locally…';
+    file.arrayBuffer().then(function(buf){
+      return crypto.subtle.digest('SHA-256', buf);
+    }).then(function(d){
+      fileHash=Array.prototype.map.call(new Uint8Array(d),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
+      status.innerHTML='<strong>'+fileName+'</strong> — its File Check Code:<span class="hash">SHA-256: '+fileHash+'</span>';
+    }).catch(function(){
+      fileHash=null; status.textContent='That file could not be read. Try choosing it again.';
+    });
+  }
+  input.addEventListener('change',function(){ if(input.files[0]) hashFile(input.files[0]); });
+  ['dragenter','dragover'].forEach(function(ev){ zone.addEventListener(ev,function(e){ e.preventDefault(); zone.classList.add('drag'); }); });
+  ['dragleave','drop'].forEach(function(ev){ zone.addEventListener(ev,function(e){ e.preventDefault(); zone.classList.remove('drag'); }); });
+  zone.addEventListener('drop',function(e){ var f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) hashFile(f); });
+  btn.addEventListener('click',function(){
+    var want=clean(pub.value);
+    if(!fileHash){ status.textContent='Choose or drop the downloaded file first — its code is computed here, on your device.'; return; }
+    if(want.length!==64){ slot.innerHTML=''; status.textContent='Paste the full published File Check Code (64 characters) beside the download, then Compare.'; return; }
+    showResult(want===fileHash);
+  });
+})();
+}
