@@ -5,6 +5,24 @@ namespace Acp.SessionAgent;
 /// <summary>One encoded access unit out of the H.264 encoder.</summary>
 internal sealed record EncodedAu(byte[] Data, bool Keyframe);
 
+/// <summary>One rung of the streaming encode ladder (the fallback
+/// law: MF hardware → MF software → bundled software encoder).
+/// StreamEngine holds whichever rung started; the rung's
+/// Description and Hardware flag ride the stream_start result,
+/// the stats, and every frame header, so the active rung is
+/// honestly shown wherever the stream is described. The choice is
+/// made once per stream start and never revisited mid-stream —
+/// a ladder that cannot oscillate cannot flap.</summary>
+internal interface IH264StreamEncoder : IDisposable
+{
+    bool Hardware { get; }
+    string Description { get; }
+    int Width { get; }
+    int Height { get; }
+    void RequestKeyFrame();
+    IReadOnlyList<EncodedAu> Encode(ReadOnlySpan<byte> nv12, long time100ns, long duration100ns);
+}
+
 /// <summary>BD-WIN-AGENT F12: Media Foundation process lifetime,
 /// reference-counted. The pre-fix code called MFStartup on EVERY
 /// encoder/decoder creation and never called MFShutdown at all —
@@ -61,7 +79,7 @@ internal static class MfLifetime
 /// IMFTransform itself is held as an RCW — its IID resolves — and
 /// only its value-only methods are called through it.
 /// </summary>
-internal sealed class H264Encoder : IDisposable
+internal sealed class H264Encoder : IH264StreamEncoder
 {
     private IMFTransform? _mft;
     private IntPtr _mftPtr;
@@ -76,21 +94,30 @@ internal sealed class H264Encoder : IDisposable
 
     public static bool TryCreate(int width, int height, int fps, int bitrateBps, out H264Encoder? encoder, out string error)
     {
+        // Both Media Foundation passes (hardware, then software);
+        // the streaming ladder (StreamEncoderLadder) walks the
+        // same passes as separate rungs before descending to the
+        // bundled software encoder.
+        if (TryCreatePass(hardware: true, width, height, fps, bitrateBps, out encoder, out error)) return true;
+        return TryCreatePass(hardware: false, width, height, fps, bitrateBps, out encoder, out error);
+    }
+
+    /// <summary>One Media Foundation pass of the encode ladder.
+    /// BD-WIN-AGENT F12: MF lifetime is reference-counted
+    /// (MfLifetime) — started once per process, shut down when
+    /// the last codec disposes. Every enumerated MFT gets an
+    /// activate+configure attempt: vendor MFTs differ in what
+    /// they accept, and the first one that activates is not
+    /// necessarily one that will take the stream's types (the
+    /// first hardware MFT on the reference laptop activates, then
+    /// refuses the H.264 output type with MF_E_INVALIDMEDIATYPE —
+    /// probe-verified 2026-11-19).</summary>
+    internal static bool TryCreatePass(bool hardware, int width, int height, int fps, int bitrateBps, out H264Encoder? encoder, out string error)
+    {
         encoder = null;
-        // BD-WIN-AGENT F12: MF lifetime is reference-counted
-        // (MfLifetime) — started once per process, shut down when
-        // the last codec disposes.
         if (!MfLifetime.Acquire(out error)) return false;
-        // Every enumerated MFT gets an activate+configure attempt:
-        // vendor MFTs differ in what they accept, and the first one
-        // that activates is not necessarily one that will take the
-        // stream's types (the first hardware MFT on the reference laptop
-        // activates, then refuses the H.264 output type with
-        // MF_E_INVALIDMEDIATYPE — probe-verified 2026-11-19).
-        if (!TryPass(hardware: true, width, height, fps, bitrateBps, out var enc, out var hwError) &&
-            !TryPass(hardware: false, width, height, fps, bitrateBps, out enc, out hwError))
+        if (!TryPass(hardware, width, height, fps, bitrateBps, out var enc, out error))
         {
-            error = hwError;
             MfLifetime.Release();
             return false;
         }
