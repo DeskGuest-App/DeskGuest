@@ -1133,10 +1133,36 @@ public sealed class DesktopEngine
     private async Task<(bool, string)> MenuDialogAsync(JsonElement args)
     {
         var itemName = GetString(args, "item") ?? "";
-        var el = _uia.FindByText(itemName);
-        if (el is null) return (false, $"menu item '{itemName}' not found in the current UI tree");
-        if (el.TryGetCurrentPattern(InvokePattern.Pattern, out var ip)) { ((InvokePattern)ip).Invoke(); return (true, $"invoked '{itemName}'"); }
-        if (el.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out var ep)) { ((ExpandCollapsePattern)ep).Expand(); return (true, $"expanded '{itemName}'"); }
+        if (string.IsNullOrWhiteSpace(itemName)) return (false, "ui_menu_dialog requires {item}");
+        // FR-142 (issue #34): resolution runs over ALL name matches
+        // through the pure MenuDialogResolution. The pre-fix code
+        // took the FIRST depth-first match from FindByText — for
+        // the item "Save As" with that dialog already open, the
+        // first match is the dialog window itself, and the fallback
+        // centre-clicked it: the click landed in the file list,
+        // stole the file-name focus, collapsed the selection and
+        // flipped the action button from Save to Open, silently
+        // wrecking the save flow the call was part of (battery leg
+        // 6, run 7). A window's own surface is never a click target
+        // now: an already-open dialog is reported as already open
+        // and nothing is clicked.
+        var matches = _uia.FindMenuCandidates(itemName);
+        var (outcome, index) = MenuDialogResolution.Decide(matches.Select(m => m.Candidate).ToArray());
+        switch (outcome)
+        {
+            case MenuDialogOutcome.NotFound:
+                return (false, $"menu item '{itemName}' not found in the current UI tree");
+            case MenuDialogOutcome.AlreadyOpen:
+                return (true, $"dialog '{itemName}' is already open; nothing was clicked");
+            case MenuDialogOutcome.RefuseNonActionable:
+                var matched = matches[index].Candidate;
+                return (false, $"'{itemName}' matched only a {matched.ControlType} element ('{matched.Name}'), not a menu item or button; nothing was clicked");
+        }
+        var el = matches[index].Element;
+        if (outcome == MenuDialogOutcome.Invoke
+            && el.TryGetCurrentPattern(InvokePattern.Pattern, out var ip)) { ((InvokePattern)ip).Invoke(); return (true, $"invoked '{itemName}'"); }
+        if (outcome == MenuDialogOutcome.Expand
+            && el.TryGetCurrentPattern(ExpandCollapsePattern.Pattern, out var ep)) { ((ExpandCollapsePattern)ep).Expand(); return (true, $"expanded '{itemName}'"); }
         var r = el.Current.BoundingRectangle;
         // BD-WIN-AGENT F8: the fallback click goes through the one
         // glide+narrate path — the pre-fix code teleported the real
