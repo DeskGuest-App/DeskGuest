@@ -30,8 +30,25 @@ public sealed record Pairing(
     bool ConnectionCorrupt = false,
     string? CorruptConnectionMode = null,
     string[]? CorruptConnectionRungs = null,
-    string? CorruptConnectionPin = null)
+    string? CorruptConnectionPin = null,
+    // FR-134 / item (16): the Terms acknowledgment this pairing has
+    // on record — the version + SHA-256 of the exact Terms text the
+    // agent client acknowledged, and when. All three null = the
+    // agent has never acknowledged (every pre-FR-134 record, and
+    // every fresh pairing until its client acks): such a pairing
+    // is session-locked until it acks the CURRENT Terms hash.
+    string? TermsAckVersion = null,
+    string? TermsAckHash = null,
+    DateTimeOffset? TermsAckUtc = null)
 {
+    /// <summary>FR-134: true when this pairing's recorded Terms
+    /// acknowledgment names exactly the hash the host currently
+    /// serves — the one state in which sessions may start. A null
+    /// ack, or an ack of any older text, is not current: a Terms
+    /// update re-locks the pairing until it re-acknowledges.</summary>
+    public bool HasCurrentTermsAck(string currentTermsSha256) =>
+        TermsAckHash is not null &&
+        string.Equals(TermsAckHash, currentTermsSha256, StringComparison.Ordinal);
     /// <summary>The setting enforcement reads: the stored one, or
     /// AUTO for a record that predates the policy — or, W107, the
     /// fail-closed CorruptRefused setting for a present-but-corrupt
@@ -320,6 +337,38 @@ public sealed class PairingService
         }
     }
 
+    /// <summary>FR-134 / item (16): record this pairing's protocol
+    /// acknowledgment of the Terms — the exact version + SHA-256
+    /// the agent client returned, stamped with the host's clock.
+    /// Called by the MCP layer ONLY after it has verified the
+    /// returned hash equals the currently served Terms hash (a
+    /// wrong-hash ack never reaches this method). A revoked or
+    /// unknown pairing refuses: a dead pairing cannot sign for
+    /// anything. On success the record is the pairing's standing
+    /// Terms state from the next check, and Changed persists the
+    /// store — the acknowledgment must survive a Core restart
+    /// exactly like the pairing itself does.</summary>
+    public (bool Ok, DateTimeOffset? AckUtc) RecordTermsAck(string pairingId, string termsVersion, string termsSha256)
+    {
+        lock (_gate)
+        {
+            if (!_pairings.TryGetValue(pairingId, out var stored)) return (false, null);
+            if (stored.Pairing.Revoked) return (false, null);
+            var at = DateTimeOffset.UtcNow;
+            _pairings[pairingId] = stored with
+            {
+                Pairing = stored.Pairing with
+                {
+                    TermsAckVersion = termsVersion,
+                    TermsAckHash = termsSha256,
+                    TermsAckUtc = at,
+                }
+            };
+            Changed?.Invoke();
+            return (true, at);
+        }
+    }
+
     public IReadOnlyList<Pairing> List()
     {
         lock (_gate) return _pairings.Values.Select(s => s.Pairing).ToList();
@@ -364,7 +413,12 @@ public sealed class PairingService
         string TokenHash, string ProtectedAgentName,
         // W97: connection-path setting, defaulted so a pre-W97
         // store (which has none of these fields) restores as AUTO.
-        string? ConnectionMode = null, string[]? ConnectionRungs = null, string? ConnectionPin = null);
+        string? ConnectionMode = null, string[]? ConnectionRungs = null, string? ConnectionPin = null,
+        // FR-134: Terms acknowledgment, defaulted so a pre-FR-134
+        // store (which has none of these fields) restores as
+        // never-acknowledged — the pairing re-acks on its next
+        // connection, exactly the item (16) update flow.
+        string? TermsAckVersion = null, string? TermsAckHash = null, DateTimeOffset? TermsAckUtc = null);
 
     /// <summary>Restore a store previously produced by ExportJson.
     /// Malformed entries are skipped, never fatal: a corrupt store must
@@ -397,7 +451,10 @@ public sealed class PairingService
                     ConnectionCorrupt: connectionCorrupt,
                     CorruptConnectionMode: connectionCorrupt ? dto.ConnectionMode : null,
                     CorruptConnectionRungs: connectionCorrupt ? dto.ConnectionRungs : null,
-                    CorruptConnectionPin: connectionCorrupt ? dto.ConnectionPin : null);
+                    CorruptConnectionPin: connectionCorrupt ? dto.ConnectionPin : null,
+                    TermsAckVersion: dto.TermsAckVersion,
+                    TermsAckHash: dto.TermsAckHash,
+                    TermsAckUtc: dto.TermsAckUtc);
                 _pairings[dto.Id] = new StoredPairing(pairing, dto.TokenHash, dto.ProtectedAgentName);
                 restored++;
             }
@@ -429,6 +486,12 @@ public sealed class PairingService
                 ConnectionPin = s.Pairing.ConnectionCorrupt
                     ? s.Pairing.CorruptConnectionPin
                     : s.Pairing.EffectiveConnection.PinOrNull,
+                // FR-134: the Terms acknowledgment round-trips
+                // verbatim — an export must never drop or invent an
+                // agent's signature on the rulebook.
+                s.Pairing.TermsAckVersion,
+                s.Pairing.TermsAckHash,
+                s.Pairing.TermsAckUtc,
             });
             return JsonSerializer.Serialize(dto);
         }

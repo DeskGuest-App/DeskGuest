@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Acp.Core.Services;
 using Acp.Shared.Audit;
 using Acp.Shared.Policy;
 using Acp.Shared.Security;
@@ -27,6 +28,12 @@ public sealed class McpHandler
     private readonly string _dataDir;
     private readonly SessionBudget _budgets = new();
     private readonly DataFlowLedger? _flows;
+    // FR-134 / item (16): the Terms bundle this Core serves.
+    // Null only in bare unit embedders (no Terms machinery: no
+    // resource, no ack method, no session lock — the pre-FR-134
+    // posture those embeds always had). Production wiring
+    // (CoreRuntime) always passes TermsBundleProvider.Current.
+    private readonly TermsBundle? _terms;
 
     /// <summary>U5: the per-agent data-flow ledger counted at this
     /// choke point (request/response bytes per pairing+tool,
@@ -204,7 +211,7 @@ public sealed class McpHandler
     /// to the watchdog's working directory instead, so a restart
     /// outcome (and its failure alert) never reached the chained
     /// audit on the wire path.</param>
-    public McpHandler(PairingService pairings, PolicyEngine policy, ToolRegistry tools, IAuditLog audit, CoreState state, Modules.SessionManager sessions, string dataDir = "", DataFlowLedger? flows = null)
+    public McpHandler(PairingService pairings, PolicyEngine policy, ToolRegistry tools, IAuditLog audit, CoreState state, Modules.SessionManager sessions, string dataDir = "", DataFlowLedger? flows = null, TermsBundle? terms = null)
     {
         _pairings = pairings;
         _policy = policy;
@@ -213,6 +220,7 @@ public sealed class McpHandler
         _state = state;
         _sessions = sessions;
         _dataDir = dataDir;
+        _terms = terms;
         // U5: default the ledger into the Core's data dir beside the
         // audit log, so production wiring needs no extra plumbing;
         // an injected ledger (tests, CoreRuntime sharing it with
@@ -286,13 +294,39 @@ public sealed class McpHandler
             case "initialize":
             {
                 var clientName = obj["params"]?["clientInfo"]?["name"]?.GetValue<string>();
+                var capabilities = new JsonObject { ["tools"] = new JsonObject() };
+                if (_terms is not null) capabilities["resources"] = new JsonObject();
                 var result = new JsonObject
                 {
                     ["protocolVersion"] = "2025-03-26",
-                    ["capabilities"] = new JsonObject { ["tools"] = new JsonObject() },
+                    ["capabilities"] = capabilities,
                     ["serverInfo"] = new JsonObject { ["name"] = "ACP-Windows", ["version"] = _state.CoreVersion },
                     ["_meta"] = new JsonObject { ["clientNameSeen"] = clientName }
                 };
+                // FR-134 / item (16): the Terms pointer rides the
+                // handshake itself — a client learns at connect
+                // where the Terms stand and what it must return.
+                // A pairing whose acknowledgment is missing or
+                // stale is (re)pushed the current Terms state on
+                // this connection, and the push enters the audit
+                // chain under the agent's name (item 16(c)/(d)).
+                if (_terms is not null)
+                {
+                    result["instructions"] = _terms.Instructions;
+                    if (!pairing.HasCurrentTermsAck(_terms.Sha256))
+                    {
+                        try
+                        {
+                            _audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", pairing.Id, pairing.AgentName,
+                                null, null, null,
+                                $"terms_pending_ack:agent holds {(pairing.TermsAckVersion is null ? "no acknowledgment" : $"v{pairing.TermsAckVersion}")}; " +
+                                $"current Terms are v{_terms.Version} (sha256 {_terms.Sha256}), served in full at {TermsBundle.ResourceUri}; " +
+                                "sessions are locked until the exact hash is acknowledged",
+                                "SYSTEM", null));
+                        }
+                        catch { _state.NoteAuditWriteFailure(); }
+                    }
+                }
                 return new McpResponse(200, ResultJson(id, result));
             }
             case "ping":
@@ -318,9 +352,112 @@ public sealed class McpHandler
             }
             case "tools/call":
                 return await CallToolAsync(obj, id, pairing, approvedGateClasses, ct);
+            // FR-134 / item (16)(e): the Terms stand as a permanent
+            // MCP resource — listable and readable at any time,
+            // before and after acknowledgment, always the FULL
+            // current text (never a diff).
+            case "resources/list":
+            {
+                var resources = new JsonArray();
+                if (_terms is not null)
+                {
+                    resources.Add(new JsonObject
+                    {
+                        ["uri"] = TermsBundle.ResourceUri,
+                        ["name"] = $"DeskGuest Terms of Service (v{_terms.Version})",
+                        ["description"] = "The full Terms governing this pairing, with the agent rulebook. Acknowledge the exact sha256 via " + TermsBundle.AckMethod + ".",
+                        ["mimeType"] = "text/markdown"
+                    });
+                }
+                return new McpResponse(200, ResultJson(id, new JsonObject { ["resources"] = resources }));
+            }
+            case "resources/read":
+            {
+                string? uri;
+                try { uri = obj["params"]?["uri"]?.GetValue<string>(); }
+                catch (InvalidOperationException) { uri = null; }
+                if (_terms is null || uri != TermsBundle.ResourceUri)
+                    return new McpResponse(200, ErrorJson(id, -32602, $"unknown resource: {uri ?? "(none)"} — this host serves exactly one resource, {TermsBundle.ResourceUri}"));
+                var contents = new JsonArray
+                {
+                    new JsonObject
+                    {
+                        ["uri"] = TermsBundle.ResourceUri,
+                        ["mimeType"] = "text/markdown",
+                        ["text"] = _terms.Text
+                    }
+                };
+                return new McpResponse(200, ResultJson(id, new JsonObject { ["contents"] = contents }));
+            }
+            // FR-134 / item (16)(b): the protocol acknowledgment —
+            // pairing completes only when the client returns the
+            // EXACT current Terms hash.
+            case TermsBundle.AckMethod:
+                return AcknowledgeTerms(obj, id, pairing);
             default:
                 return new McpResponse(200, ErrorJson(id, -32601, $"method not found: {method}"));
         }
+    }
+
+    /// <summary>FR-134 / item (16)(b)+(d): record the calling
+    /// pairing's acknowledgment of the Terms. The returned version
+    /// AND hash must equal the currently served bundle exactly —
+    /// an ack of any other text (an old version, a corrupted copy,
+    /// a guess) is refused and the refusal is audited, so the
+    /// record never shows an acknowledgment that did not happen.
+    /// A correct ack is written into the audit chain under the
+    /// agent's own name with the version, the hash, and the time
+    /// (the entry's timestamp) — the item (15)/(16) acceptance
+    /// record.</summary>
+    private McpResponse AcknowledgeTerms(JsonObject obj, JsonNode? id, Pairing pairing)
+    {
+        if (_terms is null)
+            return new McpResponse(200, ErrorJson(id, -32601, $"method not found: {TermsBundle.AckMethod}"));
+        string? version, hash;
+        try
+        {
+            version = obj["params"]?["terms_version"]?.GetValue<string>();
+            hash = obj["params"]?["terms_sha256"]?.GetValue<string>();
+        }
+        catch (InvalidOperationException)
+        {
+            return new McpResponse(200, ErrorJson(id, -32602, "invalid params: terms_version and terms_sha256 must be strings"));
+        }
+        if (!string.Equals(version, _terms.Version, StringComparison.Ordinal) ||
+            !string.Equals(hash, _terms.Sha256, StringComparison.Ordinal))
+        {
+            try
+            {
+                _audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", pairing.Id, pairing.AgentName,
+                    null, null, null,
+                    $"terms_ack_refused:agent returned version '{version ?? "(none)"}' sha256 '{hash ?? "(none)"}'; " +
+                    $"this host serves Terms v{_terms.Version} sha256 {_terms.Sha256}",
+                    "Agent", null));
+            }
+            catch { _state.NoteAuditWriteFailure(); }
+            return new McpResponse(200, ErrorJson(id, -32602,
+                $"terms acknowledgment refused: this host serves Terms v{_terms.Version} with sha256 {_terms.Sha256}. " +
+                $"Read the full current text at {TermsBundle.ResourceUri} (resources/read) and acknowledge its exact version and hash."));
+        }
+        var (ok, ackUtc) = _pairings.RecordTermsAck(pairing.Id, _terms.Version, _terms.Sha256);
+        if (!ok || ackUtc is null)
+            return new McpResponse(200, ErrorJson(id, -32001, "terms acknowledgment refused: this pairing is no longer valid"));
+        try
+        {
+            _audit.Append(new AuditEntry(ackUtc.Value, "system", pairing.Id, pairing.AgentName,
+                null, null, null,
+                $"terms_acknowledged:version={_terms.Version};sha256={_terms.Sha256}",
+                "Agent", null));
+        }
+        catch { _state.NoteAuditWriteFailure(); }
+        var result = new JsonObject
+        {
+            ["acknowledged"] = true,
+            ["terms_version"] = _terms.Version,
+            ["terms_sha256"] = _terms.Sha256,
+            ["acknowledged_utc"] = ackUtc.Value.ToString("o")
+        };
+        return new McpResponse(200, ResultJson(id, result));
     }
 
     private async Task<McpResponse> CallToolAsync(JsonObject obj, JsonNode? id, Pairing pairing, IReadOnlySet<string> approvedGateClasses, CancellationToken ct)
@@ -343,6 +480,23 @@ public sealed class McpHandler
         // engine matches them against the owner's protected set.
         var decision = _policy.Evaluate(pairing, module.Descriptor, args, session, _state.ComputeState(), approvedGateClasses,
             session.ForegroundTitle, session.ForegroundProcess);
+        // FR-134 / item (16)(b)+(c): the Terms session lock, at
+        // the same choke point as every other standing rule. A
+        // pairing that has not acknowledged the CURRENT Terms
+        // hash — never acked, or acked an older text before an
+        // update — cannot start a session. Everything else stays
+        // reachable (the agent must be able to read the Terms
+        // resource and return the ack), so the lock names exactly
+        // what is missing and how to clear it; the denial is
+        // audited below like every other call outcome.
+        if (decision.Allowed && name == "session_start" && _terms is not null && !pairing.HasCurrentTermsAck(_terms.Sha256))
+        {
+            decision = PolicyDecision.Deny(pairing.TermsAckHash is null
+                ? $"terms_ack_required: this pairing has not acknowledged the DeskGuest Terms (current version {_terms.Version}, sha256 {_terms.Sha256}). " +
+                  $"Read the full text at resource {TermsBundle.ResourceUri} and return the protocol acknowledgment ({TermsBundle.AckMethod} with the exact terms_version and terms_sha256); sessions stay locked until then"
+                : $"terms_update_pending: this pairing acknowledged Terms v{pairing.TermsAckVersion}, but the current Terms are v{_terms.Version} (sha256 {_terms.Sha256}). " +
+                  $"The full current text — never a diff — is at resource {TermsBundle.ResourceUri}; re-acknowledge its exact hash via {TermsBundle.AckMethod} before the next session");
+        }
         // W9 per-action gate (design of record §3, live caller): a
         // call denied ONLY by the sensitive-action gate leg, in a
         // live session owned by this pairing, raises the gate at the
@@ -768,13 +922,19 @@ public sealed class PairingHandler
     /// already-encrypted channel and can pin the LAN lane from its
     /// first connection (H1 remainder closure).</param>
     public PairingHandler(PairingService pairings, IAuditLog audit, Func<string?>? lanTlsPinProvider = null,
-        Shared.Sessions.EventSubscriptionStore? eventStore = null)
+        Shared.Sessions.EventSubscriptionStore? eventStore = null, Func<TermsBundle?>? termsProvider = null)
     {
         _pairings = pairings;
         _audit = audit;
         _lanTlsPinProvider = lanTlsPinProvider;
         _eventStore = eventStore;
+        _termsProvider = termsProvider;
     }
+
+    // FR-134 / item (16)(a): supplies the Terms bundle carried in
+    // the exchange response. Null in bare unit embedders (the
+    // pre-FR-134 response shape); CoreRuntime always wires it.
+    private readonly Func<TermsBundle?>? _termsProvider;
 
     private readonly Shared.Sessions.EventSubscriptionStore? _eventStore;
 
@@ -860,12 +1020,40 @@ public sealed class PairingHandler
             var boundName = _pairings.List().FirstOrDefault(p => p.Id == exchange.PairingId)?.AgentName;
             _audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", exchange.PairingId, boundName, null, null, null, "pairing_created", null, null));
             var lanPin = _lanTlsPinProvider?.Invoke();
-            return (200, JsonSerializer.Serialize(new
+            var response = new JsonObject
             {
-                pairing_id = exchange.PairingId,
-                bearer_token = exchange.BearerToken,
-                lan_tls_pin = lanPin // null when the host has no LAN certificate (never in production wiring)
-            }));
+                ["pairing_id"] = exchange.PairingId,
+                ["bearer_token"] = exchange.BearerToken,
+                // JsonValue.Create keeps the key present with a
+                // JSON null when the host has no LAN certificate
+                // (never in production wiring) — the pre-FR-134
+                // response shape, which clients already parse.
+                ["lan_tls_pin"] = JsonValue.Create(lanPin)
+            };
+            // FR-134 / item (16)(a)+(d): the Terms travel inside
+            // the pairing itself — full text, version, SHA-256 and
+            // the agent rulebook are delivered in the exchange
+            // response, and the delivery enters the audit chain
+            // under the agent's name. Pairing completes only when
+            // the client returns the protocol acknowledgment of
+            // this exact hash (McpHandler, deskguest/terms_acknowledge);
+            // until then the pairing is session-locked.
+            if (_termsProvider?.Invoke() is { } terms)
+            {
+                response["terms"] = new JsonObject
+                {
+                    ["version"] = terms.Version,
+                    ["sha256"] = terms.Sha256,
+                    ["text"] = terms.Text,
+                    ["rulebook"] = terms.Rulebook,
+                    ["resource_uri"] = TermsBundle.ResourceUri,
+                    ["ack_method"] = TermsBundle.AckMethod,
+                    ["ack_required_before_session"] = true
+                };
+                _audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", exchange.PairingId, boundName, null, null, null,
+                    $"terms_delivered:version={terms.Version};sha256={terms.Sha256}", null, null));
+            }
+            return (200, response.ToJsonString());
         }
         catch (JsonException)
         {

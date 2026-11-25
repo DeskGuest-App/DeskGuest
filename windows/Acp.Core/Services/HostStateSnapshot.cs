@@ -139,6 +139,16 @@ public static class HostStateSnapshot
         int LastRestorePairings,
         int LastRestoreRosterEntries);
 
+    // ---- FR-134 / item (16) Terms facts -----------------------------
+    // The Terms the Core currently serves (version + SHA-256 of the
+    // exact text). Carried in the snapshot so each pairing's
+    // acknowledgment state can be computed where the pairing facts
+    // are serialized: a pairing whose recorded ack hash differs
+    // from this hash is "Terms update pending" on its card — the
+    // owner sees why the agent is session-locked without lifting
+    // a finger.
+    public sealed record TermsFact(string Version, string Sha256);
+
     public static string Build(
         string coreVersion,
         string machineName,
@@ -185,7 +195,11 @@ public static class HostStateSnapshot
         // computed by the Core from AgentChatStore + ChatOrderStore
         // + the owner's seen cursors. Null (older embedders) = no
         // chatThreads section; the window then shows no inbox.
-        IReadOnlyList<ChatThreadFact>? chatThreads = null)
+        IReadOnlyList<ChatThreadFact>? chatThreads = null,
+        // FR-134 / item (16): the currently served Terms. Null
+        // (older embedders) = no Terms fields on the pairing rows;
+        // the window then shows no Terms state, as before.
+        TermsFact? terms = null)
     {
         var doc = new
         {
@@ -222,6 +236,15 @@ public static class HostStateSnapshot
                 connectionPin = p.EffectiveConnection.PinOrNull,
                 currentRung = lastConnection?.Invoke(p.Id)?.Rung,
                 currentRungAtUtc = lastConnection?.Invoke(p.Id)?.AtUtc,
+                // FR-134 / item (16): this pairing's Terms
+                // acknowledgment, judged against the CURRENT
+                // served Terms — termsPending is the card's
+                // "Terms update pending" truth (never acked, or
+                // acked an older text before an update).
+                termsAckVersion = p.TermsAckVersion,
+                termsAckUtc = p.TermsAckUtc,
+                termsCurrentVersion = terms?.Version,
+                termsPending = terms is not null && !p.HasCurrentTermsAck(terms.Sha256),
             }).ToArray(),
             gates = gatedClasses.OrderBy(g => g, StringComparer.Ordinal).Select(g => new
             {

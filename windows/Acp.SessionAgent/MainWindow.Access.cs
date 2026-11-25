@@ -112,6 +112,7 @@ public partial class MainWindow
               $"|pend:{(_accessPending is null ? "-" : string.Join(",", _accessPending.OrderBy(s => s)))}" +
               $"|ft:{_accessFineTuneOpen}|drag:{_accessDragStop}|elev:{_accessElevationConfirmed}" +
               $"|conn:{ConnSignature(pairing.Value.Id)}" +
+              $"|terms:{TermsSignature(pairing.Value.Id)}" +
               $"|sess:{_host?.SessionActive}:{_host?.SessionAgent}";
         if (signature == _accessSignature) return;
         _accessSignature = signature;
@@ -162,9 +163,9 @@ public partial class MainWindow
         _accessBody.Children.Add(identity);
 
         // ---- W120 / S09(d): «Message {agent}» — the door into
-        // this pairing's S13 thread. It lives here because the
-        // thread lives with the agent card (§8 record); the click
-        // opens Home with this pairing's thread expanded and
+        // this pairing's S13 thread. W135: the thread is a
+        // full-window page (ruling U-7); the click navigates to
+        // the chat page with this pairing's thread open and
         // requests the thread from the Core. A revoked pairing
         // has no thread (unpairing ended it) — no button.
         if (!revoked)
@@ -183,7 +184,7 @@ public partial class MainWindow
                 _chatOpenPairingId = capturedMsgId;
                 _chatMessages.Clear();
                 _chatOrders.Clear();
-                ShowPage("overview");
+                ShowPage("chat");
                 RefreshDynamics();
                 if (_chatThreadSender is not null) await _chatThreadSender(capturedMsgId);
             };
@@ -268,6 +269,54 @@ public partial class MainWindow
         // access card — how this helper may connect, and the path
         // it is actually on (live snapshot facts, never stored).
         _accessBody.Children.Add(BuildConnectionCard(id, pname));
+
+        // ---- FR-134 / item (16): the Terms line — when a helper
+        // is session-locked over a Terms acknowledgment, the owner
+        // sees why right here without lifting a finger.
+        if (BuildTermsLine(id) is { } termsLine)
+            _accessBody.Children.Add(termsLine);
+    }
+
+    // ================= FR-134 Terms acknowledgment =================
+
+    /// <summary>The pairing's Terms facts from the live snapshot
+    /// (no state at all when an older Core reports none).</summary>
+    private (string? AckVersion, DateTimeOffset? AckUtc, string? CurrentVersion, bool Pending) TermsFacts(string pairingId)
+    {
+        if (_host is not null && _host.PairingTerms.TryGetValue(pairingId, out var f)) return f;
+        return (null, null, null, false);
+    }
+
+    private string TermsSignature(string pairingId)
+    {
+        var f = TermsFacts(pairingId);
+        return $"{f.AckVersion}:{f.AckUtc}:{f.CurrentVersion}:{f.Pending}";
+    }
+
+    /// <summary>The Terms line for the agent card. Null when the
+    /// Core serves no Terms state (an older Core) — the page then
+    /// shows nothing, exactly as before FR-134. Pending is stated
+    /// plainly with the reason and the (lack of) owner action;
+    /// current is one quiet line naming the version signed for.</summary>
+    private UIElement? BuildTermsLine(string pairingId)
+    {
+        var f = TermsFacts(pairingId);
+        if (f.CurrentVersion is null) return null;
+        if (f.Pending)
+        {
+            return new TextBlock
+            {
+                Text = f.AckVersion is null
+                    ? $"Terms acknowledgment pending — this helper hasn't acknowledged the Terms (v{f.CurrentVersion}), so it can't start a session yet. " +
+                      "It receives the full text when it connects and acknowledges it from its own side; there is nothing for you to do."
+                    : $"Terms update pending — this helper acknowledged Terms v{f.AckVersion}, but the current Terms are v{f.CurrentVersion}, so it can't start a session until it re-acknowledges. " +
+                      "It receives the full new text when it connects; there is nothing for you to do.",
+                FontSize = 13.5, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(4, 0, 0, 14),
+            };
+        }
+        var line = Muted($"Terms v{f.AckVersion} acknowledged{(f.AckUtc is { } at ? $" on {at.ToLocalTime():MMM d, yyyy}" : "")} — the acknowledgment is in this device's Activity Record.", 12.5);
+        line.Margin = new Thickness(4, 0, 0, 14);
+        return line;
     }
 
     // ================= W103 / S09(a): ring-with-initial identity ==

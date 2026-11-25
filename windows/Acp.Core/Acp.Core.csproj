@@ -33,6 +33,16 @@
     <EmbeddedResource Include="..\..\..\agent-control-app\quick-assist-web\index.html" LogicalName="Acp.Core.QuickAssist.index.html" />
     <EmbeddedResource Include="..\..\..\agent-control-app\quick-assist-web\app.js" LogicalName="Acp.Core.QuickAssist.app.js" />
   </ItemGroup>
+  <!-- FR-134 / item (16): the Terms of Service, embedded straight
+       from the legal source (agent-control-app/legal/terms-of-service.md)
+       so the text the pairing bundle carries, the MCP resource
+       serves, and the acknowledgment hash covers can never drift
+       from the legal document. Same C18 discipline as the door
+       above: if the file is absent the build fails loudly rather
+       than shipping a Core that pairs agents without its Terms. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\agent-control-app\legal\terms-of-service.md" LogicalName="Acp.Core.Terms.terms-of-service.md" />
+  </ItemGroup>
   <!-- D38 RMM-23 F5: VendorPassService.Store is internal (the
        service is the only public door past the policy gates); the
        test assembly reaches the store for mechanism-level tests. -->

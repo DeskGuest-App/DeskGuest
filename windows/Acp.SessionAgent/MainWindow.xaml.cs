@@ -126,10 +126,21 @@ public partial class MainWindow : Window
         };
         // W8: no build label in owner chrome — the version is
         // stated on the About page only (record §4).
+        // W135: the chat page tracks the page host's viewport so
+        // the full-window thread always fills it.
+        if (PageHost.Parent is ScrollViewer sv0)
+        {
+            _pageScroller = sv0;
+            sv0.SizeChanged += (_, _) => { if (_currentPage == "chat") FitChatPage(); };
+        }
         _timer.Tick += (_, _) => OnTick();
         _timer.Start();
         ShowPage("overview");
     }
+
+    // W135: the shell page host's scroller (the chat page sizes
+    // itself to its viewport; see FitChatPage).
+    private ScrollViewer? _pageScroller;
 
     // W9 (Addendum A): the Agent chat thread view state — the thread
     // lives on the agent's row in Overview (record §4): at most one
@@ -247,14 +258,22 @@ public partial class MainWindow : Window
                 "sessions" => BuildSessionsPage(),
                 "enterprise" => BuildEnterprisePage(),
                 "services" => BuildServicesPage(),
+                "chat" => BuildChatPage(),
                 _ => BuildOverviewPage(),
             };
             _pages[page] = element;
         }
         PageHost.Content = element;
         if (PageHost.Parent is ScrollViewer sv)
+        {
+            _pageScroller = sv;
+            // W135: the chat page scrolls its timeline internally
+            // and fills the viewport — the host scroller stands down.
             sv.VerticalScrollBarVisibility = page == "overview"
-                ? ScrollBarVisibility.Hidden : ScrollBarVisibility.Auto;
+                ? ScrollBarVisibility.Hidden
+                : page == "chat" ? ScrollBarVisibility.Disabled : ScrollBarVisibility.Auto;
+            if (page == "chat") FitChatPage();
+        }
         foreach (var (name, button) in new[]
         {
             ("overview", NavOverview), ("presence", NavPresence), ("guardrails", NavGuardrails),
@@ -337,6 +356,13 @@ public partial class MainWindow : Window
         // Absent fields (an older Core) parse as AUTO / no rung —
         // the card then shows the pre-policy truth, nothing invented.
         public Dictionary<string, (string Mode, string[] Rungs, string? Pin, string? CurrentRung, DateTimeOffset? CurrentRungAtUtc)> PairingConnections = new();
+        // FR-134 / item (16): per-pairing Terms acknowledgment
+        // facts from the same snapshot (the version the agent
+        // acked + when, the version the Core currently serves,
+        // and whether the ack is stale). Absent fields (an older
+        // Core) parse as no Terms state — the card then shows
+        // the pre-FR-134 truth, nothing invented.
+        public Dictionary<string, (string? AckVersion, DateTimeOffset? AckUtc, string? CurrentVersion, bool Pending)> PairingTerms = new();
         public List<(string Id, bool Approved)> Gates = new();
         public List<(DateTimeOffset At, string? Agent, string? Tool, string? Operation, string Outcome, long? Ms)> Audit = new();
         // Slice 2/3 live wiring (Block A): roster scopes, human
@@ -442,6 +468,13 @@ public partial class MainWindow : Window
                     p.TryGetProperty("connectionPin", out var cp) && cp.ValueKind == JsonValueKind.String ? cp.GetString() : null,
                     p.TryGetProperty("currentRung", out var cur) && cur.ValueKind == JsonValueKind.String ? cur.GetString() : null,
                     p.TryGetProperty("currentRungAtUtc", out var ca) && ca.ValueKind == JsonValueKind.String ? ca.GetDateTimeOffset() : null);
+                // FR-134: Terms facts ride the same pairing rows;
+                // every field is optional (older Core ⇒ no line).
+                host.PairingTerms[pid] = (
+                    p.TryGetProperty("termsAckVersion", out var tav) && tav.ValueKind == JsonValueKind.String ? tav.GetString() : null,
+                    p.TryGetProperty("termsAckUtc", out var tau) && tau.ValueKind == JsonValueKind.String ? tau.GetDateTimeOffset() : null,
+                    p.TryGetProperty("termsCurrentVersion", out var tcv) && tcv.ValueKind == JsonValueKind.String ? tcv.GetString() : null,
+                    p.TryGetProperty("termsPending", out var tp) && tp.ValueKind == JsonValueKind.True);
             }
             foreach (var g in r.GetProperty("gates").EnumerateArray())
                 host.Gates.Add((g.GetProperty("id").GetString() ?? "", g.GetProperty("approved").GetBoolean()));
@@ -808,6 +841,7 @@ public partial class MainWindow : Window
             case "sessions": RenderSessions(); break;
             case "enterprise": RenderEnterprise(); break;
             case "services": RenderBlockG(); break;
+            case "chat": RenderChatPage(); break;
         }
     }
 
@@ -1086,33 +1120,21 @@ public partial class MainWindow : Window
             // W123: one shared button row per agent (Chat + Access),
             // aligned to the text column (tile 64 + margin 16 = 80).
             var btnRow = new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(80, 0, 0, 3) };
-            // The agent chat thread lives on the agent's row (§8
-            // record) — kept from the previous Home, in-language.
+            // W135: the agent chat thread is a full-window page
+            // (ruling U-7) — the agent card's Chat button is the
+            // door into it, in-language as before.
             if (!revoked)
             {
                 var capturedChatId = id;
                 var chatToggle = new Button
                 {
-                    Content = _chatOpenPairingId == id ? "Close chat" : "Chat",
+                    Content = "Chat",
                     Style = (Style)FindResource("GhostButton"),
                     FontSize = 12, Padding = new Thickness(10, 3, 10, 3),
                     HorizontalAlignment = HorizontalAlignment.Left,
                     Margin = new Thickness(0, 0, 6, 0),
                 };
-                chatToggle.Click += async (_, _) =>
-                {
-                    if (_chatOpenPairingId == capturedChatId)
-                    {
-                        _chatOpenPairingId = null;
-                        _chatMessages.Clear();
-                        RefreshDynamics();
-                        return;
-                    }
-                    _chatOpenPairingId = capturedChatId;
-                    _chatMessages.Clear();
-                    RefreshDynamics();
-                    if (_chatThreadSender is not null) await _chatThreadSender(capturedChatId);
-                };
+                chatToggle.Click += (_, _) => OpenChatThread(capturedChatId);
                 btnRow.Children.Add(chatToggle);
             }
             // W79 / S08: the access-control surface lives on the
@@ -1132,8 +1154,6 @@ public partial class MainWindow : Window
             }
             if (btnRow.Children.Count > 0)
                 _homeHelpersBody.Children.Add(btnRow);
-            if (!revoked && _chatOpenPairingId == id)
-                _homeHelpersBody.Children.Add(BuildChatPanel(id, pname));
         }
     }
 
