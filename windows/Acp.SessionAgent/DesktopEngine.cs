@@ -8,6 +8,7 @@ using System.Windows.Automation;
 using System.Windows.Forms;
 using Acp.Shared.Input;
 using Acp.Shared.Policy;
+using Acp.Shared.Threading;
 using Acp.Shared.Tools;
 
 namespace Acp.SessionAgent;
@@ -265,12 +266,17 @@ public sealed class DesktopEngine
     /// <summary>FR-130: every raw SendInput this engine makes is
     /// noted in the self-input window before and after the send,
     /// so the local-input watcher can tell the agent's own
-    /// injections from outside input.</summary>
-    private static void SendInputNoted(NativeMethods.INPUT[] inputs)
+    /// injections from outside input. FR-139: the send's return
+    /// value — how many events the OS input queue actually
+    /// accepted — is handed back to the caller; the pre-fix
+    /// wrapper discarded it, so a caller could not tell accepted
+    /// input from silently dropped input.</summary>
+    private static uint SendInputNoted(NativeMethods.INPUT[] inputs)
     {
         SelfInputWindow.Shared.Note(DateTime.UtcNow);
-        NativeMethods.SendInput((uint)inputs.Length, inputs, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.INPUT>());
+        var inserted = NativeMethods.SendInput((uint)inputs.Length, inputs, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.INPUT>());
         SelfInputWindow.Shared.Note(DateTime.UtcNow);
+        return inserted;
     }
 
     // ---------- Perception ----------
@@ -464,6 +470,15 @@ public sealed class DesktopEngine
         return (true, $"clicked {button} at {x},{y}");
     }
 
+    /// <summary>FR-139: the pause between typed characters. A
+    /// flood of Unicode events corrupts inside TSF/RichEdit
+    /// targets (see TypeTextAsync); a human typist's pace does
+    /// not. 12 ms ≈ 80 characters/second — far faster than a
+    /// person, slow enough for the target's text stack to keep
+    /// up. The byte-exact landing at this pace is proven live
+    /// (BUILD-LOG, FR-139 entry).</summary>
+    private const int InterCharacterPaceMs = 12;
+
     private async Task<(bool, string)> TypeTextAsync(JsonElement args, CancellationToken ct = default)
     {
         var text = GetString(args, "text") ?? "";
@@ -475,20 +490,65 @@ public sealed class DesktopEngine
         if (FocusBlocksTyping(out var refusal)) return (false, refusal);
 
         _narrate($"Typing {text.Length} characters");
-        foreach (var ch in text)
+        // FR-139: the whole string is planned up front by the
+        // pure builder (Acp.Shared): characters become Unicode
+        // key pairs, '\n'/'\r' become real VK_RETURN presses and
+        // '\t' VK_TAB — a raw line-feed CHARACTER is ignored by
+        // edit controls, which is how multi-line text landed as
+        // one line. The plan goes out ONE CHARACTER AT A TIME
+        // through the one noted funnel, with a short pace between
+        // characters, and every character's accepted count is
+        // checked; the result (TextTypingPlan.Outcome) claims
+        // only the characters the OS input queue confirmed.
+        //
+        // The pacing is load-bearing, not cosmetic. A whole
+        // string sent as one instant flood corrupts inside
+        // TSF/RichEdit targets (Windows 11 Notepad, proven live
+        // 2026-11-25): the first word and first space land, then
+        // every remaining character is stamped as the string's
+        // final character — while SendInput accepts every event,
+        // so the accepted count alone cannot see it. The same
+        // string typed character by character landed byte-exact.
+        // The pre-fix path was worse on every axis: unchecked
+        // sends and the submitted count reported as typed (the
+        // Tested-AI battery run 5 evidence).
+        var plan = TextTypingPlan.Build(text);
+        var units = plan.Units();
+        var confirmedEvents = 0;
+        for (var u = 0; u < units.Count; u++)
         {
-            // BD-WIN-AGENT F5: STOP ends the typing mid-string.
+            // BD-WIN-AGENT F5: STOP ends the typing between
+            // characters — a cancelled send reports cancelled via
+            // the caller's handler, never a partial success.
             ct.ThrowIfCancellationRequested();
-            var inputs = new[]
-            {
-                new NativeMethods.INPUT { type = NativeMethods.INPUT_KEYBOARD, U = new NativeMethods.InputUnion { ki = new NativeMethods.KEYBDINPUT { wScan = ch, dwFlags = NativeMethods.KEYEVENTF_UNICODE } } },
-                new NativeMethods.INPUT { type = NativeMethods.INPUT_KEYBOARD, U = new NativeMethods.InputUnion { ki = new NativeMethods.KEYBDINPUT { wScan = ch, dwFlags = NativeMethods.KEYEVENTF_UNICODE | NativeMethods.KEYEVENTF_KEYUP } } }
-            };
-            SendInputNoted(inputs);
+            var unit = units[u];
+            var inputs = new NativeMethods.INPUT[unit.Events.Count];
+            for (var i = 0; i < unit.Events.Count; i++) inputs[i] = ToInput(unit.Events[i]);
+            var inserted = SendInputNoted(inputs);
+            confirmedEvents += (int)Math.Min(inserted, (uint)unit.Events.Count);
+            if (inserted < (uint)unit.Events.Count) break; // shortfall: stop and report the true counts
+            if (u + 1 < units.Count)
+                await Task.Delay(InterCharacterPaceMs, ct);
         }
-        await Task.CompletedTask;
-        return (true, $"typed {text.Length} characters");
+        return TextTypingPlan.Outcome(plan.TotalChars, plan.ConfirmedChars(confirmedEvents));
     }
+
+    /// <summary>FR-139: one planned typing event as a raw input
+    /// event — a virtual-key event carries the VK code with no
+    /// Unicode flag; a character event carries the code point in
+    /// the scan field under KEYEVENTF_UNICODE, exactly as the
+    /// pre-fix per-character path built it.</summary>
+    private static NativeMethods.INPUT ToInput(TypingEvent e) => e.IsVirtualKey
+        ? new NativeMethods.INPUT
+        {
+            type = NativeMethods.INPUT_KEYBOARD,
+            U = new NativeMethods.InputUnion { ki = new NativeMethods.KEYBDINPUT { wVk = e.VirtualKey, dwFlags = e.KeyUp ? NativeMethods.KEYEVENTF_KEYUP : 0 } }
+        }
+        : new NativeMethods.INPUT
+        {
+            type = NativeMethods.INPUT_KEYBOARD,
+            U = new NativeMethods.InputUnion { ki = new NativeMethods.KEYBDINPUT { wScan = e.Char, dwFlags = NativeMethods.KEYEVENTF_UNICODE | (e.KeyUp ? NativeMethods.KEYEVENTF_KEYUP : 0u) } }
+        };
 
     private (bool, string) KeyPress(JsonElement args)
     {
@@ -827,7 +887,12 @@ public sealed class DesktopEngine
         var policy = _clipboardPolicy;
         if (policy.DenyReasonFor("clipboard_get") is { } denied)
             return (false, denied);
-        var text = System.Windows.Clipboard.ContainsText() ? System.Windows.Clipboard.GetText() : "";
+        // FR-138: the WPF clipboard is an OLE surface and demands
+        // an STA thread; tool calls arrive on thread-pool (MTA)
+        // threads, so the raw call threw ThreadStateException.
+        // The clipboard touch runs on the dedicated STA thread —
+        // the policy gates above stay here, before any touch.
+        var text = StaDispatcher.Invoke(() => System.Windows.Clipboard.ContainsText() ? System.Windows.Clipboard.GetText() : "");
         var (ok, refusal) = ClipboardGate.CheckRead(policy, text);
         if (!ok)
         {
@@ -849,7 +914,11 @@ public sealed class DesktopEngine
         // KeyPress.
         if (FocusBlocksTyping(out var focusRefusal)) return (false, focusRefusal);
         var text = GetString(args, "text") ?? "";
-        System.Windows.Clipboard.SetText(text);
+        // FR-138: as ClipboardGet — the set runs on the dedicated
+        // STA thread. The pre-fix direct call died with
+        // ThreadStateException AFTER the owner had approved the
+        // write at the gate, so an approved action never happened.
+        StaDispatcher.Invoke(() => System.Windows.Clipboard.SetText(text));
         _narrate($"Clipboard set by the agent ({text.Length} chars)");
         return (true, "clipboard set");
     }
