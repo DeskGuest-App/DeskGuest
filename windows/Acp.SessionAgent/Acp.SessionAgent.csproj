@@ -22,6 +22,15 @@
     <ProjectReference Include="..\Acp.Shared\Acp.Shared.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <!-- The encode ladder's bottom rung: the bundled software
+         H.264 encoder (OpenH264 2.6.0, Cisco BSD — license text
+         beside it), copied next to the agent binary where
+         OpenH264Encoder looks for it. SHA-256 of the shipped DLL:
+         2076cb5675ec6c1a4c70e7a2a322552f547b6eeed649d6dfcd9e02a543b24691 -->
+    <None Include="openh264-2.6.0-win64.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="openh264-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
     <Resource Include="deskguest-lockup.png" />
     <Resource Include="deskguest-icon.png" />
     <Resource Include="deskguest-mark-tight.png" />

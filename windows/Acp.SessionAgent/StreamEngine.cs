@@ -12,7 +12,9 @@ namespace Acp.SessionAgent;
 /// Agent because capture belongs to the interactive session:
 ///
 ///   DXGI Desktop Duplication (damage rects from the platform)
-///     → BGRA → NV12 → Media Foundation H.264 (hardware MFT first)
+///     → BGRA → NV12 → H.264 via the encode ladder (Media
+///       Foundation hardware → MF software → bundled software
+///       encoder; the winning rung is named in every header)
 ///     → Annex B access units in a small ring, served to the Core
 ///       through the stream_frame desktop tool.
 ///
@@ -28,8 +30,8 @@ namespace Acp.SessionAgent;
 /// to GDI capture (CopyFromScreen, the pre-existing preview path's
 /// mechanism) with tile-diff damage, and every frame header names
 /// capture:"gdi" — the fallback is visible in the protocol, never
-/// disguised as DXGI. If the encoder cannot start, stream_start
-/// fails with the step + HRESULT and there is no stream.
+/// disguised as DXGI. If no encoder rung can start, stream_start
+/// fails naming every rung and its reason, and there is no stream.
 ///
 /// Protected surfaces: Desktop Duplication is refused outright on
 /// the secure desktop (ACCESS_DENIED) and windows marked
@@ -47,7 +49,7 @@ public sealed class StreamEngine : IDisposable
     private readonly Queue<(StreamProtocol.FrameHeader Header, byte[] Body)> _ring = new();
     private CancellationTokenSource? _cts;
     private Thread? _pump;
-    private H264Encoder? _encoder;
+    private IH264StreamEncoder? _encoder;
     private DxgiCapture? _dxgi;
     private DamageTracker _gdiDamage = new();
     private string _captureKind = "";
@@ -115,7 +117,11 @@ public sealed class StreamEngine : IDisposable
                     return (false, $"capture refused by the platform: {dxgiError}");
             }
             var bitrate = Math.Clamp(_width * _height * 4, 1_500_000, 12_000_000);
-            if (!H264Encoder.TryCreate(_width, _height, TargetFps, bitrate, out var encoder, out var encError))
+            // The encode ladder (StreamEncoderLadder): MF hardware
+            // → MF software → bundled software encoder. The winning
+            // rung's Description/Hardware are reported below and in
+            // every frame header — the active rung is honestly shown.
+            if (!StreamEncoderLadder.TryCreate(_width, _height, TargetFps, bitrate, out var encoder, out var encError))
             {
                 _dxgi?.Dispose(); _dxgi = null;
                 return (false, $"H.264 encoder start failed: {encError}");
