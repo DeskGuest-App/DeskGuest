@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Features — DeskGuest</title>
-<meta name="description" content="Everything DeskGuest does: presence and consent, many ways to connect, Quick Fix, rooms and live collaboration, groups and fleets, the workplace pack, deep customization, and recovery with no account.">
+<meta name="description" content="Everything DeskGuest does: presence and consent, many ways to connect, Quick Fix, rooms and live collaboration, your own paired AI agents, groups and fleets, the workplace pack, deep customization, and recovery with no account.">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
 <link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
 <link rel="stylesheet" href="style.css">
@@ -12,7 +12,7 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DeskGuest">
 <meta property="og:title" content="Features — DeskGuest">
-<meta property="og:description" content="Everything DeskGuest does: presence and consent, many ways to connect, Quick Fix, rooms and live collaboration, groups and fleets, the workplace pack, deep customization, and recovery with no account.">
+<meta property="og:description" content="Everything DeskGuest does: presence and consent, many ways to connect, Quick Fix, rooms and live collaboration, your own paired AI agents, groups and fleets, the workplace pack, deep customization, and recovery with no account.">
 <meta property="og:url" content="https://deskguest.pages.dev/features.html">
 <meta property="og:image" content="https://deskguest.pages.dev/assets/a3-master-lockup.png">
 <meta name="twitter:card" content="summary">
@@ -23,7 +23,7 @@
 <header class="site-header"><div class="wrap">
 <a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html" aria-current="page">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust &amp; Security</a><a href="support.html">Help &amp; Support</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav>
+<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html" aria-current="page">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust</a><a href="support.html">Support</a><a href="workplaces.html">Workplaces</a><a href="it.html">IT</a></nav>
 <a class="btn small" href="download.html">Coming soon</a>
 </div></header>
 <main id="main">
@@ -41,10 +41,16 @@
 <div class="fact rv"><h3>The Glow</h3><p>A soft edge of light around your screen while a session is live, so a connection is visible even from across the room.</p></div>
 </div>
 <div class="cards reveal" style="margin-top:20px">
-<div class="card rv"><h3>You can take back control</h3><p>Touch your mouse or keyboard and you're driving again — your helper's pointer dims and waits. How that hand-off behaves (take over, share, or hotkey only) is your setting, chosen on your device.</p></div>
+<div class="card rv"><h3>You can take back control</h3><p>Touch your mouse or keyboard and you're driving again — your helper's pointer dims and waits. How that hand-off behaves (take over, share, or hotkey only) is your setting, chosen on your device. And while you've taken over — for a login, say — all capture suspends: the record shows a takeover happened, never what it contained.</p></div>
 <div class="card rv"><h3>Approvals before actions</h3><p>Anything that matters — sending a file, changing a setting, running a command — arrives as a clear action card. Your tap is the approval, and it's written into the session record.</p></div>
 <div class="card rv"><h3>Background Work Only</h3><p>Mid-session, you can hold all screen work with one toggle. Your helper keeps doing permitted background work, the held items are counted where you can see them, and the banner stays up.</p></div>
 <div class="card rv"><h3>A face you can recognise</h3><p>Every helper — person or AI — has a name and a face that ride along with their pairing. You learn to recognise your helper the way you recognise a voice on the phone.</p></div>
+</div>
+<div class="cards reveal" style="margin-top:20px">
+<div class="card rv"><h3>A running commentary</h3><p>A persistent activity line states in plain words what your helper is doing as they act, and a ripple marks every touch as it lands. Session sounds announce the start and the end — a session never begins or ends silently.</p></div>
+<div class="card rv"><h3>STOP lives everywhere</h3><p>The session is mirrored in your notification area for its whole duration, with elapsed time and who's acting — and session state with a one-tap STOP sits on your home screen and quick settings too. You never have to hunt for the exit.</p></div>
+<div class="card rv"><h3>Every display accounted for</h3><p>On a machine with several screens, DeskGuest inventories them all, and the presence layer marks which display is being driven. Help happens on the screen you can see it on.</p></div>
+<div class="card rv"><h3>Sensitive surfaces ask for more</h3><p>On screens you mark sensitive, the banner persists and the session requires an unlocked, screen-on device for the duration of the action. And in a moving vehicle, screen driving is refused outright — voice-grade interaction only.</p></div>
 </div>
 </div></section>
 
@@ -55,6 +61,11 @@
 <div class="fact rv"><h3>Same network</h3><p>Direct, device to device, on your own Wi-Fi or office network. Nothing leaves the building.</p></div>
 <div class="fact rv"><h3>Across the internet</h3><p>Direct where your connection allows it; otherwise through sealed relays that can carry a session but can never read one.</p></div>
 <div class="fact rv"><h3>Your own hub</h3><p>Run the optional hub on a machine you own and your devices can always find each other through it — still sealed, still yours.</p></div>
+</div>
+<div class="trio reveal" style="margin-top:18px">
+<div class="fact rv"><h3>It heals itself — and proves it</h3><p>After a reboot and your unlock, the device restores its own connection, then verifies its health and reports green, amber, or red in plain words. Across its first reboots it measures its own survival and reports the result instead of assuming. If a link can't heal itself, you get exactly one notification naming the exact action that clears it.</p></div>
+<div class="fact rv"><h3>Dead-zone mode</h3><p>No internet at all? DeskGuest says so, and works the roads that remain — your local network and direct paths — as a named, tested mode. A path that's down reports DOWN, with its reason. Never a hang, never a pretend connection.</p></div>
+<div class="fact rv"><h3>Wake before you connect</h3><p>A sleeping device on your network can be woken for a session, and roads you build yourself — your own tunnel, your own addresses — are first-class citizens beside the built-in ones. Your devices find their connection points by listening on-device; no external scanning exists anywhere in the product.</p></div>
 </div>
 <p style="margin-top:22px">There are also privacy-heavy options (a swarm phone-book that finds devices without any server knowing the list, and a Tor road) and, for people who already have one, their own mesh network. Switching roads never means pairing again. <a href="trust.html">How the sealing works</a></p>
 </div></section>
@@ -67,6 +78,7 @@
 <div class="step rv"><img src="assets/pose-working.webp" alt="DeskGuest greeter at work" width="720" height="720" loading="lazy" decoding="async"><span class="n">One more tap</span><h3>Let them take over</h3><p>When watching isn't enough, one tap brings in a one-time helper program for full control — under the full presence rules.</p></div>
 <div class="step rv"><img src="assets/pose-success.webp" alt="DeskGuest greeter giving a thumbs-up" width="720" height="720" loading="lazy" decoding="async"><span class="n">Hang up</span><h3>It removes itself</h3><p>When the session ends, the helper program deletes itself and the link dies. Nothing is left behind, ever. Quick Fix can never be used to reach a device unattended.</p></div>
 </div>
+<p style="margin-top:22px"><a class="more" href="quick-fix.html"><strong>Quick Fix, in full — the two ways in, the anti-scam design, and the helped person's rights</strong></a></p>
 </div></section>
 
 <section class="section section--tint"><div class="wrap">
@@ -76,7 +88,22 @@
 <div class="card rv"><h3>Sessions</h3><p>The live event, on one device: screen, voice, chat, file transfer, and — when the owner allows — control. People and AI agents can join the same session, each under their own name and permissions.</p></div>
 <div class="card rv"><h3>Rooms</h3><p>A standing meeting place owned by a group: named members, one standing invite link, and a memory — session records, notes, transcripts, and receipts are filed in the room where they happened.</p></div>
 <div class="card rv"><h3>Working side by side</h3><p>Two drivers can work at once, each with their own named ghost pointer, and everything either of them does is attributed to them in the record. An AI can also join just to watch, take notes, and point things out — without driving.</p></div>
-<div class="card rv"><h3>Talk to your AI</h3><p>Paired AI agents can speak and listen in a session, with a voice you choose for them. Voice works offline with the built-in voices; an agent can also bring its own.</p></div>
+<div class="card rv"><h3>A receipt for the person helped</h3><p>After every session, a plain-language summary is left on the helped device — who was here, what they did, in that device's language. Help leaves a paper trail the helped person can read.</p></div>
+</div>
+<p style="margin-top:22px"><a class="more" href="rooms.html"><strong>Rooms &amp; live collaboration, in full</strong></a></p>
+</div></section>
+
+<section class="section section--navy" style="padding-top:88px;padding-bottom:88px"><div class="wrap on-dark">
+<div class="sec-head reveal"><h2>Your AI, working beside you</h2>
+<p>DeskGuest has no AI of its own — you pair yours. The agent you already use connects as itself, under its own name and face, and works inside the same presence, approvals, and STOP as any human helper. <a href="ai.html" style="color:var(--blue-soft)">The AI arrangement, in full</a></p></div>
+<div class="trio reveal">
+<div class="fact rv"><h3>Bring your own agent</h3><p>Any standards-based agent can pair — the control surface is the open MCP standard, and no agent is privileged by vendor. Pairing is always your manual act, with a one-time code; an agent can never pair itself or widen its own access.</p></div>
+<div class="fact rv"><h3>The leash</h3><p>You set what each agent may do — look only, full control, or a custom mix of observe, drive, shell, and admin — per pairing, changeable any time. New pairings start at look only. Sensitive actions still stop and ask, in every mode.</p></div>
+<div class="fact rv"><h3>Orders you approve</h3><p>Chat with your agent inside DeskGuest and tell it what you want. Action arrives as a structured card you approve with one tap — free text never executes. From your phone, you can direct an agent working on another device entirely; presence fires there in full, and you hold a remote STOP.</p></div>
+</div>
+<div class="cards reveal" style="margin-top:20px">
+<div class="card rv"><h3>It sees structure, not just pictures</h3><p>Your agent reads the screen as a tree of labelled elements and acts by reference — a stale reference fails rather than guessing a tap. It can follow a session on a live feed, point things out without driving, and read a screen into structured data. Apps you mark invisible stay invisible to it entirely.</p></div>
+<div class="card rv"><h3>It speaks, if you want it to</h3><p>Paired agents can speak and listen in a session. The default voice is built in and local — it works offline and phones nothing home. You can give each agent its own voice pack, and an agent that brings its own voice is labelled as doing so.</p></div>
 </div>
 </div></section>
 
@@ -87,6 +114,12 @@
 <div class="fact rv"><h3>Your circle</h3><p>Your own devices form a private circle. Add a device once, from a device you already trust, and it belongs.</p></div>
 <div class="fact rv"><h3>Groups</h3><p>Family, a workplace, a customer site — each group has its own members, its own sealing, and its own admins. Groups can't read each other.</p></div>
 <div class="fact rv"><h3>The endpoint never sees the fleet</h3><p>A device you help sees only the people and agents paired to it. Your other devices and groups are not listed there — they aren't hidden, they're absent.</p></div>
+</div>
+<div class="cards reveal" style="margin-top:20px">
+<div class="card rv"><h3>Add a device by ID + code</h3><p>A new device shows its own ID and a one-time code — ten minutes, single use, never a standing password. From inside a group, on any of your devices, "Add device" joins it: one act makes it a member and pairs it.</p></div>
+<div class="card rv"><h3>Your devices sync — sealed</h3><p>Your device list, groups, profile, settings, and customisation sync between your own devices over the same encrypted connections, with no account anywhere. Want an always-available copy? It lives as a sealed blob on your own hub, which cannot read it.</p></div>
+<div class="card rv"><h3>A device's job is chosen at setup</h3><p>Installing asks one question: "What will this device do?" Help others, receive help with someone present, be reachable when nobody's here — combinable. An attended-only install carries no unattended pathway at all: the door doesn't exist, dormant or otherwise.</p></div>
+<div class="card rv"><h3>Before you connect</h3><p>The operator sees a device's vitals first — disk, battery, a reboot waiting, health flags — before starting work. And a paired agent, at your request, can ring your phone at full volume even on silent, or put your words on its screen.</p></div>
 </div>
 </div></section>
 
@@ -99,6 +132,12 @@
 <div class="card rv"><h3>Offboarding in one action</h3><p>Remove a person and you first see the full list of what changes — their access, their devices, their agent pairings — then confirm once.</p></div>
 <div class="card rv"><h3>Sign-in, the organisation's way</h3><p>An organisation can gate key use behind its own sign-in system, on its own tenant, with its own multi-factor rules. DeskGuest still holds no account and receives nothing.</p></div>
 </div>
+<div class="cards reveal" style="margin-top:20px">
+<div class="card rv"><h3>Vendor access that expires</h3><p>Outside help gets a time-boxed grant: this vendor, these devices, until Thursday. Outside the window the access doesn't exist, and expiry is automatic and audited — nobody has to remember to take it back.</p></div>
+<div class="card rv"><h3>Automation, signed</h3><p>Runbooks, scheduled missions, and script engines run under a signature policy: automation executes signed work, attributed and audited like everything else. Unsigned work doesn't run quietly — it doesn't run.</p></div>
+<div class="card rv"><h3>Billable time</h3><p>Session time per site comes straight from the Activity Record — the same record the customer can inspect — and exports for invoicing. No stopwatch screenshots, no disputed hours.</p></div>
+<div class="card rv"><h3>Paperwork, your way</h3><p>Evidence packs and reports can carry your organisation's logo and colours; alert thresholds and retention windows are yours to set. And a sole admin names a successor in advance, on a defined trigger — succession is planned, not improvised in a crisis.</p></div>
+</div>
 </div></section>
 
 <section class="section"><div class="wrap">
@@ -109,6 +148,12 @@
 <div class="card rv"><h3>Pointers</h3><p>Your helper's ghost pointer comes in galleries too — professional, minimal, and fun — recoloured per agent, with size and name-tag options.</p></div>
 <div class="card rv"><h3>Presence, your way</h3><p>Banner size, glow intensity, border styles, sounds — all adjustable, within a floor that can't be crossed: presence is never invisible, the driver is always named, and STOP is always there.</p></div>
 <div class="card rv"><h3>Session feel</h3><p>Picture quality versus smoothness, which screen is shared first, clipboard defaults, where received files land, and your own shortcuts for taking back control.</p></div>
+</div>
+<div class="cards reveal" style="margin-top:20px">
+<div class="card rv"><h3>Arrange your world</h3><p>Colour-code sites and groups, pin favourites, choose list density, pick which fields a device card shows, and tag devices your own way. Your console looks like your work, not like a demo.</p></div>
+<div class="card rv"><h3>Family mode</h3><p>A named preset that collapses the whole product to the family-help shape: the fewest concepts, the largest targets, everything else hidden but present. Set it up once for a parent; they never meet the machinery.</p></div>
+<div class="card rv"><h3>Accessible by design</h3><p>Generous touch targets, contrast floors, type that survives being scaled to 200%, and full screen-reader support in the app's own interface. The product follows each platform's own design language — and its dark theme is designed, not inverted.</p></div>
+<div class="card rv"><h3>Layers, so it never overwhelms</h3><p>Every setting lives in Basics, Preferences, or Advanced fine-tune; settings are searchable, and every section resets independently. Company policy may pin or hide items for a fleet. The one thing no layer contains: the consent floor.</p></div>
 </div>
 </div></section>
 
@@ -131,9 +176,7 @@
 <a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
 </div>
-<div><p class="fh">Site</p><nav aria-label="Site">
-<a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a>
-</nav></div>
+<div><p class="fh">Site</p><nav aria-label="Site"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a></nav></div>
 <div><p class="fh">Trust</p><nav aria-label="Trust">
 <a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
 </nav></div>
