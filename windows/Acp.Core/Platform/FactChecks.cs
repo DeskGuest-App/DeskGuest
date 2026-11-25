@@ -40,7 +40,16 @@ public sealed class WindowsFactChecks : IFactChecks
         try
         {
             using var key = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\Windows NT\CurrentVersion");
-            var product = key?.GetValue("ProductName")?.ToString() ?? "unknown";
+            // FR-129: ProductName's version token is stale on
+            // Windows 11 machines (it still says "Windows 10");
+            // the version name is derived from the build number
+            // (WindowsVersionName), ProductName supplies only the
+            // edition.
+            var productRaw = key?.GetValue("ProductName")?.ToString();
+            var buildText = key?.GetValue("CurrentBuildNumber")?.ToString()
+                ?? key?.GetValue("CurrentBuild")?.ToString();
+            var build = int.TryParse(buildText, out var b) ? b : 0;
+            var product = WindowsVersionName.FromProductName(productRaw, build);
             var capable = product.Contains("Pro") || product.Contains("Enterprise") || product.Contains("Education");
             return new SubsystemHealth("windows_edition",
                 capable ? HealthLevel.Green : HealthLevel.Amber,
