@@ -105,7 +105,7 @@ public class Fr136FixTests
             idx += 10;
         }
         Assert.Equal(1, count);
-        var wrapper = MethodBody(engine, "private static void SendInputNoted", "private static string CapturePngBase64");
+        var wrapper = MethodBody(engine, "private static uint SendInputNoted", "private static string CapturePngBase64");
         Assert.Contains("NativeMethods.SendInput(", wrapper);
         Assert.Contains("SelfInputWindow.Shared.Note", wrapper);
     }
