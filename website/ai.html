@@ -45,7 +45,7 @@
   #main .steps>*,#main .trio>*{grid-column:auto}
 }
 .matrix-scroll{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r-lg)}
-table.ai-matrix{border-collapse:separate;border-spacing:0;min-width:920px}
+table.ai-matrix{border-collapse:separate;border-spacing:0;min-width:840px}
 table.ai-matrix th,table.ai-matrix td{vertical-align:top}
 table.ai-matrix thead th{font-size:16px;line-height:1.3}
 table.ai-matrix th:first-child,table.ai-matrix td:first-child{position:sticky;left:0;z-index:2;
@@ -60,6 +60,38 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 @media (prefers-color-scheme: dark){ .mx-status.tested{color:#8FD0D0} }
 .matrix-notes{font-size:14px;color:var(--text-2);max-width:62em;margin:18px 0 0}
 .matrix-notes li{margin:0 0 7px}
+/* Supported AIs — stacked cards below desktop width. The 7-column table
+   only ever renders where every column has room to breathe (>=1150px);
+   below that, one card per AI with label -> value lines replaces it. */
+.ai-cards{display:none}
+@media (max-width:1149px){
+  .matrix-scroll{display:none}
+  .ai-cards{display:grid;grid-template-columns:1fr;gap:20px}
+}
+.ai-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-lg);
+  overflow:hidden;text-align:left}
+.ai-card-head{display:flex;flex-wrap:wrap;align-items:flex-start;gap:8px 16px;
+  padding:20px 24px 18px;background:var(--subtle);border-bottom:1px solid var(--border)}
+.ai-card-head h3{margin:0;font-size:21px;line-height:1.25;letter-spacing:-.01em}
+.ai-card-route{margin:4px 0 0;color:var(--text-2);font-size:14.5px;line-height:1.45}
+.ai-pill{margin-left:auto;flex:none;font-size:13px;font-weight:800;line-height:1.35;
+  padding:6px 13px;border-radius:999px;border:1.5px solid var(--text-2);color:var(--text)}
+.ai-pill.tested{border-color:var(--teal-dark);color:var(--teal-dark)}
+@media (prefers-color-scheme: dark){ .ai-pill.tested{border-color:#8FD0D0;color:#8FD0D0} }
+.ai-rows{margin:0;padding:4px 24px 12px}
+.ai-row{display:grid;grid-template-columns:minmax(170px,38%) 1fr;gap:4px 22px;
+  padding:13px 0;border-bottom:1px solid var(--border)}
+.ai-row:last-child{border-bottom:0}
+.ai-row dt{font-weight:700;font-size:15px;line-height:1.45}
+.ai-row dd{margin:0;font-size:15.5px;line-height:1.5}
+.ai-lead{display:block;font-weight:800;font-size:16.5px}
+.ai-note{display:block;font-size:13.5px;font-weight:400;color:var(--text-2);margin-top:4px;line-height:1.5}
+@media (max-width:560px){
+  .ai-card-head{padding:18px 20px 15px}
+  .ai-pill{margin-left:0}
+  .ai-rows{padding:4px 20px 10px}
+  .ai-row{grid-template-columns:1fr;gap:3px;padding:12px 0}
+}
 </style>
 </head>
 <body>
@@ -94,7 +126,6 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <table class="matrix ai-matrix" aria-label="Supported AIs — status, capabilities, and minimum plan">
 <thead><tr>
 <th scope="col">Capability</th>
-<th scope="col">Muse (Axle)<span class="mx-note">Reference pass · direct connection</span></th>
 <th scope="col">Claude Code<span class="mx-note">via the Claude Code CLI</span></th>
 <th scope="col">ChatGPT<span class="mx-note">via Codex</span></th>
 <th scope="col">Gemini<span class="mx-note">via Antigravity</span></th>
@@ -105,7 +136,6 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <tbody>
 <tr>
 <th scope="row">Status with DeskGuest</th>
-<td><span class="mx-status tested">Fully supported</span><span class="mx-note">Tested on its direct mesh route — November 2026</span></td>
 <td><span class="mx-status">Documented but untested</span></td>
 <td><span class="mx-status">Documented but untested</span></td>
 <td><span class="mx-status">Documented but untested</span></td>
@@ -115,7 +145,6 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </tr>
 <tr>
 <th scope="row">Minimum plan</th>
-<td><strong>Free</strong><span class="mx-note">Muse&rsquo;s free tier is the floor — see note 1</span></td>
 <td><strong>Pro</strong><span class="mx-note">Claude plan; not in Free</span></td>
 <td><strong>Free</strong><span class="mx-note">ChatGPT plan; Codex included</span></td>
 <td><strong>Free</strong><span class="mx-note">Personal Google account</span></td>
@@ -125,7 +154,6 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </tr>
 <tr>
 <th scope="row">Pairs directly — no bridge</th>
-<td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span><span class="mx-note">Via the Codex app or CLI</span></td>
 <td><span class="mx-yes">✓</span><span class="mx-note">Via the Antigravity app or CLI</span></td>
@@ -140,7 +168,6 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
-<td><span class="mx-yes">✓</span></td>
 <td><span class="mx-note">Under the scopes you grant</span></td>
 </tr>
 <tr>
@@ -150,12 +177,10 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
-<td><span class="mx-yes">✓</span></td>
 <td><span class="mx-note">Under the scopes you grant</span></td>
 </tr>
 <tr>
 <th scope="row">Honours gates &amp; STOP</th>
-<td><span class="mx-yes">✓</span><span class="mx-note">Observed live, both directions</span></td>
 <td><span class="mx-note">DeskGuest enforces; the battery verifies behaviour</span></td>
 <td><span class="mx-note">DeskGuest enforces; the battery verifies behaviour</span></td>
 <td><span class="mx-note">DeskGuest enforces; the battery verifies behaviour</span></td>
@@ -165,7 +190,6 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </tr>
 <tr>
 <th scope="row">Runs fully local — no cloud</th>
-<td><span class="mx-no">—</span><span class="mx-note">A cloud agent; the road it travels is yours</span></td>
 <td><span class="mx-no">—</span><span class="mx-note">App on your computer, model in the cloud</span></td>
 <td><span class="mx-no">—</span><span class="mx-note">App on your computer, model in the cloud</span></td>
 <td><span class="mx-no">—</span><span class="mx-note">App on your computer, model in the cloud</span></td>
@@ -175,7 +199,6 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </tr>
 <tr>
 <th scope="row">Needs no machine of its own</th>
-<td><span class="mx-yes">✓</span><span class="mx-note">Lives outside your fleet; connects in</span></td>
 <td><span class="mx-note">Runs on your computer</span></td>
 <td><span class="mx-note">Runs on your computer</span></td>
 <td><span class="mx-note">Runs on your computer</span></td>
@@ -186,10 +209,83 @@ table.ai-matrix thead th:first-child{background:var(--subtle);z-index:3}
 </tbody>
 </table>
 </div>
+<div class="ai-cards reveal" aria-label="Supported AIs — status, capabilities, and minimum plan, one card per agent">
+<article class="ai-card">
+<header class="ai-card-head"><div><h3>Claude Code</h3><p class="ai-card-route">via the Claude Code CLI</p></div><span class="ai-pill">Documented but untested</span></header>
+<dl class="ai-rows">
+<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Pro</strong><span class="ai-note">Claude plan; not in Free</span></dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces; the battery verifies behaviour</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">App on your computer, model in the cloud</span></dd></div>
+<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+</dl>
+</article>
+<article class="ai-card">
+<header class="ai-card-head"><div><h3>ChatGPT</h3><p class="ai-card-route">via Codex</p></div><span class="ai-pill">Documented but untested</span></header>
+<dl class="ai-rows">
+<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">ChatGPT plan; Codex included</span></dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd><span class="mx-yes">✓</span><span class="ai-note">Via the Codex app or CLI</span></dd></div>
+<div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces; the battery verifies behaviour</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">App on your computer, model in the cloud</span></dd></div>
+<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+</dl>
+</article>
+<article class="ai-card">
+<header class="ai-card-head"><div><h3>Gemini</h3><p class="ai-card-route">via Antigravity</p></div><span class="ai-pill">Documented but untested</span></header>
+<dl class="ai-rows">
+<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Personal Google account</span></dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd><span class="mx-yes">✓</span><span class="ai-note">Via the Antigravity app or CLI</span></dd></div>
+<div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces; the battery verifies behaviour</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">App on your computer, model in the cloud</span></dd></div>
+<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+</dl>
+</article>
+<article class="ai-card">
+<header class="ai-card-head"><div><h3>DeepSeek</h3><p class="ai-card-route">via the dsh harness</p></div><span class="ai-pill">Documented but untested</span></header>
+<dl class="ai-rows">
+<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">No subscription</strong><span class="ai-note">Prepaid API balance instead</span></dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd><span class="mx-no">—</span><span class="ai-note">Via the dsh harness</span></dd></div>
+<div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces; the battery verifies behaviour</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">Cloud API</span></dd></div>
+<div class="ai-row"><dt>Needs no machine of its own</dt><dd>The harness runs on a machine you control</dd></div>
+</dl>
+</article>
+<article class="ai-card">
+<header class="ai-card-head"><div><h3>Goose</h3><p class="ai-card-route">via the Goose app + a local model</p></div><span class="ai-pill">Documented but untested</span></header>
+<dl class="ai-rows">
+<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Open source; the model is yours</span></dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces; the battery verifies behaviour</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-yes">✓</span><span class="ai-note">Agent and model both on your machine</span></dd></div>
+<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+</dl>
+</article>
+<article class="ai-card">
+<header class="ai-card-head"><div><h3>Any other MCP agent</h3><p class="ai-card-route">Any MCP route</p></div><span class="ai-pill">Untested</span></header>
+<dl class="ai-rows">
+<div class="ai-row"><dt>Minimum plan</dt><dd><span class="mx-no">—</span><span class="ai-note">Set by the agent&rsquo;s maker</span></dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd>If it speaks MCP over HTTP</dd></div>
+<div class="ai-row"><dt>Observes — sees the screen</dt><dd>Under the scopes you grant</dd></div>
+<div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd>Under the scopes you grant</dd></div>
+<div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd>Depends on the agent</dd></div>
+<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Depends on the agent</dd></div>
+</dl>
+</article>
+</div>
 <ul class="matrix-notes reveal">
 <li><strong>Support is per connection route.</strong> &ldquo;Fully supported&rdquo; covers the route named in that column&rsquo;s heading, tested on the date in its status row — a road not yet exercised (a public relay, a hub, a different network) is not implied by it.</li>
 <li><strong>How to read the ticks:</strong> in a &ldquo;Documented but untested&rdquo; column, a ✓ means the maker&rsquo;s documented route supports it. The battery is what turns documentation into &ldquo;Fully supported&rdquo;.</li>
-<li><strong>Note 1 — Axle:</strong> Axle is the Muse agent paired to DeskGuest&rsquo;s own test devices — the reference pass every other agent is measured against. There is no separate Axle plan; it runs on its owner&rsquo;s Muse access, and the free tier is the minimum that pairing needs.</li>
 <li><strong>ChatGPT:</strong> the pairing route today is OpenAI&rsquo;s Codex app or CLI, which run on your computer. ChatGPT in the browser connects from OpenAI&rsquo;s cloud and cannot reach a private device address directly — that route needs more work on our side and is scheduled later. Plan facts per OpenAI&rsquo;s Codex pricing page and Anthropic&rsquo;s pricing page, checked November 2026.</li>
 <li><strong>Gemini:</strong> the Gemini seat is Google&rsquo;s Antigravity app and CLI — free with a personal Google account. Google&rsquo;s older Gemini CLI no longer serves personal accounts.</li>
 </ul>
