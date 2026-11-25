@@ -57,7 +57,8 @@ We only claim what we've tried:
 |---|---|
 | Windows | Works on **Windows 11** — the system we've tried it on. Windows 10 is not supported. |
 | Android | Works on the **Samsung Galaxy S25 Ultra** — the phone we've tried it on. Installing needs **Android 11 or newer**. Other phones haven't been tried yet. |
-| Mac / Linux | Not available. There is no Mac or Linux version. |
+| Mac | Not available. There is no Mac version. |
+| Linux | Not available today. A Linux version is planned — work hasn't started, and Windows & Android come first. |
 
 ## AI agents
 
