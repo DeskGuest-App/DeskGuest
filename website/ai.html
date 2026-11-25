@@ -70,6 +70,7 @@
 <th scope="col">Gemini<span class="mx-note">via Antigravity</span></th>
 <th scope="col">DeepSeek<span class="mx-note">via the dsh harness</span></th>
 <th scope="col">Goose<span class="mx-note">via the Goose app + a local model</span></th>
+<th scope="col">Muse by Meta<span class="mx-note">Standard MCP client</span></th>
 <th scope="col">Any other MCP agent<span class="mx-note">Any MCP route</span></th>
 </tr></thead>
 <tbody>
@@ -80,6 +81,7 @@
 <td><span class="mx-status">Documented but untested</span></td>
 <td><span class="mx-status">Fully supported</span><span class="mx-note">Tested 25 November 2026 — dsh harness, tailnet route</span></td>
 <td><span class="mx-status">Documented but untested</span></td>
+<td><span class="mx-status">Documented but untested</span></td>
 <td><span class="mx-status">Untested</span><span class="mx-note">Until its battery runs</span></td>
 </tr>
 <tr>
@@ -89,6 +91,7 @@
 <td><strong>Free</strong><span class="mx-note">Personal Google account</span></td>
 <td><strong>No subscription</strong><span class="mx-note">Prepaid API balance instead</span></td>
 <td><strong>Free</strong><span class="mx-note">Open source; the model is yours</span></td>
+<td><strong>Free</strong><span class="mx-note">Free plan, with a usage limit</span></td>
 <td>—<span class="mx-note">Set by the agent&rsquo;s maker</span></td>
 </tr>
 <tr>
@@ -98,10 +101,12 @@
 <td><span class="mx-yes">✓</span><span class="mx-note">Via the Antigravity app or CLI</span></td>
 <td><span class="mx-no">—</span><span class="mx-note">Via the dsh harness</span></td>
 <td><span class="mx-yes">✓</span></td>
-<td><span class="mx-note">If it speaks MCP over HTTP</span></td>
+<td><span class="mx-yes">✓</span></td>
+<td><span class="mx-note">If it speaks MCP</span></td>
 </tr>
 <tr>
 <th scope="row">Observes — sees the screen</th>
+<td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
@@ -116,10 +121,12 @@
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
 <td><span class="mx-yes">✓</span></td>
+<td><span class="mx-yes">✓</span></td>
 <td><span class="mx-note">Under the scopes you grant</span></td>
 </tr>
 <tr>
 <th scope="row">Honours gates &amp; STOP</th>
+<td><span class="mx-note">DeskGuest enforces; the battery verifies behaviour</span></td>
 <td><span class="mx-note">DeskGuest enforces; the battery verifies behaviour</span></td>
 <td><span class="mx-note">DeskGuest enforces; the battery verifies behaviour</span></td>
 <td><span class="mx-note">DeskGuest enforces; the battery verifies behaviour</span></td>
@@ -134,6 +141,7 @@
 <td><span class="mx-no">—</span><span class="mx-note">App on your computer, model in the cloud</span></td>
 <td><span class="mx-no">—</span><span class="mx-note">Cloud API</span></td>
 <td><span class="mx-yes">✓</span><span class="mx-note">Agent and model both on your machine</span></td>
+<td><span class="mx-no">—</span><span class="mx-note">The agent runs in Meta&rsquo;s cloud</span></td>
 <td><span class="mx-note">Depends on the agent</span></td>
 </tr>
 <tr>
@@ -143,6 +151,7 @@
 <td><span class="mx-note">Runs on your computer</span></td>
 <td><span class="mx-note">The harness runs on a machine you control</span></td>
 <td><span class="mx-note">Runs on your computer</span></td>
+<td><span class="mx-note">Runs in Meta&rsquo;s cloud, not on yours</span></td>
 <td><span class="mx-note">Depends on the agent</span></td>
 </tr>
 </tbody>
@@ -210,10 +219,22 @@
 </dl>
 </article>
 <article class="ai-card">
+<header class="ai-card-head"><div><h3>Muse by Meta</h3><p class="ai-card-route">Standard MCP client</p></div><span class="ai-pill">Documented but untested</span></header>
+<dl class="ai-rows">
+<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Free plan, with a usage limit</span></dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd><span class="mx-yes">✓</span></dd></div>
+<div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces; the battery verifies behaviour</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">The agent runs in Meta&rsquo;s cloud</span></dd></div>
+<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs in Meta&rsquo;s cloud, not on yours</dd></div>
+</dl>
+</article>
+<article class="ai-card">
 <header class="ai-card-head"><div><h3>Any other MCP agent</h3><p class="ai-card-route">Any MCP route</p></div><span class="ai-pill">Untested</span></header>
 <dl class="ai-rows">
 <div class="ai-row"><dt>Minimum plan</dt><dd><span class="mx-no">—</span><span class="ai-note">Set by the agent&rsquo;s maker</span></dd></div>
-<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd>If it speaks MCP over HTTP</dd></div>
+<div class="ai-row"><dt>Pairs directly — no bridge</dt><dd>If it speaks MCP</dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd>Under the scopes you grant</dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, shell</dt><dd>Under the scopes you grant</dd></div>
 <div class="ai-row"><dt>Honours gates &amp; STOP</dt><dd>DeskGuest enforces</dd></div>
@@ -228,6 +249,8 @@
 <li><strong>ChatGPT:</strong> &ldquo;Fully supported&rdquo; was earned on the Codex desktop app, connected over a private network (tailnet), on 25 November 2026 — the full battery: pairing and Terms acknowledgment, working inside its scopes, observing, a gated action refused and allowed, a drive task, STOP honoured, ending its own session, and a clean record under its own name. The Codex CLI shares the same route but has not been through the battery itself. ChatGPT in the browser connects from OpenAI&rsquo;s cloud and cannot reach a private device address directly — that route needs more work on our side and is scheduled later. Plan facts per OpenAI&rsquo;s Codex pricing page and Anthropic&rsquo;s pricing page, checked November 2026.</li>
 <li><strong>DeepSeek:</strong> &ldquo;Fully supported&rdquo; was earned through the dsh harness, connected over a private network (tailnet), on 25 November 2026 — the full battery: pairing and Terms acknowledgment, working inside its scopes, observing, a gated action refused and allowed, a drive task, STOP honoured, ending its own session, and a clean record under its own name. The battery ran the Flash model through the harness; other DeepSeek clients have not been through the battery themselves.</li>
 <li><strong>Gemini:</strong> the Gemini seat is Google&rsquo;s Antigravity app and CLI — free with a personal Google account. Google&rsquo;s older Gemini CLI no longer serves personal accounts.</li>
+<li><strong>Muse by Meta:</strong> Meta&rsquo;s agent connects as a standard MCP client, the same door as every other agent here. Its battery has not run yet, so it stands at &ldquo;Documented but untested&rdquo;. Plan fact per Meta&rsquo;s own Muse subscriptions help page, checked November 2026.</li>
+<li><strong>Connections are HTTPS.</strong> An agent connects over HTTPS, and it checks the device&rsquo;s certificate against the pin it was given at pairing. Plain HTTP is refused — that is the default, it is a setting in the device&rsquo;s policy, and an IT department can hold it there. On a home or office network the agent listener has only ever spoken HTTPS. Two devices talking to each other don&rsquo;t use HTTP at all — that traffic is sealed end to end on every road — and a connection riding a private mesh travels inside the mesh&rsquo;s own tunnel as well.</li>
 </ul>
 <div class="notice reveal"><strong>What an agent costs — and what it doesn&rsquo;t.</strong> DeskGuest is free and charges nothing: no account, no subscription, no per-session fee. A paired agent runs under your own arrangement with its provider — if that plan bills for usage, the bill is between you and them, and DeskGuest can&rsquo;t see it: it holds no provider keys and keeps no telemetry. What DeskGuest does count is its own side — everything it serves your agent is listed in the session record, so the weight of a session is never a mystery.</div>
 </div></section>

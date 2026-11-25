@@ -136,7 +136,7 @@
 // scripts beyond the hashed class script. Guarded to the AI page by
 // its body class; the code below is the page's original, unchanged.)
 if (document.body.classList.contains('pg-ai')) {
-// AI page only: a deep link to a chapter opens it on arrival (Astra review).
+// AI page only: a deep link to a chapter opens it on arrival.
 (function () {
   function openFromHash() {
     var id = location.hash.replace('#', '');
