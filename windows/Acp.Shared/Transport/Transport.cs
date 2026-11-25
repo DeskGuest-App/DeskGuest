@@ -662,43 +662,56 @@ public sealed class LanHostListener : IDisposable
     {
         using (client)
         {
-            if (_hostIdentity is null) { RefusedHandshakes++; return; }
-            if (!await _handshakeCap.WaitAsync(0))
-            { RefusedHandshakes++; return; } // half-open cap reached: drop at once
-            try
-            {
-                var stream = client.GetStream();
-                string? deviceId; Stream? channel;
-                try
-                {
-                    using var hsTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
-                    hsTimeout.CancelAfter(HandshakeTimeout);
-                    (deviceId, channel) = await LanProtocol.HostHandshakeAsync(
-                        stream, _enrollments, _hostIdentity, hsTimeout.Token);
-                }
-                finally { _handshakeCap.Release(); } // the cap binds HALF-OPEN handshakes, not live sessions
-                if (deviceId is null || channel is null) { RefusedHandshakes++; return; }
-                AcceptedSessions++;
-                using (channel)
-                {
-                    while (!ct.IsCancellationRequested)
-                    {
-                        var line = await LanProtocol.ReadLineAsync(channel, ct);
-                        if (line is null) return;
-                        // W14: STOPLOCAL is refused by name and the
-                        // channel stays open (P3-F14b); a SESSION
-                        // line runs the P3-F2 owner binding against
-                        // the handshake-proven peer device id first.
-                        var ownerRefusal = LanProtocol.SessionInitiatorOf(line) is { } initiator
-                            ? _enrollments.SessionOwnerRefusal(deviceId, initiator)
-                            : null;
-                        await LanProtocol.WriteLineAsync(channel,
-                            LanProtocol.SessionLineReply(line, ownerRefusal), ct);
-                    }
-                }
-            }
+            try { await ServeConnectedStreamAsync(client.GetStream(), ct); }
             catch { /* a dead peer ends its channel, nothing more */ }
         }
+    }
+
+    /// <summary>Serve one already-connected stream: the v2 host
+    /// handshake, then the session-protocol line loop — exactly
+    /// what an accepted socket gets. The relay host connector
+    /// (RelayHostConnector, FR-131) runs paired relay streams
+    /// through this same routine: there is ONE host-side session
+    /// protocol implementation, whatever road the bytes arrived
+    /// by. Returns true when a session was accepted and served.</summary>
+    public async Task<bool> ServeConnectedStreamAsync(Stream stream, CancellationToken ct)
+    {
+        if (_hostIdentity is null) { RefusedHandshakes++; return false; }
+        if (!await _handshakeCap.WaitAsync(0))
+        { RefusedHandshakes++; return false; } // half-open cap reached: drop at once
+        try
+        {
+            string? deviceId; Stream? channel;
+            try
+            {
+                using var hsTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
+                hsTimeout.CancelAfter(HandshakeTimeout);
+                (deviceId, channel) = await LanProtocol.HostHandshakeAsync(
+                    stream, _enrollments, _hostIdentity, hsTimeout.Token);
+            }
+            finally { _handshakeCap.Release(); } // the cap binds HALF-OPEN handshakes, not live sessions
+            if (deviceId is null || channel is null) { RefusedHandshakes++; return false; }
+            AcceptedSessions++;
+            using (channel)
+            {
+                while (!ct.IsCancellationRequested)
+                {
+                    var line = await LanProtocol.ReadLineAsync(channel, ct);
+                    if (line is null) return true;
+                    // W14: STOPLOCAL is refused by name and the
+                    // channel stays open (P3-F14b); a SESSION
+                    // line runs the P3-F2 owner binding against
+                    // the handshake-proven peer device id first.
+                    var ownerRefusal = LanProtocol.SessionInitiatorOf(line) is { } initiator
+                        ? _enrollments.SessionOwnerRefusal(deviceId, initiator)
+                        : null;
+                    await LanProtocol.WriteLineAsync(channel,
+                        LanProtocol.SessionLineReply(line, ownerRefusal), ct);
+                }
+            }
+            return true;
+        }
+        catch { return false; /* a dead peer ends its channel, nothing more */ }
     }
 
     public void Stop()

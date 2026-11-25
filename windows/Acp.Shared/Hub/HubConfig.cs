@@ -21,6 +21,13 @@ public static class HubPins
     /// toolchain floor instead of shipping the official binary.</summary>
     public const string MinGoToolchain = "1.27.4";
     public const string BuildGoToolchain = "1.27.4";
+    /// <summary>FR-133 — SHA-256 of the rebuilt Windows amd64
+    /// headscale.exe the deploy package stages (hub-component/
+    /// PACKAGE-MANIFEST.md). HubLifecycle refuses to install or
+    /// run a binary whose bytes differ from this pin: packaging
+    /// places the pinned binary, the lifecycle proves it.</summary>
+    public const string WindowsBinarySha256 =
+        "0a64ea4cf96569cb69a12f589d47d057a2ac90aee3ffa6ae3bef0c1508b32dc8";
     /// <summary>Official release artefact, hash-verified at packaging time
     /// against the release checksums.txt (used for the Linux leak-observation
     /// run and as the provenance cross-check for the source tree).</summary>

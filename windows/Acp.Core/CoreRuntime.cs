@@ -137,6 +137,9 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
     // Tailscale setup service (D4) behind the `mesh` rung.
     public LanHostListener HubListener { get; }
     public MeshSetupService MeshSetup { get; }
+    // FR-131: the public sealed relay's host leg (dials out to the
+    // configured postman; dormant until relay.json exists).
+    public RelayHostConnector RelayHost { get; }
     // Block F surfacing: the Block E enterprise services live in the
     // Core, the session terminal authority, quick-assist codes, the
     // manual-WebRTC signaling, and the local AI pack machinery.
@@ -1324,9 +1327,10 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
         // verified D4 setup), and Block F's `ipv6` (direct global
         // IPv6), `ownpath` (ACP-generated WireGuard peer set, read
         // from ownpath-peers.json at connect time), and `tor`
-        // (SOCKS via ACP's configured Tor proxy, tor.json). All six
-        // automatic rungs (D32) are now registered; manual WebRTC
-        // sits below the chain by design (WebRtc above).
+        // (SOCKS via ACP's configured Tor proxy, tor.json). The six
+        // D32 rungs plus the bench's two missing rungs — `netbird`
+        // (FR-132) and `relay` (FR-131) — are registered; manual
+        // WebRTC sits below the chain by design (WebRtc above).
         MeshSetup = new MeshSetupService(new TailscaleCliProbe(), new TailscaleHttpApi(), protector);
         Transports = new TransportSessionManager(Roster, HumanSessions,
             new ITransportRung[]
@@ -1341,8 +1345,18 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
                 new LanRung(Enrollments),
                 new HubRung(deviceId => HubNodes is not null && HubNodes.Get(deviceId) is { Deleted: false }, enrollments: Enrollments),
                 new MeshRung(() => MeshSetup.State, enrollments: Enrollments, readinessRecheck: () => MeshSetup.ReverifyReadiness()),
+                // FR-132 (#11): the second borrowed-mesh account rung —
+                // NetBird, riding the OWNER's own NetBird client,
+                // operator-side only, never required, probed live at
+                // connect time like `mesh` re-verifies readiness.
+                new NetBirdRung(enrollments: Enrollments),
                 new Ipv6Rung(enrollments: Enrollments),
                 new OwnPathRung(() => ReadOwnPathPeers(options.DataDir), Enrollments),
+                // FR-131 (#10): the public sealed relay — config is
+                // relay.json (endpoint + THIS device's per-device
+                // rendezvous token), read at connect time like
+                // tor.json; the host leg is RelayHost below.
+                new RelayRung(() => ReadRelayConfig(options.DataDir), Enrollments),
                 new TorRung(() => ReadTorConfig(options.DataDir), Enrollments),
             }, Identity);
         // BD-SHARED-TRANSPORT F1: listeners carry THIS device's
@@ -1350,6 +1364,14 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
         // it and refuses every session when it is absent.
         LanListener = new LanHostListener(Enrollments, Identity);
         HubListener = new LanHostListener(Enrollments, Identity);
+        // FR-131: the relay HOST leg — this device dials out to the
+        // configured postman and stands as the waiting host for its
+        // own device id, so peers behind any NAT can rendezvous.
+        // Dormant (no connection, 30s re-check) until relay.json
+        // exists; pairings are served by LanListener's one
+        // host-session routine. Runs on the runtime shutdown token.
+        RelayHost = new RelayHostConnector(LanListener, Identity, () => ReadRelayConfig(options.DataDir));
+        _ = RelayHost.RunAsync(_cts.Token);
         // Offboarding hook, wired (D38 F4 / D14): any roster mutation
         // (removal, suspension) sweeps the live human sessions so a
         // removed or suspended participant's session ends promptly —
@@ -2008,7 +2030,7 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
         // counters, local interface facts). No probing, no mutation.
         Tools.Register(new ConnectionDoctorModule(() =>
         {
-            var rungIds = new[] { "lan", "hub", "mesh", "ipv6", "ownpath", "tor" };
+            var rungIds = new[] { "lan", "hub", "mesh", "netbird", "ipv6", "ownpath", "relay", "tor" };
             var snapshots = new List<Shared.Connection.RungSnapshot>();
             foreach (var id in rungIds)
             {
@@ -2025,7 +2047,14 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
                 var configured = id switch
                 {
                     "mesh" => MeshSetup.State.Stage == Shared.Tailscale.MeshSetupStage.Ready,
+                    // FR-132: configured when the owner's own NetBird
+                    // client is installed AND connected (probed on
+                    // demand — the doctor is an ask-only surface).
+                    "netbird" => new Shared.Tailscale.NetBirdCliProbe().Probe().State == Shared.Tailscale.NetBirdReadiness.Ready,
                     "ownpath" => File.Exists(Path.Combine(options.DataDir, "ownpath-peers.json")),
+                    // FR-131: configured when relay.json names a
+                    // postman + this device's rendezvous token.
+                    "relay" => ReadRelayConfig(options.DataDir) is not null,
                     "tor" => File.Exists(Path.Combine(options.DataDir, "tor.json")),
                     _ => rung is not null
                 };
@@ -2272,6 +2301,10 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
         {
             ComponentHome = Path.Combine(options.DataDir, "hub"),
             ServerUrl = options.HubServerUrl,
+            // FR-133: verify the staged hub binary against the
+            // HubPins hash before install/run (Windows pin; other
+            // platforms record their own pin at packaging time).
+            BinarySha256 = OperatingSystem.IsWindows() ? HubPins.WindowsBinarySha256 : null,
         }, new HubProcess(), options.HubRungSelected);
         TorSetup = new Shared.Tor.TorSetupService(
             new Shared.Tor.TorProvisioner(Shared.Tor.TorComponentManifest.Production),
@@ -2279,7 +2312,8 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
             Path.Combine(options.DataDir, "tor"),
             options.DataDir);
 
-        Mcp = new McpHandler(Pairings, Policy, Tools, Audit, State, Sessions, options.DataDir);
+        Mcp = new McpHandler(Pairings, Policy, Tools, Audit, State, Sessions, options.DataDir,
+            terms: Services.TermsBundleProvider.Current);
         Mcp.Events = AgentEvents;
         // W9: the GateSheet's live caller — a gate-denied call in a
         // live session raises the §3 sheet at the endpoint through
@@ -2323,7 +2357,8 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
             && (p.ExpiresUtc is null || p.ExpiresUtc > DateTimeOffset.UtcNow));
         try { Missions.RecoverStaleRuns(); } catch { /* recovery is best-effort at construct; module list re-runs it */ }
         macroModule.PolicyStepRunner = (pairingId, tool, args, ct) => Mcp.ExecuteForPairingAsync(pairingId, tool, args, ct);
-        var pairingHandler = new PairingHandler(Pairings, Audit, () => LanTls.Fingerprint, EventSubscriptions);
+        var pairingHandler = new PairingHandler(Pairings, Audit, () => LanTls.Fingerprint, EventSubscriptions,
+            () => Services.TermsBundleProvider.Current);
         // Mesh companion server (M2): the phone's device page talks
         // to these routes on the tailnet lane; facts come straight
         // from the session/state stores, never cached copies.
@@ -2685,7 +2720,13 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
             // W97: the live last-seen rung per pairing (this run).
             lastConnection: id => Pairings.LastConnection(id),
             // W122 / N22: the inbox index over the one chat store.
-            chatThreads: BuildChatThreadFacts());
+            chatThreads: BuildChatThreadFacts(),
+            // FR-134 / item (16): the Terms this Core serves, so
+            // each card can show its pairing's acknowledgment
+            // state ("Terms update pending" when stale).
+            terms: new HostStateSnapshot.TermsFact(
+                Services.TermsBundleProvider.Current.Version,
+                Services.TermsBundleProvider.Current.Sha256));
     }
 
     /// <summary>W122 / N22: per-pairing inbox facts for the host
@@ -4897,6 +4938,28 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
             var host = doc.RootElement.TryGetProperty("socksHost", out var h) ? h.GetString() : null;
             var port = doc.RootElement.TryGetProperty("socksPort", out var p) ? p.GetInt32() : 0;
             return host is null || port <= 0 ? null : new TorConfig(host, port);
+        }
+        catch { return null; }
+    }
+
+    /// <summary>FR-131: relay.json — the public postman's endpoint
+    /// and THIS device's per-device rendezvous token, in the same
+    /// owner-written config shape as tor.json. Read at connect
+    /// time (and by the relay host leg's re-check), so setting the
+    /// file up takes effect without a Core restart. Absent or
+    /// malformed = the relay rung is unconfigured and refuses by
+    /// name; the token is never logged or surfaced.</summary>
+    private static RelayConfig? ReadRelayConfig(string dataDir)
+    {
+        try
+        {
+            var path = Path.Combine(dataDir, "relay.json");
+            if (!File.Exists(path)) return null;
+            using var doc = JsonDocument.Parse(File.ReadAllText(path));
+            var endpoint = doc.RootElement.TryGetProperty("endpoint", out var e) ? e.GetString() : null;
+            var token = doc.RootElement.TryGetProperty("token", out var t) ? t.GetString() : null;
+            return string.IsNullOrWhiteSpace(endpoint) || string.IsNullOrWhiteSpace(token)
+                ? null : new RelayConfig(endpoint, token);
         }
         catch { return null; }
     }

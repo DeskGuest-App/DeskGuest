@@ -176,11 +176,16 @@ public sealed class RosterService
     public static readonly IReadOnlySet<string> ValidRights =
         new HashSet<string> { "use", "enroll", "admin", "view" };
 
-    /// <summary>The six automatic transport rungs (D32), canonical
-    /// order. Manual WebRTC sits below the chain and is never a rung
-    /// id in a group set.</summary>
+    /// <summary>The automatic transport rungs, canonical order:
+    /// D32's six (lan, hub, mesh, ipv6, ownpath, tor) plus the two
+    /// rungs the transport bench found missing and FR-131/FR-132
+    /// built — `netbird` beside `mesh` (the second borrowed-mesh
+    /// account rung) and `relay` after `ownpath` (the public
+    /// sealed relay: the guaranteed road when no direct or
+    /// user-owned path exists, ahead of only Tor). Manual WebRTC
+    /// sits below the chain and is never a rung id in a group set.</summary>
     public static readonly IReadOnlyList<string> AllTransportRungs =
-        new[] { "lan", "hub", "mesh", "ipv6", "ownpath", "tor" };
+        new[] { "lan", "hub", "mesh", "netbird", "ipv6", "ownpath", "relay", "tor" };
 
     private static readonly HashSet<string> RungSet = new(AllTransportRungs);
 

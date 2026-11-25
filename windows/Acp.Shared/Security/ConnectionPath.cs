@@ -1,7 +1,7 @@
 namespace Acp.Shared.Security;
 
 /// <summary>
-/// W97 / S09(b) — the AI connection-path policy (owner directive,
+/// W97 / S09(b) — the AI connection-path policy (Jacob,
 /// 2026-11-23): per pairing, the owner chooses HOW the paired AI
 /// may connect. Three modes:
 ///   AUTO            — the full transports menu; best working
@@ -78,18 +78,20 @@ public static class ConnectionPathPolicy
 {
     /// <summary>One real transport: its rung id and its plain
     /// name for the owner surfaces. The ids are the tree's own —
-    /// the failover engine's rungs (lan / hub / mesh / ipv6 /
-    /// ownpath / tor, the ConnectionDoctor list) plus loopback,
+    /// the failover engine's rungs (lan / hub / mesh / netbird /
+    /// ipv6 / ownpath / relay / tor, the ConnectionDoctor list) plus loopback,
     /// the local-only lane the host also binds.</summary>
     public sealed record RungInfo(string Id, string PlainName);
 
     public static readonly IReadOnlyList<RungInfo> Rungs = new[]
     {
         new RungInfo("mesh", "Private mesh (Tailscale)"),
+        new RungInfo("netbird", "Private mesh (NetBird)"),
         new RungInfo("lan", "Home network (LAN)"),
         new RungInfo("hub", "Company hub"),
         new RungInfo("ipv6", "Direct IPv6"),
         new RungInfo("ownpath", "Direct public IP"),
+        new RungInfo("relay", "Public relay (sealed)"),
         new RungInfo("tor", "Tor (hidden service)"),
         new RungInfo("loopback", "This PC only (loopback)"),
     };
