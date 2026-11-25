@@ -67,11 +67,13 @@ DeskGuest works with any AI agent that uses MCP, the open connection standard. *
 
 | | |
 |---|---|
-| **[Download](https://deskguest.pages.dev/download)** | Where downloads will live when they open — and the support statement, exactly as far as it's been tried |
 | **[Features](https://deskguest.pages.dev/features)** | The whole product, family by family — presence, Quick Fix, rooms, groups, recovery |
 | **[How it works](https://deskguest.pages.dev/how-it-works)** | Three steps, and how pairing puts you in charge |
 | **[AI agents](https://deskguest.pages.dev/ai)** | Bring your own agent: the leash, the approvals, and which AIs are fully supported vs not yet tried |
 | **[Rooms & collaboration](https://deskguest.pages.dev/rooms)** | Standing meeting rooms — members, links, and the room's memory |
+| **[Quick Fix](https://deskguest.pages.dev/quick-fix)** | One-time help for anyone from a single invite link — no install, no pairing first |
+| **[Download](https://deskguest.pages.dev/download)** | Where downloads will live when they open — and the support statement, exactly as far as it's been tried |
+| **[Help & Support](https://deskguest.pages.dev/support)** | Guides, the uh-oh report, and how to get help |
 | **[Trust & Security](https://deskguest.pages.dev/trust)** | The consent floor: what no setting and no policy can switch off |
 | **[Security](https://deskguest.pages.dev/security)** | The threat model, in plain words — including what DeskGuest does not claim |
 | **[Privacy](https://deskguest.pages.dev/privacy)** | No account, no cloud, no telemetry — and what that means in practice |
@@ -80,7 +82,6 @@ DeskGuest works with any AI agent that uses MCP, the open connection standard. *
 | **[Is this a scam?](https://deskguest.pages.dev/scam)** | The three signs of a genuine DeskGuest session, and the red flags |
 | **[For Workplaces](https://deskguest.pages.dev/workplaces)** | Groups, signed policy and local audit — without a fleet roster on endpoints |
 | **[For IT](https://deskguest.pages.dev/it)** | The evaluation pack: the support matrix stated exactly, sizing, policy — and what happens to your data when an AI agent helps |
-| **[Help & Support](https://deskguest.pages.dev/support)** | Guides, the uh-oh report, and how to get help |
 
 ## Get help
 
