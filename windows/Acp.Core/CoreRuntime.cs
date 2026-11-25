@@ -38,7 +38,7 @@ public sealed record CoreOptions
     public required string DataDir { get; init; }
     public int Port { get; init; } = 8741;
     public IReadOnlyList<string> FileRoots { get; init; } = Array.Empty<string>();
-    public string AgentExePath { get; init; } = "AcpSessionAgent.exe";
+    public string AgentExePath { get; init; } = AgentExePathResolver.ShippedAgentExeName;
     public bool IncludeLoopbackLane { get; init; } = false; // dev/tests only
     /// <summary>Hub rung (D16/D27): the hub component runs ONLY when a scope
     /// chose the hub rung. Default false — dormant, nothing runs.</summary>
@@ -122,6 +122,15 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
     /// the detail to write into the audit chain at StartAsync;
     /// null on every ordinary start.</summary>
     private string? _livenessOverrideAuditDetail;
+    /// <summary>FR-135 (#16): when this start proceeded over a
+    /// stale pid-less run marker on the strength of the process
+    /// enumeration's proven-absence verdict, the detail written
+    /// into the audit chain at StartAsync; null otherwise.</summary>
+    private string? _staleMarkerAuditDetail;
+    /// <summary>The W113 enumeration verdict from the constructor's
+    /// liveness block, kept so the W107 marker check below consumes
+    /// the same evidence instead of judging freshness alone.</summary>
+    private CoreProcessLiveness.Result? _livenessResult;
     public EnrollmentService Enrollments { get; }
     public RosterService Roster { get; }
     public SessionService HumanSessions { get; }
@@ -447,6 +456,7 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
         //     a command-line flag an agent could pass casually).
         {
             var liveness = (options.CoreLivenessProbe ?? CoreProcessLiveness.Probe)();
+            _livenessResult = liveness;
             if (liveness.Verdict == CoreProcessLiveness.Verdict.OtherCoreRunning)
             {
                 InstanceLock.Dispose();
@@ -504,12 +514,28 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
             // a start proceeds only when the owner is provably
             // dead on every available sign.
             var heartbeatAt = RunMarker.ReadHeartbeatAtUtc(options.DataDir);
-            if (snapshot is not null && RunMarker.IndicatesLiveOwner(snapshot, DateTimeOffset.UtcNow, heartbeatAt))
+            // FR-135 (#16): the W113 enumeration verdict above is
+            // evidence this check must consume. For a pid-less
+            // marker, proven absence of any Core process outranks
+            // the file (RunMarker.MarkerBlocksStart) — the W135
+            // lockout was this check judging freshness alone while
+            // enumeration had already proven the machine Core-free.
+            var enumerationProvedNone = _livenessResult?.Verdict == CoreProcessLiveness.Verdict.NoOtherCore;
+            var nowUtc = DateTimeOffset.UtcNow;
+            var indicatesLive = snapshot is not null && RunMarker.IndicatesLiveOwner(snapshot, nowUtc, heartbeatAt);
+            var blocks = snapshot is not null && RunMarker.MarkerBlocksStart(snapshot, nowUtc, heartbeatAt, enumerationProvedNone);
+            if (indicatesLive && !blocks)
+            {
+                _staleMarkerAuditDetail =
+                    $"pid-less run marker (pre-single-instance build), last seen {snapshot!.LastSeenUtc:u}, not ended cleanly; " +
+                    "process enumeration proved no DeskGuest Core process is running, so the stale marker did not block this start";
+            }
+            if (blocks)
             {
                 InstanceLock.Dispose();
                 throw new CoreInstanceLock.AlreadyRunningException(
                     $"{CoreInstanceLock.DuplicateMessage} (data folder: {Path.GetFullPath(options.DataDir)}" +
-                    $"; live run marker: owner pid {(snapshot.OwnerPid > 0 ? snapshot.OwnerPid.ToString() : "unknown (pre-single-instance build)")}" +
+                    $"; live run marker: owner pid {(snapshot!.OwnerPid > 0 ? snapshot.OwnerPid.ToString() : "unknown (pre-single-instance build)")}" +
                     $", last seen {snapshot.LastSeenUtc:u}, heartbeat {(heartbeatAt is { } hb ? hb.ToString("u") : "absent")}, not ended cleanly — the running Core could not be verified stopped)");
             }
         }
@@ -5550,6 +5576,15 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
         {
             Audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", null, null, null, null, null,
                 $"core_started_on_operator_liveness_override:{_livenessOverrideAuditDetail}", "SYSTEM", null));
+        }
+        // FR-135 (#16): a start that proceeded over a stale
+        // pid-less marker on the enumeration's proven-absence
+        // verdict says so IN THE CHAIN — the clearance is part of
+        // the record, never a silent hole in it.
+        if (_staleMarkerAuditDetail is not null)
+        {
+            Audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", null, null, null, null, null,
+                $"core_started_over_stale_pidless_marker:{_staleMarkerAuditDetail}", "SYSTEM", null));
         }
         // Safe Mode ride: if the previous boot set safeboot for us, this
         // boot clears it FIRST THING (SafeModeOrchestrator contract).

@@ -25,8 +25,11 @@ var dataDir = Environment.GetEnvironmentVariable("ACP_DATA_DIR")
         ? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.CommonApplicationData), "ACP", "data")
         : Path.Combine(AppContext.BaseDirectory, "acp-data"));
 var port = int.TryParse(Environment.GetEnvironmentVariable("ACP_PORT"), out var p) ? p : 8741;
-var agentExe = Environment.GetEnvironmentVariable("ACP_AGENT_EXE")
-    ?? Path.Combine(AppContext.BaseDirectory, "AcpSessionAgent.exe");
+// FR-135 (#15): existence-based sibling resolution — the shipped
+// agent is Acp.SessionAgent.exe; the old literal fallback named a
+// file that does not exist and stranded every bare launch.
+var agentExe = AgentExePathResolver.Resolve(AppContext.BaseDirectory,
+    Environment.GetEnvironmentVariable("ACP_AGENT_EXE"));
 var fileRootsEnv = Environment.GetEnvironmentVariable("ACP_FILE_ROOTS");
 var fileRoots = string.IsNullOrWhiteSpace(fileRootsEnv)
     ? Array.Empty<string>()

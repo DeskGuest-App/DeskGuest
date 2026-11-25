@@ -177,6 +177,30 @@ public sealed class RunMarker
         return markerFresh || heartbeatFresh;
     }
 
+    /// <summary>FR-135 (#16): does this marker BLOCK a new start?
+    /// The pure decision the Core constructor applies. A marker
+    /// blocks when it indicates a live owner — with ONE exception:
+    /// a pid-less marker (a pre-single-instance build recorded no
+    /// owner pid) when process enumeration has already PROVEN no
+    /// Core process exists. The W113 doctrine cuts both ways: a
+    /// live process outranks every file, and proven absence
+    /// outranks a file that cannot name a process — the W135
+    /// incident was a just-died old Core's fresh pid-less marker
+    /// stranding its successor forever (exit 41) while enumeration
+    /// had already proven the machine Core-free. A marker naming
+    /// a RECORDED pid is never overridden by enumeration
+    /// (defence in depth, W111): its own pid-liveness rule
+    /// decides. With enumeration indeterminate or unrun, a
+    /// pid-less marker keeps its full freshness discipline.</summary>
+    public static bool MarkerBlocksStart(MarkerSnapshot? marker, DateTimeOffset nowUtc,
+        DateTimeOffset? heartbeatAtUtc, bool enumerationProvedNoOtherCore)
+    {
+        if (marker is null) return false;
+        if (!IndicatesLiveOwner(marker, nowUtc, heartbeatAtUtc)) return false;
+        if (marker.OwnerPid <= 0 && enumerationProvedNoOtherCore) return false;
+        return true;
+    }
+
     /// <summary>Read the previous run's marker BEFORE overwriting it.</summary>
     public PreviousRunInfo? ReadPreviousRun()
     {
