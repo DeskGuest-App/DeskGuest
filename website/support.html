@@ -3,72 +3,93 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Help & Support — DeskGuest</title>
-<meta name="description" content="DeskGuest help topics, the uh-oh promise, and how to report a problem: what a report contains, and that nothing is sent until you tap Send.">
+<title>Help &amp; Support — DeskGuest</title>
+<meta name="description" content="Plain answers first: search the help topics, learn how reports work, and find out what a good report includes.">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
 <link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
 <link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#0F2537">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DeskGuest">
+<meta property="og:title" content="Help &amp; Support — DeskGuest">
+<meta property="og:description" content="Plain answers first: search the help topics, learn how reports work, and find out what a good report includes.">
+<meta property="og:url" content="https://deskguest.pages.dev/support.html">
+<meta property="og:image" content="https://deskguest.pages.dev/assets/a3-master-lockup.png">
+<meta name="twitter:card" content="summary">
+<script>document.documentElement.className+=' js'</script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
-<a class="brand" href="index.html"><img src="assets/a3-mark.png" alt="">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust & Security</a><a href="support.html" aria-current="page">Help & Support</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav>
+<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust &amp; Security</a><a href="support.html" aria-current="page">Help &amp; Support</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav>
 <a class="btn small" href="download.html">Coming soon</a>
 </div></header>
-<main>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+<h1 class="page-title">Help &amp; support</h1>
+<p class="page-sub">Plain answers first. The same help that lives inside the app lives here — one set of answers, two doors.</p>
+</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
 
-<section class="band"><div class="wrap">
-<div class="section-head"><h2>Help &amp; support</h2>
-<p>Plain answers first. The same help that lives inside the app lives here — one set of answers, two doors.</p></div>
+<section class="section"><div class="wrap">
+
 <form class="help-search" id="help-search" role="search">
-<label class="help-search-label" for="help-search-input" style="position:absolute;left:-9999px">Search help topics</label>
-<input type="search" id="help-search-input" name="q" placeholder="Search helper articles…" autocomplete="off">
+<label class="fineprint" for="help-search-input" style="position:absolute;left:-9999px">Search help topics</label>
+<input id="help-search-input" type="search" placeholder="Search help topics" autocomplete="off">
 <button class="btn" type="submit">Search</button>
 </form>
-<p class="help-search-status" id="help-search-status" role="status" aria-live="polite"></p>
+<p class="help-search-status" id="help-search-status" aria-live="polite"></p>
 <div class="help-search-empty" id="help-search-empty" style="display:none">
-<h3>No help topic matches that — yet.</h3>
+<p class="empty-title">No help topic matches that — yet.</p>
 <p>Try a shorter word, or browse all six topics below. If you're stuck on something that went wrong, the report section under the topics explains how to send a report from the app.</p>
 </div>
-<div class="cards three">
-<div class="card"><h3>First time here?</h3><p>What DeskGuest is, what it costs (nothing), and the three steps of a first help session.</p><p><a href="how-it-works.html">Start with How It Works →</a></p></div>
-<div class="card"><h3>Inviting a helper</h3><p>Pairing with a one-time code, what the code can and can't do, and how to remove a helper.</p><p><a href="how-it-works.html">Pairing, step by step →</a></p></div>
-<div class="card"><h3>Stop a session instantly</h3><p>Press STOP on screen, or the Esc key. It works at any moment, and nothing can disable it.</p><p><a href="trust.html">Why STOP always works →</a></p></div>
-<div class="card"><h3>Connection problems</h3><p>What "your helper can't be reached right now" means, and the checks to try in order.</p></div>
-<div class="card"><h3>Setting up an AI agent</h3><p>Pairing your agent, choosing what it may do — from watch-only to full help — and changing your mind later.</p><p><a href="how-it-works.html">Access levels explained →</a></p></div>
-<div class="card"><h3>Privacy controls</h3><p>Your Activity Record: what's in it, that it stays on your device, and how long it's kept.</p><p><a href="trust.html">Records &amp; privacy →</a></p></div>
+
+<h2 class="sr-only">Help topics</h2>
+<div class="cards three reveal">
+<div class="card rv"><h3>First time here?</h3><p>What DeskGuest is, what it costs (nothing), and the three steps of a first help session.</p><p><a class="more" href="how-it-works.html">Start with How It Works</a></p></div>
+<div class="card rv"><h3>Inviting a helper</h3><p>Pairing with a one-time code, what the code can and can't do, and how to remove a helper.</p><p><a class="more" href="how-it-works.html">Pairing, step by step</a></p></div>
+<div class="card rv"><h3>Stop a session instantly</h3><p>Press STOP on screen, or the Esc key. It works at any moment, and nothing can disable it.</p><p><a class="more" href="trust.html">Why STOP always works</a></p></div>
+<div class="card rv"><h3>Connection problems</h3><p>What "your helper can't be reached right now" means, and the checks to try in order.</p><p><a class="more" href="features.html">How connections work</a></p></div>
+<div class="card rv"><h3>Setting up an AI agent</h3><p>Pairing your agent, choosing what it may do — from watch-only to full help — and changing your mind later.</p><p><a class="more" href="how-it-works.html">Access levels explained</a></p></div>
+<div class="card rv"><h3>Privacy controls</h3><p>Your Activity Record: what's in it, that it stays on your device, and how long it's kept.</p><p><a class="more" href="privacy.html">Records &amp; privacy</a></p></div>
 </div>
 </div></section>
-<section class="band" style="padding-top:0"><div class="wrap">
-<div class="cards">
-<div class="card"><img class="pose" src="assets/pose-uhoh.png" alt="DeskGuest greeter looking worried, hands raised">
-<h3>Uh-oh! Still stuck? Report an issue.</h3>
+
+<section class="section section--tint"><div class="wrap">
+<div class="uhoh reveal">
+<img class="pose" src="assets/pose-uhoh.webp" alt="DeskGuest greeter looking worried, hands raised" width="720" height="720" loading="lazy" decoding="async">
+<div>
+<h2>Uh-oh! Still stuck? Report an issue.</h2>
 <p><strong>Our promise:</strong> when something goes wrong, DeskGuest never fails quietly. You get a plain account of what happened, what it means, and the one thing to do next — at the moment it happens, not buried in a log.</p>
-<p>A Report is a diagnostics package from your device: what happened, in order. Before anything is attached, DeskGuest scans it for passwords, keys, and tokens and removes them. <strong>Nothing is sent until you tap Send</strong> — you are the sender, every time.</p>
-<p>We read every report; fixes ship in updates.</p>
-<p><a class="btn gold" href="download.html">Get the app to send a report</a></p>
-<p class="fineprint">Reports are sent from inside the app, because that's where the diagnostics live. If the app won't open at all, you can also ask for help on <a href="https://github.com/DeskGuest-App/DeskGuest/discussions">the DeskGuest discussions on GitHub</a> or open an issue in <a href="https://github.com/DeskGuest-App/DeskGuest/issues">the issue tracker</a>.</p></div>
-<div class="card"><h3>What a good report includes</h3>
-<ul>
+<p>A Report is a diagnostics package from your device: what happened, in order. Before anything is attached, DeskGuest scans it for passwords, keys, and tokens and removes them. Nothing is sent until you tap Send — you are the sender, every time. We read every report; fixes ship in updates.</p>
+</div>
+</div>
+<div class="cards reveal" style="margin-top:40px">
+<div class="card rv"><h3>Get the app to send a report</h3><p>Reports are sent from inside the app, because that's where the diagnostics live. If the app won't open at all, you can also ask for help on the <a href="https://github.com/DeskGuest-App/DeskGuest/discussions">DeskGuest discussions on GitHub</a> or open an issue in the <a href="https://github.com/DeskGuest-App/DeskGuest/issues">issue tracker</a>.</p></div>
+<div class="card rv"><h3>What a good report includes</h3><ul>
 <li>What you were trying to do, in your own words</li>
 <li>What happened instead — the uh-oh message says it plainly; quote it if you can</li>
 <li>Whether STOP worked (it should — tell us if it didn't)</li>
 <li>Your device type: a Windows 11 computer, or your Android phone model</li>
-</ul>
-<p>Never include passwords, recovery keys, or pairing codes in a report — DeskGuest removes secrets from its own diagnostics, and your words deserve the same care.</p></div>
+</ul><p class="fineprint">Never include passwords, recovery keys, or pairing codes in a report — DeskGuest removes secrets from its own diagnostics, and your words deserve the same care.</p></div>
 </div>
 </div></section>
 
 </main>
 <footer class="site-footer"><div class="wrap">
-<a class="brand" href="index.html"><img src="assets/a3-mark.png" alt="">DeskGuest</a>
-<nav aria-label="Footer">
-<a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust &amp; Security</a>
-<a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a>
-<a href="it.html">For IT</a><a href="download.html">Download</a>
-<a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
-</nav>
+<div class="cols">
+<div>
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
+</div>
+<div><p class="fh">Site</p><nav aria-label="Site">
+<a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a>
+</nav></div>
+<div><p class="fh">Trust</p><nav aria-label="Trust">
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+</nav></div>
+</div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
 Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>

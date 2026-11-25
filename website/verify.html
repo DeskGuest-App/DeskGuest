@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Verify a Download — DeskGuest</title>
+<meta name="description" content="How to check a DeskGuest download against its published File Check Code (SHA-256) on Windows, and what a match or a mismatch means.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
+<link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#0F2537">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DeskGuest">
+<meta property="og:title" content="Verify a Download — DeskGuest">
+<meta property="og:description" content="How to check a DeskGuest download against its published File Check Code (SHA-256) on Windows, and what a match or a mismatch means.">
+<meta property="og:url" content="https://deskguest.pages.dev/verify.html">
+<meta property="og:image" content="https://deskguest.pages.dev/assets/a3-master-lockup.png">
+<meta name="twitter:card" content="summary">
+<script>document.documentElement.className+=' js'</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html" aria-current="page">Trust &amp; Security</a><a href="support.html">Help &amp; Support</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav>
+<a class="btn small" href="download.html">Coming soon</a>
+</div></header>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+<h1 class="page-title">Verify a download</h1>
+<p class="page-sub">Every DeskGuest release publishes a File Check Code (SHA-256) beside its downloads. Comparing the code takes a minute, and it proves the file you have is the file that was published.</p>
+</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
+
+<section class="section"><div class="wrap">
+<div class="sec-head reveal"><h2>On Windows</h2></div>
+<div class="steps reveal" style="grid-template-columns:repeat(3,1fr)">
+<div class="step rv"><span class="n">Step 1</span><h3>Open PowerShell</h3><p>Press the Windows key, type <code>PowerShell</code>, and open it. No administrator rights are needed.</p></div>
+<div class="step rv"><span class="n">Step 2</span><h3>Run the check</h3><p>Type <code>Get-FileHash</code>, a space, then drag the downloaded file into the window to fill in its path. Press Enter.</p></div>
+<div class="step rv"><span class="n">Step 3</span><h3>Compare</h3><p>PowerShell shows the file's code. Compare it, character for character, with the File Check Code published beside the download. They must match exactly.</p></div>
+</div>
+<div class="sec-head reveal" style="margin-top:48px"><h2>What the result means</h2></div>
+<div class="cards reveal">
+<div class="card rv"><h3>The codes match</h3><p>Your file is byte-for-byte the file that was published. Install it with confidence.</p></div>
+<div class="card rv"><h3>The codes don't match</h3><p>Do not install the file. Delete it and download again from this site or the project's releases page — nowhere else. If a fresh download still doesn't match, <a href="support.html">report it</a>: that's exactly the kind of thing we need to hear.</p></div>
+</div>
+<div class="notice red reveal"><strong>Only two places are official:</strong> this website's Download page and <a href="https://github.com/DeskGuest-App/DeskGuest">the DeskGuest project on GitHub</a>. DeskGuest is not in the Microsoft Store or Google Play, and no other site is authorised to offer it. A "DeskGuest" download from anywhere else is not DeskGuest.</div>
+<p class="fineprint">Why a code and not just trust? Because trust should be checkable. The code is computed from the file itself — change one byte and the code changes completely — so a match is proof, not a promise.</p>
+</div></section>
+
+</main>
+<footer class="site-footer"><div class="wrap">
+<div class="cols">
+<div>
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
+</div>
+<div><p class="fh">Site</p><nav aria-label="Site">
+<a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a>
+</nav></div>
+<div><p class="fh">Trust</p><nav aria-label="Trust">
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+</nav></div>
+</div>
+<p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
+<a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
+Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>
+</div></footer>
+<script src="site.js"></script>
+</body>
+</html>

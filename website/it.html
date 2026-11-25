@@ -4,59 +4,76 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>For IT — Evaluation Pack — DeskGuest</title>
-<meta name="description" content="DeskGuest IT evaluation: the proven support matrix, measured sizing specs, policy and Effective Policy, local records and exports, and deployment shapes.">
+<meta name="description" content="The DeskGuest evaluation pack for IT: support matrix as proven, measured sizing, architecture, the consent floor, policy, records, deployment, and disclosure.">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
 <link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
 <link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#0F2537">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DeskGuest">
+<meta property="og:title" content="For IT — Evaluation Pack — DeskGuest">
+<meta property="og:description" content="The DeskGuest evaluation pack for IT: support matrix as proven, measured sizing, architecture, the consent floor, policy, records, deployment, and disclosure.">
+<meta property="og:url" content="https://deskguest.pages.dev/it.html">
+<meta property="og:image" content="https://deskguest.pages.dev/assets/a3-master-lockup.png">
+<meta name="twitter:card" content="summary">
+<script>document.documentElement.className+=' js'</script>
 </head>
 <body>
+<a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
-<a class="brand" href="index.html"><img src="assets/a3-mark.png" alt="">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust & Security</a><a href="support.html">Help & Support</a><a href="workplaces.html">For Workplaces</a><a href="it.html" aria-current="page">For IT</a></nav>
+<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust &amp; Security</a><a href="support.html">Help &amp; Support</a><a href="workplaces.html">For Workplaces</a><a href="it.html" aria-current="page">For IT</a></nav>
 <a class="btn small" href="download.html">Coming soon</a>
 </div></header>
-<main>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+<h1 class="page-title">For IT: evaluation pack</h1>
+<p class="page-sub">Everything on this page is stated at the level it has been proven. Where a number hasn't been measured yet, this page says so instead of estimating.</p>
+</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
 
-<section class="band"><div class="wrap">
-<div class="section-head"><h2>For IT: evaluation pack</h2>
-<p>Everything on this page is stated at the level it has been proven. Where a number hasn't been measured yet, this page says so instead of estimating.</p></div>
-<h3 style="font-size:20px">Support matrix — as proven</h3>
-<table class="matrix" aria-label="IT support matrix">
+<section class="section"><div class="wrap">
+<div class="sec-head reveal"><h2>Support matrix — as proven</h2></div>
+<table class="matrix reveal" aria-label="Support matrix — as proven">
 <tr><th>Item</th><th>Statement</th></tr>
-<tr><td>Windows</td><td>Supported and proven on Windows 11. Windows 10 is not supported and is not claimed anywhere.</td></tr>
-<tr><td>Android</td><td>Support is proven on Samsung Galaxy S25 Ultra. Android 11 is the installable floor — the minimum the app will install on — not a support claim. Other phones are not yet proven.</td></tr>
+<tr><td>Windows</td><td>Supported and proven on <strong>Windows 11</strong>. Windows 10 is not supported and is not claimed anywhere.</td></tr>
+<tr><td>Android</td><td>Support is proven on <strong>Samsung Galaxy S25 Ultra</strong>. Android 11 is the installable floor — the minimum the app will install on — not a support claim. Other phones are not yet proven.</td></tr>
 <tr><td>Mac / Linux hosts</td><td>None. There is no macOS or Linux host, and neither appears as a DeskGuest endpoint.</td></tr>
 <tr><td>Sizing &amp; specs</td><td>Measured and published — see Sizing, below.</td></tr>
 </table>
-<h3 style="font-size:20px;margin-top:28px">Sizing — measured</h3>
-<table class="matrix" aria-label="DeskGuest sizing">
+<div class="sec-head reveal" style="margin-top:48px"><h2>Sizing — measured</h2></div>
+<table class="matrix reveal" aria-label="Sizing — measured">
 <tr><th>What</th><th>Minimum</th><th>Recommended</th></tr>
 <tr><td>Free disk space</td><td>1 GB free</td><td>2 GB free</td></tr>
 <tr><td>Memory (RAM)</td><td>8 GB</td><td>16 GB</td></tr>
 <tr><td>Processor</td><td>Any modern 4-core x86-64 processor</td><td>6 cores</td></tr>
 </table>
-<p style="margin-top:14px">The optional local-model AI pack is a separate spec and is never folded into the base numbers above: it takes about 31 GB on disk — allow 40 GB free on the pack's drive.</p>
-<p>How these numbers were derived, stated honestly: they were measured on the proven fleet machine, and each minimum is the measured footprint with headroom added — not a tested weakest-machine floor. During a live session with screen streaming, DeskGuest's own memory use peaked at about 1 GB.</p>
-<div class="cards" style="margin-top:24px">
-<div class="card"><h3>Architecture in one paragraph</h3><p>No DeskGuest cloud and no DeskGuest account: identity is a key held on the device, with a recovery key (Windows) or a 34-word recovery key sheet (Android) as the only way back in — there is no central reset. Devices pair with one-time codes (10-minute expiry, single use). Some connection paths use a third-party coordination service (for example Tailscale) for device discovery only; it never holds sessions or records.</p></div>
-<div class="card"><h3>Consent floor — not configurable</h3><p>Presence (the connected helper is named on every screen), a STOP that always works, refusal to type credentials, and an Activity Record that can't be quietly edited are properties of the product, not settings. Policy governs comfort and scope — it cannot switch the floor off, including any form of unattended access.</p></div>
-<div class="card"><h3>Policy &amp; Effective Policy</h3><p>Rules are written as sentences with scope and source, inherited workplace → group → device. The Effective Policy view shows the resolved result for a given device ("what actually applies"), not just the rule stack. Camera viewing, patch approvals, and auto-remediation are policy-governed and audited; patch rollouts are approval-gated and halt themselves on failure.</p></div>
-<div class="card"><h3>Records &amp; exports</h3><p>The Activity Record lives on the device and accounts for what DeskGuest itself did — what was looked at, sent, and changed. Exports are local files (including CSV) produced on the device. Endpoint backup destinations are your own storage. Compliance evidence packs list their contents before export.</p></div>
-<div class="card"><h3>Deployment shapes</h3><p>Standalone per device, or a workplace hub run once by the organization with sites enrolling by code. There is no DeskGuest-imposed user limit and no device limit. Offboarding is one removal action with the blast list shown first; removing a fellow admin takes dual control, and the last admin cannot be removed.</p></div>
-<div class="card"><h3>Security disclosure</h3><p>Report vulnerabilities privately via GitHub private vulnerability reporting on the DeskGuest project: <a href="https://github.com/DeskGuest-App/DeskGuest/security/advisories/new">open a private security advisory</a>. Downloads — and the File Check Code (SHA-256) for each — live only at <a href="https://github.com/DeskGuest-App/DeskGuest">the DeskGuest project</a>.</p></div>
+<div class="notice reveal"><strong>The optional local-model AI pack is a separate spec</strong> and is never folded into the base numbers above: it takes about 31 GB on disk — allow 40 GB free on the pack's drive. How these numbers were derived, stated honestly: they were measured on the proven fleet machine, and each minimum is the measured footprint with headroom added — not a tested weakest-machine floor. During a live session with screen streaming, DeskGuest's own memory use peaked at about 1 GB.</div>
+<div class="cards reveal" style="margin-top:26px">
+<div class="card rv"><h3>Architecture in one paragraph</h3><p>No DeskGuest cloud and no DeskGuest account: identity is a key held on the device, with a recovery key (Windows) or a 34-word recovery key sheet (Android) as the only way back in — there is no central reset. Devices pair with one-time codes (10-minute expiry, single use). Some connection paths use a third-party coordination service (for example Tailscale) for device discovery only; it never holds sessions or records.</p></div>
+<div class="card rv"><h3>Consent floor — not configurable</h3><p>Presence (the connected helper is named on every screen), a STOP that always works, refusal to type credentials, and an Activity Record that can't be quietly edited are properties of the product, not settings. Policy governs comfort and scope — it cannot switch the floor off, including any form of unattended access.</p></div>
+<div class="card rv"><h3>Policy &amp; Effective Policy</h3><p>Rules are written as sentences with scope and source, inherited workplace → group → device. The Effective Policy view shows the resolved result for a given device ("what actually applies"), not just the rule stack. Camera viewing, patch approvals, and auto-remediation are policy-governed and audited; patch rollouts are approval-gated and halt themselves on failure.</p></div>
+<div class="card rv"><h3>Records &amp; exports</h3><p>The Activity Record lives on the device and accounts for what DeskGuest itself did — what was looked at, sent, and changed. Exports are local files (including CSV) produced on the device. Endpoint backup destinations are your own storage. Compliance evidence packs list their contents before export.</p></div>
+<div class="card rv"><h3>Deployment shapes</h3><p>Standalone per device, or a workplace hub run once by the organization with sites enrolling by code. There is no DeskGuest-imposed user limit and no device limit. Offboarding is one removal action with the blast list shown first; removing a fellow admin takes dual control, and the last admin cannot be removed.</p></div>
+<div class="card rv"><h3>Security disclosure</h3><p>Report vulnerabilities privately via GitHub private vulnerability reporting on the DeskGuest project: <a href="https://github.com/DeskGuest-App/DeskGuest/security/advisories/new">open a private security advisory</a>. Downloads — and the File Check Code (SHA-256) for each — live only at <a href="https://github.com/DeskGuest-App/DeskGuest">the DeskGuest project</a>.</p></div>
 </div>
+<p style="margin-top:26px">The full reasoning: <a href="security.html">Security &amp; the threat model</a> · <a href="privacy.html">Privacy</a> · <a href="verify.html">Verify a download</a></p>
 </div></section>
 
 </main>
 <footer class="site-footer"><div class="wrap">
-<a class="brand" href="index.html"><img src="assets/a3-mark.png" alt="">DeskGuest</a>
-<nav aria-label="Footer">
-<a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html">Trust &amp; Security</a>
-<a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a>
-<a href="it.html">For IT</a><a href="download.html">Download</a>
-<a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
-</nav>
+<div class="cols">
+<div>
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
+</div>
+<div><p class="fh">Site</p><nav aria-label="Site">
+<a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a>
+</nav></div>
+<div><p class="fh">Trust</p><nav aria-label="Trust">
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+</nav></div>
+</div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
 Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>

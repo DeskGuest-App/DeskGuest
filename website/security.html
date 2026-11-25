@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Security &amp; the Threat Model — DeskGuest</title>
+<meta name="description" content="DeskGuest's threat model: what is protected, who it is protected against, the defenses, the consent floor, and what DeskGuest does not claim.">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
+<link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#0F2537">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DeskGuest">
+<meta property="og:title" content="Security &amp; the Threat Model — DeskGuest">
+<meta property="og:description" content="DeskGuest's threat model: what is protected, who it is protected against, the defenses, the consent floor, and what DeskGuest does not claim.">
+<meta property="og:url" content="https://deskguest.pages.dev/security.html">
+<meta property="og:image" content="https://deskguest.pages.dev/assets/a3-master-lockup.png">
+<meta name="twitter:card" content="summary">
+<script>document.documentElement.className+=' js'</script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+<nav class="main-nav" aria-label="Main"><a href="index.html">Home</a><a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="trust.html" aria-current="page">Trust &amp; Security</a><a href="support.html">Help &amp; Support</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav>
+<a class="btn small" href="download.html">Coming soon</a>
+</div></header>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+<h1 class="page-title">Security &amp; the threat model</h1>
+<p class="page-sub">What DeskGuest is built to withstand, what each defense is, and — just as important — what it does not claim to protect against.</p>
+</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
+
+<section class="section"><div class="wrap">
+<div class="sec-head reveal"><h2>What is being protected</h2>
+<p>Your device and everything on it; the screen and input during a session; your identity key and your ways back in; and the Activity Record that proves what happened.</p></div>
+<div class="sec-head reveal"><h2>Who it is protected against</h2></div>
+<div class="cards reveal">
+<div class="card rv"><h3>The fake helper</h3><p>A scammer who phones or messages claiming to be support and asks you to "let them in." Defense: a session can only begin when you open DeskGuest and hand out a one-time code; the helper is named on screen the whole time; and DeskGuest never presses Yes on system prompts. <a class="more" href="scam.html">Is this a scam?</a></p></div>
+<div class="card rv"><h3>A helper who oversteps</h3><p>A paired person or AI agent doing more than you allowed. Defense: per-helper permission levels set by you; sensitive actions arrive as approval cards before they run; presence that cannot be hidden; STOP that cuts input first; and an Activity Record that can't be quietly edited.</p></div>
+<div class="card rv"><h3>Someone watching the wire</h3><p>An observer on the network, or a relay carrying your session. Defense: sessions are sealed between the devices. Relays and coordination services can carry a session but cannot read one; the swarm phone-book finds devices without any server knowing the list.</p></div>
+<div class="card rv"><h3>A lost or stolen device</h3><p>Defense: your identity is a key held on the device, and any surviving device of yours can strike a lost device's key from your circle. Recovery doors (a sealed file, a trusted person, split pieces, a word sheet) restore you — never a central reset DeskGuest controls.</p></div>
+</div>
+<div class="sec-head reveal" style="margin-top:48px"><h2>The consent floor</h2>
+<p>Four properties are the product, not settings — no policy, admin, or helper can switch them off: the connected helper is named on every screen; STOP always works; DeskGuest refuses to type credentials and never clicks through system permission prompts; and the Activity Record cannot be quietly edited.</p></div>
+<div class="sec-head reveal"><h2>What DeskGuest does not claim</h2>
+<p>Stated plainly, so nobody has to guess:</p></div>
+<div class="cards reveal">
+<div class="card rv"><h3>It can't judge your trust for you</h3><p>If you hand a code to the wrong person, DeskGuest shows you who is connected and stops them the instant you say so — but the choice of who to trust is yours. The scam page exists to help with exactly that.</p></div>
+<div class="card rv"><h3>It doesn't protect a device that's already compromised</h3><p>If malicious software already runs on a device with full rights, no remote-help tool can make that device safe. DeskGuest's record will still show what happened in its own sessions.</p></div>
+<div class="card rv"><h3>Approved actions are the approver's</h3><p>When you tap Approve on an action card, DeskGuest runs it and records your approval. Read cards before approving them — that's what they're for.</p></div>
+<div class="card rv"><h3>Support is proven where it's proven</h3><p>Security claims are made at the level they have been tested: Windows 11 and the Samsung Galaxy S25 Ultra today. The <a href="it.html">IT page</a> states the support matrix exactly.</p></div>
+</div>
+<div class="notice reveal"><strong>Found a security problem?</strong> Please report it privately through <a href="https://github.com/DeskGuest-App/DeskGuest/security/advisories/new">GitHub's vulnerability reporting for the DeskGuest project</a>. Please don't post security problems publicly before they've had a chance to be fixed.</div>
+</div></section>
+
+</main>
+<footer class="site-footer"><div class="wrap">
+<div class="cols">
+<div>
+<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
+</div>
+<div><p class="fh">Site</p><nav aria-label="Site">
+<a href="features.html">Features</a><a href="how-it-works.html">How It Works</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a>
+</nav></div>
+<div><p class="fh">Trust</p><nav aria-label="Trust">
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+</nav></div>
+</div>
+<p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
+<a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
+Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>
+</div></footer>
+<script src="site.js"></script>
+</body>
+</html>
