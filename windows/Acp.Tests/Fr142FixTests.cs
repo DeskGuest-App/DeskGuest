@@ -76,7 +76,7 @@ public class Fr142FixTests
     {
         // The battery's exact trap: the only "Save As" match is
         // the already-open dialog window itself.
-        var (outcome, index) = MenuDialogResolution.Decide(new[] { C("Save As", "Window") });
+        var (outcome, index) = MenuDialogResolution.Decide(new[] { C("Save As", "Window") }, "Save As");
         Assert.Equal(MenuDialogOutcome.AlreadyOpen, outcome);
         Assert.Equal(0, index);
         Assert.False(MenuDialogResolution.IsActionable(C("Save As", "Window")));
@@ -90,8 +90,43 @@ public class Fr142FixTests
         // AlreadyOpen, never to a click on its surface.
         var window = C("Save As", "Window", invoke: true, expand: true);
         Assert.False(MenuDialogResolution.IsActionable(window));
-        var (outcome, _) = MenuDialogResolution.Decide(new[] { window });
+        var (outcome, _) = MenuDialogResolution.Decide(new[] { window }, "Save As");
         Assert.Equal(MenuDialogOutcome.AlreadyOpen, outcome);
+    }
+
+    [Fact]
+    public void SubstringHijack_ExactWindowBeatsPartialActionable()
+    {
+        // The first FR-142 build's live failure: the item
+        // "Save As" exactly names the open dialog, but the
+        // "Save as type:" combo merely CONTAINS it — and a combo
+        // is expandable, so a substring-first rule expanded the
+        // combo instead of reporting the dialog already open.
+        var matches = new[]
+        {
+            C("Save As", "Window"),
+            C("Save as type:", "ComboBox", expand: true),
+        };
+        var (outcome, index) = MenuDialogResolution.Decide(matches, "Save As");
+        Assert.Equal(MenuDialogOutcome.AlreadyOpen, outcome);
+        Assert.Equal(0, index);
+    }
+
+    [Fact]
+    public void ExactName_IgnoresEllipsisAndCase_PartialStillWorksAsFallback()
+    {
+        // Menu captions carry the ellipsis: "Save As..." is the
+        // exact item "save as".
+        Assert.True(MenuDialogResolution.IsExactName("Save As...", "save as"));
+        Assert.True(MenuDialogResolution.IsExactName("Save As", "Save As"));
+        Assert.False(MenuDialogResolution.IsExactName("Save as type:", "Save As"));
+        // With no exact match anywhere, substring matches still
+        // decide (the pre-FR-142 behaviour, kept as the fallback).
+        var (outcome, _) = MenuDialogResolution.Decide(new[]
+        {
+            C("Save As...", "MenuItem", invoke: true),
+        }, "Save A");
+        Assert.Equal(MenuDialogOutcome.Invoke, outcome);
     }
 
     [Fact]
@@ -105,7 +140,7 @@ public class Fr142FixTests
             C("Save As", "Window"),
             C("Save", "Button", invoke: true),
         };
-        var (outcome, index) = MenuDialogResolution.Decide(matches);
+        var (outcome, index) = MenuDialogResolution.Decide(matches, "Save");
         Assert.Equal(MenuDialogOutcome.Invoke, outcome);
         Assert.Equal(1, index);
     }
@@ -119,7 +154,7 @@ public class Fr142FixTests
         {
             C("File", "Text"),
             C("Save As...", "MenuItem", invoke: true),
-        });
+        }, "Save As");
         Assert.Equal(MenuDialogOutcome.Invoke, outcome);
         Assert.Equal(1, index);
     }
@@ -127,11 +162,11 @@ public class Fr142FixTests
     [Fact]
     public void ExpandableMatch_Expands_PatternlessButton_Clicks()
     {
-        var (expandOutcome, _) = MenuDialogResolution.Decide(new[] { C("Recent", "MenuItem", expand: true) });
+        var (expandOutcome, _) = MenuDialogResolution.Decide(new[] { C("Recent", "MenuItem", expand: true) }, "Recent");
         Assert.Equal(MenuDialogOutcome.Expand, expandOutcome);
         // A button-class control with no patterns is still a
         // legitimate click target (the F8 glide-click fallback).
-        var (clickOutcome, _) = MenuDialogResolution.Decide(new[] { C("OK", "Button") });
+        var (clickOutcome, _) = MenuDialogResolution.Decide(new[] { C("OK", "Button") }, "OK");
         Assert.Equal(MenuDialogOutcome.Click, clickOutcome);
     }
 
@@ -140,17 +175,17 @@ public class Fr142FixTests
     {
         // A label or an edit field is not a menu item; the tool
         // must say so instead of centre-clicking a bystander.
-        var (outcome, index) = MenuDialogResolution.Decide(new[] { C("Save As", "Text") });
+        var (outcome, index) = MenuDialogResolution.Decide(new[] { C("Save As", "Text") }, "Save As");
         Assert.Equal(MenuDialogOutcome.RefuseNonActionable, outcome);
         Assert.Equal(0, index);
-        var (editOutcome, _) = MenuDialogResolution.Decide(new[] { C("Save As", "Edit") });
+        var (editOutcome, _) = MenuDialogResolution.Decide(new[] { C("Save As", "Edit") }, "Save As");
         Assert.Equal(MenuDialogOutcome.RefuseNonActionable, editOutcome);
     }
 
     [Fact]
     public void NoMatches_IsNotFound()
     {
-        var (outcome, index) = MenuDialogResolution.Decide(Array.Empty<MenuDialogCandidate>());
+        var (outcome, index) = MenuDialogResolution.Decide(Array.Empty<MenuDialogCandidate>(), "Save As");
         Assert.Equal(MenuDialogOutcome.NotFound, outcome);
         Assert.Equal(-1, index);
     }

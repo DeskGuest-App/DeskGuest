@@ -18,10 +18,21 @@ namespace Acp.Shared.Tools;
 /// be pinned without a desktop: given every name match in walk
 /// order, described structurally, decide what the tool may do.
 ///
-///   * ACTIONABLE matches win, in walk order. Actionable means a
-///     menu item / button class of control, or any non-window
-///     element exposing Invoke or ExpandCollapse. The winner's own
-///     patterns choose Invoke over Expand over a plain click.
+///   * EXACT name matches decide before substring matches. A
+///     caption is a name, not a search term: the item "Save As"
+///     names the dialog titled "Save As" exactly, while the
+///     "Save as type:" combo merely CONTAINS it — and a combo is
+///     expandable, so a substring-first rule lets the longer name
+///     hijack the call (the first FR-142 build expanded that
+///     combo on the battery's exact call; proven live, fixed by
+///     this partition). Exactness ignores case, surrounding
+///     whitespace, and a trailing ellipsis (menu captions carry
+///     "Save As..." for the item "Save As").
+///   * Within the deciding partition, ACTIONABLE matches win, in
+///     walk order. Actionable means a menu item / button class of
+///     control, or any non-window element exposing Invoke or
+///     ExpandCollapse. The winner's own patterns choose Invoke
+///     over Expand over a plain click.
 ///   * A WINDOW is never actionable — not even if it somehow
 ///     reports an invoke pattern. A name that matches only the
 ///     window of an already-open dialog resolves to AlreadyOpen:
@@ -74,12 +85,35 @@ public static class MenuDialogResolution
             || candidate.HasExpandCollapse
             || ActionableControlTypes.Contains(candidate.ControlType));
 
-    /// <summary>Decide the action over all name matches in walk
-    /// order. Returns the outcome and the index of the match it
-    /// refers to (-1 for NotFound).</summary>
-    public static (MenuDialogOutcome Outcome, int Index) Decide(IReadOnlyList<MenuDialogCandidate> matches)
+    /// <summary>An element's name IS the requested item's name:
+    /// equal ignoring case and surrounding whitespace, with a
+    /// trailing ellipsis (the menu-caption convention) forgiven
+    /// on either side.</summary>
+    public static bool IsExactName(string? elementName, string itemName) =>
+        string.Equals(NormalizeCaption(elementName), NormalizeCaption(itemName), StringComparison.OrdinalIgnoreCase);
+
+    private static string NormalizeCaption(string? name)
     {
+        var s = (name ?? "").Trim();
+        if (s.EndsWith("...", StringComparison.Ordinal)) s = s[..^3].TrimEnd();
+        else if (s.EndsWith("…", StringComparison.Ordinal)) s = s[..^1].TrimEnd();
+        return s;
+    }
+
+    /// <summary>Decide the action over all name matches in walk
+    /// order. Exact-name matches form the deciding pool when any
+    /// exist; otherwise every (substring) match does. Returns the
+    /// outcome and the index of the match it refers to, in the
+    /// ORIGINAL list (-1 for NotFound).</summary>
+    public static (MenuDialogOutcome Outcome, int Index) Decide(IReadOnlyList<MenuDialogCandidate> matches, string itemName)
+    {
+        var pool = new List<int>();
         for (var i = 0; i < matches.Count; i++)
+            if (IsExactName(matches[i].Name, itemName)) pool.Add(i);
+        if (pool.Count == 0)
+            for (var i = 0; i < matches.Count; i++) pool.Add(i);
+
+        foreach (var i in pool)
         {
             var candidate = matches[i];
             if (!IsActionable(candidate)) continue;
@@ -87,11 +121,11 @@ public static class MenuDialogResolution
             if (candidate.HasExpandCollapse) return (MenuDialogOutcome.Expand, i);
             return (MenuDialogOutcome.Click, i);
         }
-        for (var i = 0; i < matches.Count; i++)
+        foreach (var i in pool)
             if (IsWindow(matches[i]))
                 return (MenuDialogOutcome.AlreadyOpen, i);
-        if (matches.Count > 0)
-            return (MenuDialogOutcome.RefuseNonActionable, 0);
+        if (pool.Count > 0)
+            return (MenuDialogOutcome.RefuseNonActionable, pool[0]);
         return (MenuDialogOutcome.NotFound, -1);
     }
 }
