@@ -5,6 +5,7 @@ using System.Drawing.Imaging;
 using System.Text.Json;
 using System.Windows;
 using System.Windows.Automation;
+using System.Windows.Automation.Text;
 using System.Windows.Forms;
 using Acp.Shared.Input;
 using Acp.Shared.Policy;
@@ -247,6 +248,9 @@ public sealed class DesktopEngine
     /// agent click that was aimed at a sidebar.</summary>
     private async Task InjectClickAtAsync(int x, int y, string button, string narration)
     {
+        // FR-141: the glide + placement + buttons are one
+        // injection operation, bracketed end to end.
+        using var selfOp = SelfInputWindow.Shared.BeginOperation();
         _narrate(narration);
         await _glideTo(x, y);
         PositionCursor(x, y);
@@ -479,6 +483,41 @@ public sealed class DesktopEngine
     /// (BUILD-LOG, FR-139 entry).</summary>
     private const int InterCharacterPaceMs = 12;
 
+    /// <summary>FR-140: a character's key-down and key-up leave
+    /// as separate sends, the key held for the remainder of the
+    /// character's pace slot. A down/up pair delivered in ONE
+    /// instant SendInput batch arrives at the target with the
+    /// same timestamp and can be coalesced by the target's text
+    /// stack; a key held across a pace slot cannot. (The hold
+    /// was originally a separate 3 ms delay: two Task.Delays
+    /// per character each round up to the ~15.6 ms Windows
+    /// timer tick, which tripled the effective pace — measured
+    /// live, 2,156 characters took 61 s and outran the host's
+    /// 60 s answer window. The slot schedule below is
+    /// deadline-based, so timer rounding cannot accumulate.)</summary>
+
+    /// <summary>FR-140: the closed loop's chunk size — after
+    /// this many characters the sender waits for the target's
+    /// text to catch up (see SendTypingPlanAsync).</summary>
+    private const int TypingChunkChars = 8;
+
+    /// <summary>FR-140: the settle beat after a line-break unit
+    /// before the next line's first character is sent — the
+    /// break commit in the target's text stack is the one step
+    /// the ordinary pace outruns (see SendTypingPlanAsync).</summary>
+    private const int BreakSettleMs = 75;
+
+    /// <summary>FR-140: the repair pass's slower pace — the
+    /// second attempt at a span goes out more gently.</summary>
+    private const int RepairPaceMs = 25;
+
+    /// <summary>FR-140: documents larger than this are not read
+    /// for verification (the read itself would stall the call);
+    /// typing into them proceeds open-loop and the result
+    /// carries the OS-acceptance evidence only, exactly as
+    /// FR-139 left it.</summary>
+    private const int MaxVerifiedDocumentChars = 100_000;
+
     private async Task<(bool, string)> TypeTextAsync(JsonElement args, CancellationToken ct = default)
     {
         var text = GetString(args, "text") ?? "";
@@ -488,6 +527,14 @@ public sealed class DesktopEngine
         // FAIL CLOSED (second-inspector H2): if the credential-field
         // check cannot run, we do not type.
         if (FocusBlocksTyping(out var refusal)) return (false, refusal);
+
+        // FR-141: the whole operation is bracketed in the
+        // self-input window. However long the typing runs, the
+        // local-input watcher tells it apart from outside input
+        // by the bracket — not by the timing of the per-send
+        // notes, which a stall anywhere in the send path could
+        // stretch past the note tail (the run-6 flips).
+        using var selfOp = SelfInputWindow.Shared.BeginOperation();
 
         _narrate($"Typing {text.Length} characters");
         // FR-139: the whole string is planned up front by the
@@ -512,9 +559,73 @@ public sealed class DesktopEngine
         // The pre-fix path was worse on every axis: unchecked
         // sends and the submitted count reported as typed (the
         // Tested-AI battery run 5 evidence).
+        //
+        // FR-140: OS acceptance is not delivery. The battery
+        // (run 6) proved a target can still drop a character on
+        // its own side of the input queue — one character in
+        // ~50 under real conditions — while every event was
+        // accepted. So where the target exposes its text, the
+        // delivery is now verified in the target itself (and
+        // repaired once, inside this call's own span, when it
+        // falls short): see TryCaptureTargetText and
+        // TypingVerification (Acp.Shared).
+        var snapshot = TryCaptureTargetText();
         var plan = TextTypingPlan.Build(text);
+        var confirmedEvents = await SendTypingPlanAsync(text, plan, InterCharacterPaceMs, snapshot, ct);
+        var outcome = TextTypingPlan.Outcome(plan.TotalChars, plan.ConfirmedChars(confirmedEvents));
+        if (!outcome.Ok || snapshot is null) return outcome;
+
+        var after = await ReadSettledTargetTextAsync(snapshot.Element, ct);
+        if (after is null) return outcome; // the target stopped exposing its text; the OS count is the evidence that remains
+        var expected = TypingVerification.ExpectedAfter(snapshot.Text, snapshot.SelStart, snapshot.SelLen, text);
+        if (TypingVerification.MatchesExpected(after, expected))
+            return (true, $"typed {plan.TotalChars} characters (delivery confirmed in the target)");
+        if (!TypingVerification.TryOwnedRegion(snapshot.Text, snapshot.SelStart, snapshot.SelLen, after, out var regionStart, out var regionLength))
+            return (false, $"typing did not land intact in the target: the OS input queue accepted all {plan.TotalChars} characters, but the target's text is not what was typed, and the difference reaches beyond this call's own text, so nothing further was changed. The document now holds {TypingVerification.NormalizeBreaks(after).Length} characters; {TypingVerification.NormalizeBreaks(expected).Length} were expected.");
+        // Repair: rewrite exactly the span this call owns — the
+        // prefix and suffix the read-back proved intact are
+        // never touched. The loss this defends against is
+        // intermittent, so one retype can itself be struck:
+        // the repair repeats while the difference stays inside
+        // the owned span, up to a small bound — each attempt
+        // re-validates the region against the current settled
+        // text before rewriting anything (measured live: a
+        // 509-character multi-line type lost a character on the
+        // first pass AND on the first repair; a further attempt
+        // is the difference between an honest failure and the
+        // byte-exact delivery the call exists to make).
+        for (var attempt = 1; attempt <= 3; attempt++)
+        {
+            if (!await TryRepairOwnedRegionAsync(snapshot, regionStart, regionLength, text, ct))
+                break; // refused (target changed) — further attempts would be too
+            var repaired = await ReadSettledTargetTextAsync(snapshot.Element, ct);
+            if (repaired is null) break;
+            if (TypingVerification.MatchesExpected(repaired, expected))
+                return (true, $"typed {plan.TotalChars} characters (delivery confirmed in the target after a repair pass)");
+            if (!TypingVerification.TryOwnedRegion(snapshot.Text, snapshot.SelStart, snapshot.SelLen, repaired, out regionStart, out regionLength))
+                break; // the difference escaped the owned span — stop, report
+        }
+        return (false, $"typing did not land intact in the target: the OS input queue accepted all {plan.TotalChars} characters, but the target's text still differs from what was typed; repair passes over this call's own span did not restore it. The document now holds {TypingVerification.NormalizeBreaks(TryReadTargetText(snapshot.Element) ?? "").Length} characters; {TypingVerification.NormalizeBreaks(expected).Length} were expected.");
+    }
+
+    /// <summary>FR-140: send a typing plan one character at a
+    /// time through the noted funnel; returns how many raw
+    /// events the OS accepted. Two changes from the FR-139 loop:
+    /// each character goes out as TWO sends — key-down, a short
+    /// hold, key-up — instead of one combined batch (a down/up
+    /// pair sharing one instant can be coalesced by the target's
+    /// text stack); and when a target snapshot is supplied the
+    /// loop runs CLOSED-LOOP: after each chunk it waits for the
+    /// target's document to reach the length the confirmed
+    /// characters imply, so the sender never runs more than one
+    /// chunk ahead of the target's own processing — the backlog
+    /// the FR-140 losses fell out of never builds up.</summary>
+    private async Task<int> SendTypingPlanAsync(string text, TypingPlan plan, int paceMs, TargetTextSnapshot? snapshot, CancellationToken ct)
+    {
         var units = plan.Units();
         var confirmedEvents = 0;
+        var confirmedChars = 0;
+        var clock = System.Diagnostics.Stopwatch.StartNew();
         for (var u = 0; u < units.Count; u++)
         {
             // BD-WIN-AGENT F5: STOP ends the typing between
@@ -522,16 +633,209 @@ public sealed class DesktopEngine
             // the caller's handler, never a partial success.
             ct.ThrowIfCancellationRequested();
             var unit = units[u];
-            var inputs = new NativeMethods.INPUT[unit.Events.Count];
-            for (var i = 0; i < unit.Events.Count; i++) inputs[i] = ToInput(unit.Events[i]);
-            var inserted = SendInputNoted(inputs);
-            confirmedEvents += (int)Math.Min(inserted, (uint)unit.Events.Count);
-            if (inserted < (uint)unit.Events.Count) break; // shortfall: stop and report the true counts
-            if (u + 1 < units.Count)
-                await Task.Delay(InterCharacterPaceMs, ct);
+            var evs = unit.Events;
+            // Split the unit at its final (key-up) event: the
+            // downs go first, the hold, then the ups.
+            var split = Math.Max(1, evs.Count - 1);
+            var shortfall = false;
+            for (var phase = 0; phase < 2 && !shortfall; phase++)
+            {
+                var from = phase == 0 ? 0 : split;
+                var count = (phase == 0 ? split : evs.Count) - from;
+                if (count <= 0) continue;
+                var inputs = new NativeMethods.INPUT[count];
+                for (var i = 0; i < count; i++) inputs[i] = ToInput(evs[from + i]);
+                var inserted = SendInputNoted(inputs);
+                confirmedEvents += (int)Math.Min(inserted, (uint)count);
+                if (inserted < (uint)count)
+                {
+                    // A rejected key-up would leave the key
+                    // logically down: retry the release once
+                    // before reporting the shortfall.
+                    if (phase == 1) _ = SendInputNoted(inputs);
+                    shortfall = true;
+                }
+                else if (phase == 0)
+                {
+                    // Hold the key until this character's pace
+                    // slot ends, then release: down and up are
+                    // separate sends a full pace apart, and the
+                    // schedule is a deadline (slot u ends at
+                    // (u+1) × pace from the loop's start), so a
+                    // wait that overshoots on a timer tick is
+                    // repaid by the next slot instead of
+                    // accumulating into the rate.
+                    var remain = TimeSpan.FromMilliseconds((long)(u + 1) * paceMs) - clock.Elapsed;
+                    if (remain > TimeSpan.Zero) await Task.Delay(remain, ct);
+                }
+            }
+            if (shortfall) return confirmedEvents; // stop: the caller reports the true counts
+            confirmedChars += unit.CharsCompleted;
+            if (snapshot is not null && (u + 1) % TypingChunkChars == 0 && u + 1 < units.Count)
+                await WaitForTargetLengthAsync(snapshot, text, confirmedChars, ct);
+            // FR-140 (gauntlet round): after a line break, the
+            // target's text stack is still committing the break
+            // when the next character arrives at the ordinary
+            // pace, and that character — the new line's first —
+            // is the one the target drops (measured live: every
+            // residual loss in the multi-line gauntlet was a
+            // line-start character, at exact line boundaries,
+            // across first passes and repair retypes alike).
+            // Give the break a settle beat of its own before
+            // the line's first character is sent.
+            if (u + 1 < units.Count && unit.Events.Any(e => e.IsVirtualKey && e.VirtualKey == TextTypingPlan.VkReturn))
+                await Task.Delay(BreakSettleMs, ct);
         }
-        return TextTypingPlan.Outcome(plan.TotalChars, plan.ConfirmedChars(confirmedEvents));
+        return confirmedEvents;
     }
+
+    /// <summary>FR-140: the closed loop's wait — poll the
+    /// target's document length until it reaches the length the
+    /// confirmed characters imply (TypingVerification
+    /// .ExpectedLengthAt), giving up after ~250 ms: a target
+    /// that lags is slowed for, never hung on; the end-of-call
+    /// verification decides what the lag meant.</summary>
+    private async Task WaitForTargetLengthAsync(TargetTextSnapshot snapshot, string typed, int confirmedChars, CancellationToken ct)
+    {
+        try
+        {
+            var expected = TypingVerification.ExpectedLengthAt(snapshot.Text, snapshot.SelLen, typed, confirmedChars);
+            for (var i = 0; i < 10; i++)
+            {
+                var now = TryReadTargetText(snapshot.Element);
+                if (now is null || TypingVerification.NormalizeBreaks(now).Length >= expected) return;
+                await Task.Delay(25, ct);
+            }
+        }
+        catch (OperationCanceledException) { throw; }
+        catch { /* a target that stops answering reads ends the wait; verification decides */ }
+    }
+
+    /// <summary>FR-140: the target snapshot type_text verifies
+    /// against: the focused element, its document text, and the
+    /// selection (the insertion the typed text will make) within
+    /// it, all in the document's own coordinates.</summary>
+    private sealed record TargetTextSnapshot(AutomationElement Element, string Text, int SelStart, int SelLen);
+
+    /// <summary>FR-140: capture the focused element's text and
+    /// selection through UI Automation's TextPattern, or null
+    /// when the target does not expose them (or the document is
+    /// too large to read responsibly). Null means open-loop: the
+    /// call proceeds exactly as FR-139 left it, on OS-acceptance
+    /// evidence alone.</summary>
+    private static TargetTextSnapshot? TryCaptureTargetText()
+    {
+        try
+        {
+            var el = AutomationElement.FocusedElement;
+            if (el is null) return null;
+            if (!el.TryGetCurrentPattern(TextPattern.Pattern, out var patObj)) return null;
+            var tp = (TextPattern)patObj;
+            var doc = tp.DocumentRange;
+            var text = doc.GetText(MaxVerifiedDocumentChars + 1);
+            if (text is null || text.Length > MaxVerifiedDocumentChars) return null;
+            var selection = tp.GetSelection();
+            if (selection is null || selection.Length == 0) return null;
+            var range = selection[0];
+            // The selection's start offset: a clone of the
+            // document range with its end pulled back to the
+            // selection's start, measured.
+            var head = doc.Clone();
+            head.MoveEndpointByRange(TextPatternRangeEndpoint.End, range, TextPatternRangeEndpoint.Start);
+            var selStart = head.GetText(-1)?.Length ?? -1;
+            var selLen = range.GetText(-1)?.Length ?? -1;
+            if (selStart < 0 || selLen < 0) return null;
+            return new TargetTextSnapshot(el, text, selStart, selLen);
+        }
+        catch { return null; }
+    }
+
+    /// <summary>FR-140: read the target's text SETTLED — two
+    /// consecutive reads, a beat apart, that agree. A target's
+    /// text stack (TSF/RichEdit) can still be settling when a
+    /// type finishes: a read taken mid-settle can show a
+    /// transient state (the tail of the text duplicated or not
+    /// yet committed), and a verify — worse, a repair — decided
+    /// on a transient read acts on a document that is no longer
+    /// there (measured live: multi-line types intermittently
+    /// failed verification with fragments of the text's own
+    /// tail wrapped around an otherwise exact landing, the
+    /// signature of a repair fired into an unsettled read).
+    /// Decisions are made on stable text only; a target that
+    /// never settles within the budget yields its last read,
+    /// and the verification judges that.</summary>
+    private async Task<string?> ReadSettledTargetTextAsync(AutomationElement el, CancellationToken ct)
+    {
+        var prev = TryReadTargetText(el);
+        if (prev is null) return null;
+        for (var i = 0; i < 10; i++)
+        {
+            await Task.Delay(120, ct);
+            var now = TryReadTargetText(el);
+            if (now is null) return prev;
+            if (string.Equals(now, prev, StringComparison.Ordinal)) return now;
+            prev = now;
+        }
+        return prev;
+    }
+
+    /// <summary>FR-140: read the snapshot element's current
+    /// document text, or null when it no longer exposes it.</summary>
+    private static string? TryReadTargetText(AutomationElement el)
+    {
+        try
+        {
+            if (!el.TryGetCurrentPattern(TextPattern.Pattern, out var patObj)) return null;
+            var text = ((TextPattern)patObj).DocumentRange.GetText(MaxVerifiedDocumentChars + 1);
+            return text is not null && text.Length <= MaxVerifiedDocumentChars ? text : null;
+        }
+        catch { return null; }
+    }
+
+    /// <summary>FR-140: the repair pass. Selects exactly the
+    /// span this call owns in the live document (the read-back
+    /// proved everything outside it intact), deletes it, and
+    /// retypes the text at the slower repair pace. True when the
+    /// retype itself was fully OS-accepted; the caller re-reads
+    /// and re-verifies before claiming anything.</summary>
+    private async Task<bool> TryRepairOwnedRegionAsync(TargetTextSnapshot snapshot, int regionStart, int regionLength, string text, CancellationToken ct)
+    {
+        try
+        {
+            // The repair rewrites the document the snapshot was
+            // taken from: if focus has moved to another element,
+            // the span no longer means what it meant — stop.
+            var focused = AutomationElement.FocusedElement;
+            if (focused is null) return false;
+            var a = focused.GetCurrentPropertyValue(AutomationElement.RuntimeIdProperty) as int[];
+            var b = snapshot.Element.GetCurrentPropertyValue(AutomationElement.RuntimeIdProperty) as int[];
+            if (a is null || b is null || !a.SequenceEqual(b)) return false;
+            if (!snapshot.Element.TryGetCurrentPattern(TextPattern.Pattern, out var patObj)) return false;
+            var tp = (TextPattern)patObj;
+            var doc = tp.DocumentRange;
+            var docText = doc.GetText(MaxVerifiedDocumentChars + 1);
+            if (docText is null) return false;
+            // The region was computed against the caller's
+            // settled read; the document must still present the
+            // SAME owned region now, or the coordinates no
+            // longer mean what they meant — abort rather than
+            // rewrite the wrong span.
+            if (!TypingVerification.TryOwnedRegion(snapshot.Text, snapshot.SelStart, snapshot.SelLen, docText, out var freshStart, out var freshLength)
+                || freshStart != regionStart || freshLength != regionLength) return false;
+            var region = doc.Clone();
+            region.MoveEndpointByUnit(TextPatternRangeEndpoint.Start, TextUnit.Character, regionStart);
+            region.MoveEndpointByUnit(TextPatternRangeEndpoint.End, TextUnit.Character, -(docText.Length - (regionStart + regionLength)));
+            region.Select();
+            SendKey(VkDelete, true); SendKey(VkDelete, false);
+            var plan = TextTypingPlan.Build(text);
+            var confirmedEvents = await SendTypingPlanAsync(text, plan, RepairPaceMs, null, ct);
+            return plan.ConfirmedChars(confirmedEvents) >= plan.TotalChars;
+        }
+        catch (OperationCanceledException) { throw; }
+        catch { return false; }
+    }
+
+    private const ushort VkDelete = 0x2E;
 
     /// <summary>FR-139: one planned typing event as a raw input
     /// event — a virtual-key event carries the VK code with no
@@ -565,6 +869,8 @@ public sealed class DesktopEngine
             return (false, "refused: SAS-class and lock combos can never be injected (platform rule, X19)");
         if (InputGuard.NeedsCredentialFieldCheck(chord) && FocusBlocksTyping(out var refusal))
             return (false, refusal);
+        // FR-141: the chord's sends are one injection operation.
+        using var selfOp = SelfInputWindow.Shared.BeginOperation();
         _narrate($"Pressing {keys}");
         var pressed = new List<ushort>();
         foreach (var vk in chord)
@@ -597,6 +903,7 @@ public sealed class DesktopEngine
 
     private async Task<(bool, string)> MouseMoveAsync(JsonElement args)
     {
+        using var selfOp = SelfInputWindow.Shared.BeginOperation(); // FR-141
         var x = GetInt(args, "x"); var y = GetInt(args, "y");
         await _glideTo(x, y);
         // FR-136: the report says "cursor at x,y" — make it true
@@ -607,6 +914,7 @@ public sealed class DesktopEngine
 
     private async Task<(bool, string)> DragAsync(JsonElement args)
     {
+        using var selfOp = SelfInputWindow.Shared.BeginOperation(); // FR-141: the held-button glide is one operation
         var (x1, y1, x2, y2) = (GetInt(args, "from_x"), GetInt(args, "from_y"), GetInt(args, "to_x"), GetInt(args, "to_y"));
         await _glideTo(x1, y1);
         // FR-136: the drag starts where the real cursor is, and
@@ -634,6 +942,7 @@ public sealed class DesktopEngine
     {
         if (!args.TryGetProperty("points", out var pts) || pts.ValueKind != JsonValueKind.Array)
             return (false, "multi_select requires {points:[{x,y},...]}");
+        using var selfOp = SelfInputWindow.Shared.BeginOperation(); // FR-141: the CTRL hold spans every point
         SendKey(0x11, true); // CTRL down
         // BD-WIN-AGENT F8 residual: multi-select narrates like every
         // other agent action (its per-point glides already fire).
@@ -656,6 +965,7 @@ public sealed class DesktopEngine
     {
         if (!args.TryGetProperty("fields", out var fields) || fields.ValueKind != JsonValueKind.Array)
             return (false, "multi_edit requires {fields:[{element_ref,text},...]}");
+        using var selfOp = SelfInputWindow.Shared.BeginOperation(); // FR-141: the whole field sequence is one operation
         foreach (var f in fields.EnumerateArray())
         {
             var el = _uia.Resolve(GetString(f, "element_ref") ?? "");
@@ -677,6 +987,7 @@ public sealed class DesktopEngine
 
     private async Task<(bool, string)> InputPrimitivesAsync(JsonElement args)
     {
+        using var selfOp = SelfInputWindow.Shared.BeginOperation(); // FR-141
         var action = GetString(args, "action") ?? "";
         switch (action)
         {

@@ -191,7 +191,12 @@ public class Fr130FixTests
     {
         var watcher = AgentFile("LocalInputWatcher.cs");
         Assert.Contains("SelfInputWindow.Shared.Covers", watcher);
-        Assert.Contains("!selfInput", watcher);
+        // FR-141: the suppression decision moved into the pure
+        // gate (LocalSignalGate), with the window's coverage as
+        // its input — the pin follows the mechanism: suppression
+        // is still keyed to the self-input window, now sampled
+        // at decision time and never applied to physical input.
+        Assert.Contains("LocalSignalGate.ShouldYield", watcher);
     }
 
     [Fact]

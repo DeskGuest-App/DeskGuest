@@ -177,15 +177,29 @@ public class Fr139FixTests
     [Fact]
     public void Engine_BuildsThePlan_PacesPerCharacter_AndChecksEveryAcceptedCount()
     {
-        var body = MethodBody(Engine(), "private async Task<(bool, string)> TypeTextAsync", "/// <summary>FR-139: one planned typing event");
+        var engine = Engine();
+        var body = MethodBody(engine, "private async Task<(bool, string)> TypeTextAsync", "/// <summary>FR-139: one planned typing event");
         Assert.Contains("TextTypingPlan.Build(text)", body);
-        Assert.Contains("plan.Units()", body);
-        // The pace is in the send loop — a flood is the proven
-        // corruption, so the delay's presence is pinned, not
-        // left to a comment's good intentions.
-        Assert.Contains("await Task.Delay(InterCharacterPaceMs, ct);", body);
-        Assert.Contains("var inserted = SendInputNoted(inputs);", body);
         Assert.Contains("TextTypingPlan.Outcome(", body);
+        // FR-140: the send loop moved into SendTypingPlanAsync
+        // (the verify/repair paths share it); the FR-139 shape
+        // is pinned there now — the plan's units, the pace
+        // between characters (a flood is the proven corruption,
+        // so the delay's presence is pinned, not left to a
+        // comment's good intentions), and the funnel's accepted
+        // count checked per send.
+        var loop = MethodBody(engine, "private async Task<int> SendTypingPlanAsync", "/// <summary>FR-140: the closed loop's wait");
+        Assert.Contains("plan.Units()", loop);
+        // FR-140 (proof-round amendment): the pace is a
+        // deadline schedule, not a per-character delay — two
+        // Task.Delays per character each round up to the
+        // Windows timer tick and tripled the rate (measured:
+        // 2,156 characters in 61 s). The pin follows: a
+        // stopwatch and the slot deadline are what pace the
+        // sends now.
+        Assert.Contains("Stopwatch.StartNew()", loop);
+        Assert.Contains("(u + 1) * paceMs", loop);
+        Assert.Contains("var inserted = SendInputNoted(inputs);", loop);
         // The pre-fix shape is gone: no per-character loop, and
         // no unconditional success claim built from the raw count.
         Assert.DoesNotContain("foreach (var ch in text)", body);
