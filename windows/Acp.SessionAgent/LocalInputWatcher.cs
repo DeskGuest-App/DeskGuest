@@ -52,6 +52,21 @@ namespace Acp.SessionAgent;
 /// every click, so unbracketed it would yield on its own first
 /// action of every session.
 ///
+/// FR-141 amendment (battery run 6 + this lane's repro): the
+/// note-and-tail window alone did not hold for SUSTAINED
+/// injection — a long paced type_text yielded to itself
+/// mid-operation, repeatedly, at random depths. The window now
+/// also covers whole OPERATIONS (the engine brackets each
+/// injection operation; coverage no longer depends on note
+/// timing while one is open), coverage is sampled at decision
+/// time, and the low-level hooks contribute the complementary
+/// half: physical (non-injected) input of either class is
+/// observed directly and is NEVER suppressed (LocalSignalGate),
+/// so a genuine owner keystroke or mouse act mid-operation
+/// still yields immediately. Other processes' injected input
+/// (the bridge) sets neither flag and classifies exactly as
+/// before.
+///
 /// The watcher reports SIGNALS, never content: no key identity
 /// leaves this class (the chord is a fixed, published constant,
 /// PresenceComposition.TakeoverChordText), no cursor path is
@@ -77,10 +92,19 @@ public sealed class LocalInputWatcher : IDisposable
     // the poll. A count (not a flag) so a pulse arriving mid-poll
     // is never lost between read and reset.
     private int _wheelPulses;
+    // FR-141: physical (non-injected) input observed by the
+    // low-level hooks, as sticky pending flags consumed by the
+    // poll. A flag, not a count: the poll needs to know only
+    // THAT the owner's hand moved, and one pending gesture must
+    // survive until a poll acts on it (LocalSignalGate).
+    private int _physKeyPending;
+    private int _physMousePending;
     private Thread? _hookThread;
     private IntPtr _hookHandle;
+    private IntPtr _keyboardHookHandle;
     private uint _hookThreadId;
     private NativeMethods.LowLevelMouseProc? _hookProc; // rooted: the GC must not collect the callback
+    private NativeMethods.LowLevelKeyboardProc? _keyboardHookProc; // rooted, same reason
 
     public LocalInputWatcher(PresenceLayer presence) => _presence = presence;
 
@@ -101,7 +125,11 @@ public sealed class LocalInputWatcher : IDisposable
         var baseline = KeyboardState();
         _chordWasDown = baseline.ChordDown;
         _ = MouseButtonState();
-        StartWheelHook();
+        // FR-141: physical input observed before the session is
+        // not a takeover signal either.
+        Interlocked.Exchange(ref _physKeyPending, 0);
+        Interlocked.Exchange(ref _physMousePending, 0);
+        StartHooks();
         _ = Task.Run(() => PollAsync(_cts.Token));
     }
 
@@ -110,16 +138,24 @@ public sealed class LocalInputWatcher : IDisposable
         _cts?.Cancel();
         _cts?.Dispose();
         _cts = null;
-        StopWheelHook();
+        StopHooks();
     }
 
-    // ---- W107: the wheel hook (best-effort) ----
-    // A dedicated thread installs WH_MOUSE_LL and pumps messages
-    // (the hook contract requires a message loop). If the hook
-    // cannot be installed, button + movement classification still
-    // works — the wheel simply has no signal, the pre-W107 state
-    // for that one input, never a watcher failure.
-    private void StartWheelHook()
+    // ---- W107 + FR-141: the low-level hooks (best-effort) ----
+    // A dedicated thread installs the hooks and pumps messages
+    // (the hook contract requires a message loop). The mouse
+    // hook carries the wheel (W107: no pollable state exists)
+    // and, since FR-141, the physical-vs-injected distinction
+    // for BOTH classes: a hook event's flags mark synthesised
+    // events (any process's SendInput, SetCursorPos) as injected
+    // and leave real device input unmarked — the one place that
+    // fact exists. Physical events set the pending flags the
+    // poll's gate (LocalSignalGate) never suppresses.
+    // If a hook cannot be installed, the rest of the watcher
+    // still works — that class simply falls back to the pre-fix
+    // evidence (pollable state + the self-input window), never a
+    // watcher failure.
+    private void StartHooks()
     {
         try
         {
@@ -127,37 +163,70 @@ public sealed class LocalInputWatcher : IDisposable
             {
                 try
                 {
-                    if (nCode >= 0 && (wParam == (IntPtr)NativeMethods.WM_MOUSEWHEEL ||
-                                       wParam == (IntPtr)NativeMethods.WM_MOUSEHWHEEL))
-                        Interlocked.Increment(ref _wheelPulses);
+                    if (nCode >= 0)
+                    {
+                        if (wParam == (IntPtr)NativeMethods.WM_MOUSEWHEEL ||
+                            wParam == (IntPtr)NativeMethods.WM_MOUSEHWHEEL)
+                            Interlocked.Increment(ref _wheelPulses);
+                        var info = System.Runtime.InteropServices.Marshal.PtrToStructure<NativeMethods.MSLLHOOKSTRUCT>(lParam);
+                        if ((info.flags & NativeMethods.LLMHF_INJECTED) == 0)
+                            Interlocked.Exchange(ref _physMousePending, 1);
+                    }
                 }
                 catch { /* the hook must never throw across the boundary */ }
                 return NativeMethods.CallNextHookEx(_hookHandle, nCode, wParam, lParam);
+            };
+            _keyboardHookProc = (nCode, wParam, lParam) =>
+            {
+                try
+                {
+                    if (nCode >= 0 && (wParam == (IntPtr)NativeMethods.WM_KEYDOWN ||
+                                       wParam == (IntPtr)NativeMethods.WM_SYSKEYDOWN))
+                    {
+                        var info = System.Runtime.InteropServices.Marshal.PtrToStructure<NativeMethods.KBDLLHOOKSTRUCT>(lParam);
+                        if ((info.flags & NativeMethods.LLKHF_INJECTED) == 0)
+                            Interlocked.Exchange(ref _physKeyPending, 1);
+                    }
+                }
+                catch { /* the hook must never throw across the boundary */ }
+                return NativeMethods.CallNextHookEx(_keyboardHookHandle, nCode, wParam, lParam);
             };
             _hookThread = new Thread(() =>
             {
                 try
                 {
                     _hookThreadId = NativeMethods.GetCurrentThreadId();
-                    _hookHandle = NativeMethods.SetWindowsHookEx(
-                        NativeMethods.WH_MOUSE_LL, _hookProc!, IntPtr.Zero, 0);
-                    // Pump until WM_QUIT (StopWheelHook posts it).
+                    try
+                    {
+                        _hookHandle = NativeMethods.SetWindowsHookEx(
+                            NativeMethods.WH_MOUSE_LL, _hookProc!, IntPtr.Zero, 0);
+                    }
+                    catch { /* mouse hook is best-effort, as above */ }
+                    try
+                    {
+                        _keyboardHookHandle = NativeMethods.SetWindowsHookEx(
+                            NativeMethods.WH_KEYBOARD_LL, _keyboardHookProc!, IntPtr.Zero, 0);
+                    }
+                    catch { /* keyboard hook is best-effort, as above */ }
+                    // Pump until WM_QUIT (StopHooks posts it).
                     while (NativeMethods.GetMessage(out _, IntPtr.Zero, 0, 0) > 0) { }
                 }
                 catch { /* no hook: named best-effort above */ }
                 finally
                 {
                     try { if (_hookHandle != IntPtr.Zero) NativeMethods.UnhookWindowsHookEx(_hookHandle); } catch { }
+                    try { if (_keyboardHookHandle != IntPtr.Zero) NativeMethods.UnhookWindowsHookEx(_keyboardHookHandle); } catch { }
                     _hookHandle = IntPtr.Zero;
+                    _keyboardHookHandle = IntPtr.Zero;
                 }
             })
-            { IsBackground = true, Name = "AcpWheelHook" };
+            { IsBackground = true, Name = "AcpInputHooks" };
             _hookThread.Start();
         }
         catch { /* no hook thread: same best-effort rule */ }
     }
 
-    private void StopWheelHook()
+    private void StopHooks()
     {
         try
         {
@@ -241,20 +310,35 @@ public sealed class LocalInputWatcher : IDisposable
 
     private void PollOnce()
     {
-        // FR-130: is this poll's evidence inside the window of
-        // the agent's OWN last injection? Sampling still runs
-        // either way (it consumes the pressed-since bits and
-        // advances the baselines, so self-evidence is never
-        // replayed as a fresh signal after the window) — only
-        // the SIGNALLING is suppressed.
-        var selfInput = SelfInputWindow.Shared.Covers(DateTime.UtcNow);
+        // FR-141: the hooks' physical-input evidence for this
+        // poll, consumed up front. A physical event is the
+        // owner's own hand (the hook flags separate it from any
+        // injected event); the gate below never suppresses it.
+        var physKeys = Interlocked.Exchange(ref _physKeyPending, 0) != 0;
+        var physMouse = Interlocked.Exchange(ref _physMousePending, 0) != 0;
+
         // W111: ONE keyboard sample per poll serves the chord and
-        // the keyboard class (see KeyboardState). The chord is
-        // checked on its own edge, independent of the tick: it
-        // must yield even in HotkeyOnly, where ordinary keyboard
-        // input is ignored for control.
+        // the keyboard class (see KeyboardState). Sampling runs
+        // whether or not anything will be signalled: it consumes
+        // the pressed-since bits and advances the baselines, so
+        // self-evidence is never replayed as a fresh signal on a
+        // later poll.
         var (keysDown, keysPressedSince, chord) = KeyboardState();
-        if (chord && !_chordWasDown && !selfInput) _presence.TakeoverHotkeyPressed();
+
+        // FR-130/FR-141: is this poll's evidence covered by the
+        // agent's OWN injection window? Sampled at DECISION time,
+        // after the state sample — the pre-FR-141 code sampled it
+        // before the sample, so an operation opening during the
+        // sample had its first keys judged against the stale
+        // reading. Coverage now means an open injection operation
+        // (FR-141) or the tail after the last noted send.
+        var selfCovered = SelfInputWindow.Shared.Covers(DateTime.UtcNow);
+
+        // The chord is checked on its own edge, independent of
+        // the tick: it must yield even in HotkeyOnly, where
+        // ordinary keyboard input is ignored for control.
+        if (chord && !_chordWasDown && LocalSignalGate.ShouldYield(physKeys, signalObserved: true, selfCovered))
+            _presence.TakeoverHotkeyPressed();
         _chordWasDown = chord;
         // The keyboard signal is latched from the sample whether
         // or not the tick advanced: the pressed-since bit IS the
@@ -267,7 +351,8 @@ public sealed class LocalInputWatcher : IDisposable
                 AnyKeyDown: keysDown,
                 AnyKeyPressedSinceLastPoll: keysPressedSince),
             _keyboardLatch);
-        if (keyboardSignal && !chord && !selfInput) _presence.SetOwnerDrivingFromKeyboard(true);
+        if (!chord && LocalSignalGate.ShouldYield(physKeys, keyboardSignal, selfCovered))
+            _presence.SetOwnerDrivingFromKeyboard(true);
 
         // Wheel pulses are consumed on every poll, tick or not:
         // the hook observed real activity; the classifier decides
@@ -278,7 +363,7 @@ public sealed class LocalInputWatcher : IDisposable
         var tick = LastInputTick();
         var tickAdvanced = tick != _lastInputTick;
         if (tickAdvanced) _lastInputTick = tick;
-        if (!tickAdvanced && !wheel) return;
+        if (!tickAdvanced && !wheel && !physMouse) return;
 
         var mouseMoved = false;
         if (NativeMethods.GetCursorPos(out var pos))
@@ -294,7 +379,8 @@ public sealed class LocalInputWatcher : IDisposable
                 AnyButtonPressedSinceLastPoll: buttonsPressedSince,
                 WheelActivity: wheel),
             _buttonLatch);
-        if (mouseSignal && !selfInput) _presence.SetOwnerDriving(true);
+        if (LocalSignalGate.ShouldYield(physMouse, mouseSignal, selfCovered))
+            _presence.SetOwnerDriving(true);
     }
 
     public void Dispose() => Stop();

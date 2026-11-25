@@ -74,6 +74,26 @@ internal static class NativeMethods
     public delegate IntPtr LowLevelMouseProc(int nCode, IntPtr wParam, IntPtr lParam);
     [StructLayout(LayoutKind.Sequential)]
     public struct MSLLHOOKSTRUCT { public POINT pt; public uint mouseData; public uint flags; public uint time; public IntPtr dwExtraInfo; }
+    /// <summary>MSLLHOOKSTRUCT.flags bit: the event was injected
+    /// (SendInput / SetCursorPos class) rather than physical.</summary>
+    public const uint LLMHF_INJECTED = 0x00000001;
+
+    // ---- FR-141: physical-input watch (WH_KEYBOARD_LL) ----
+    // A low-level hook event is the one signal that carries the
+    // injected-vs-physical distinction: KBDLLHOOKSTRUCT.flags
+    // sets LLKHF_INJECTED for synthesised events (any process's
+    // SendInput) and clears it for real device input. The watcher
+    // counts physical key-downs through this hook so a genuine
+    // owner keystroke is never suppressed by the agent's own
+    // self-input window — see LocalSignalGate (Acp.Shared).
+    public const int WH_KEYBOARD_LL = 13;
+    public const uint WM_KEYDOWN = 0x0100, WM_SYSKEYDOWN = 0x0104;
+    public const uint LLKHF_INJECTED = 0x00000010;
+    public delegate IntPtr LowLevelKeyboardProc(int nCode, IntPtr wParam, IntPtr lParam);
+    [StructLayout(LayoutKind.Sequential)]
+    public struct KBDLLHOOKSTRUCT { public uint vkCode; public uint scanCode; public uint flags; public uint time; public IntPtr dwExtraInfo; }
+    [DllImport("user32.dll", SetLastError = true)]
+    public static extern IntPtr SetWindowsHookEx(int idHook, LowLevelKeyboardProc lpfn, IntPtr hMod, uint dwThreadId);
     [StructLayout(LayoutKind.Sequential)]
     public struct MSG { public IntPtr hwnd; public uint message; public IntPtr wParam; public IntPtr lParam; public uint time; public POINT pt; }
     [DllImport("user32.dll", SetLastError = true)]
