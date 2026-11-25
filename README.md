@@ -87,7 +87,7 @@ DeskGuest works with any AI agent that uses MCP, the open connection standard. *
 ## Get help
 
 - **Questions and ideas:** [GitHub Discussions](https://github.com/DeskGuest-App/DeskGuest/discussions)
-- **Something broken:** [open an issue](https://github.com/DeskGuest-App/DeskGuest/issues) — say what you tapped, what you expected, and what happened instead. If DeskGuest showed an uh-oh, its **Report** button builds the report for you, with passwords and private keys left out.
+- **Something broken:** [open an issue](https://github.com/DeskGuest-App/DeskGuest/issues) — say what you tapped, what you expected, and what happened instead. There's also a [report form on the website](https://deskguest.pages.dev/report) that files it for you. Reporting from inside the app is in development — when it ships, its Report button will build the report for you, with passwords and private keys left out.
 - **Security problem:** report it privately — see [SECURITY.md](SECURITY.md). Please don't open a public issue for a vulnerability.
 
 ## Contributing
