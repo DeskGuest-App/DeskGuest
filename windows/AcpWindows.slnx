@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="Acp.Core/Acp.Core.csproj" />
+  <Project Path="Acp.Launcher/Acp.Launcher.csproj" />
+  <Project Path="Acp.SessionAgent/Acp.SessionAgent.csproj" />
+  <Project Path="Acp.Shared/Acp.Shared.csproj" />
+  <Project Path="Acp.Tests/Acp.Tests.csproj" />
+</Solution>

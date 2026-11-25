@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Paths the app may share through the FileProvider: update APKs for
+     the system installer (cacheDir/updates, see update/UpdateChecker.kt)
+     and user-initiated exports such as the audit log (cacheDir/exports).
+     Nothing else in the cache is ever exposed. -->
+<paths>
+    <cache-path name="updates" path="updates/" />
+    <cache-path name="exports" path="exports/" />
+</paths>

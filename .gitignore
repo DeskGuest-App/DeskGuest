@@ -1,0 +1,18 @@
+# Build output
+bin/
+obj/
+publish/
+*.user
+# Android build output
+app/build/
+.gradle/
+local.properties
+# Runtime state and identity material — never source
+*.keystore
+*.pem
+*.key
+*.pfx
+core-identity.pub
+# OS noise
+.DS_Store
+Thumbs.db

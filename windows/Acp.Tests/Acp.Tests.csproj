@@ -1,0 +1,39 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="coverlet.collector" Version="6.0.4" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+    <PackageReference Include="xunit" Version="2.9.3" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Using Include="Xunit" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Acp.Shared\Acp.Shared.csproj" />
+    <ProjectReference Include="..\Acp.Core\Acp.Core.csproj" />
+    <ProjectReference Include="..\Acp.Launcher\Acp.Launcher.csproj" />
+  </ItemGroup>
+
+  <!-- W24 / R-05: Acp.Core's pinned update-key.pub (a Content item)
+       flows into this project's output through the project
+       reference. The test binary is NOT a production composition:
+       W15's P9F6 fail-closed pins compose CoreRuntime in this
+       process and require the no-key-beside-the-binary premise.
+       The production pin belongs beside AcpCore (its own output /
+       publish), never beside the test host — remove the flowed
+       copy so the test premise stays the honest one. -->
+  <Target Name="RemoveFlowedUpdateKeyPin" AfterTargets="Build">
+    <Delete Files="$(OutDir)update-key.pub" />
+  </Target>
+
+</Project>

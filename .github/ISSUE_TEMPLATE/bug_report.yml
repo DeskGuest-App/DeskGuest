@@ -1,0 +1,53 @@
+name: Bug report
+description: Something DeskGuest did wrong, or failed to do
+title: "[Bug]: "
+labels: ["type: bug", "state: triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reporting this. The more exactly you describe what happened, the faster it gets fixed.
+        **If DeskGuest showed you an error (uh-oh) screen:** its Report button prepares a diagnostics
+        package — what happened, in order, with passwords, keys and tokens scanned out before anything
+        is attached. You can attach that package file to this issue. Nothing was sent anywhere until you chose to send it.
+  - type: dropdown
+    id: platform
+    attributes:
+      label: Where did it happen?
+      options:
+        - Windows
+        - Android
+        - The website
+        - Not sure
+    validations:
+      required: true
+  - type: textarea
+    id: what-happened
+    attributes:
+      label: What happened?
+      description: What did you do, and what did DeskGuest do? If an error screen appeared, what did it say?
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to make it happen again
+      description: If it happens every time, list the steps. If it happened once, say so — that is useful too.
+  - type: input
+    id: version
+    attributes:
+      label: DeskGuest version (if you know it)
+      description: Shown in Settings → About. Leave blank if you can't find it.
+  - type: checkboxes
+    id: diagnostics
+    attributes:
+      label: Diagnostics
+      options:
+        - label: I attached the diagnostics package from the error screen's Report button
+        - label: There was no error screen / I could not attach a package

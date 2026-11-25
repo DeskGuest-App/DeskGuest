@@ -1,0 +1,10 @@
+changelog:
+  categories:
+    - title: "What's new"
+      labels: ["type: feedback"]
+    - title: "Fixed"
+      labels: ["type: bug"]
+    - title: "Security"
+      labels: ["type: security"]
+    - title: "Other changes"
+      labels: ["*"]

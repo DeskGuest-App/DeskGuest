@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="accessibility_service_description">Lets an AI you paired see this phone\'s screen and, during a session you can stop at any time, tap and type for you. While it works, the phone shows a banner and a STOP button. Nothing is sent anywhere except to the AI you paired.</string>
+
+    <!-- U8: consent / presence / STOP surface strings. Wording is law:
+         these are the exact English strings the surfaces shipped with,
+         externalised verbatim so the consent surface can be localised.
+         Call sites read them through ConsentStringAccess, which falls
+         back to the built-in defaults in ConsentStrings when a resource
+         is missing or blank — the STOP/presence surface never blanks. -->
+    <string name="presence_stop">STOP</string>
+    <string name="presence_resume">Resume</string>
+    <string name="presence_paused_title">Paused — you have the phone</string>
+    <string name="presence_paused_agent">%1$s is paused</string>
+    <string name="consent_session_active">%1$s is controlling your phone</string>
+    <string name="presence_driver_name_missing">Session defect — the driver has no name</string>
+    <string name="presence_driver_name_missing_hint">Presence must name the specific driver. End this session and pair again so the agent has a name.</string>
+
+    <string name="approval_title">Approval requested</string>
+    <string name="approval_wants_to">%1$s wants to: %2$s\n%3$s</string>
+    <string name="approval_deny">Deny</string>
+    <string name="approval_approve">Approve</string>
+
+    <string name="tile_paused_label">Paused</string>
+    <string name="tile_paused_subtitle">You took over — tap to end</string>
+    <string name="tile_stop_label">STOP session</string>
+    <string name="tile_controlling_subtitle">%1$s is controlling</string>
+    <string name="pairing_unnamed_label">Unnamed pairing</string>
+    <string name="gate_unnamed_caller">An unnamed caller</string>
+    <string name="mesh_unnamed_agent_driving">An unnamed agent is driving</string>
+    <string name="tile_channel_open_label">Channel open</string>
+    <string name="tile_channel_open_subtitle">Tap to stop the server</string>
+    <string name="tile_channel_stopped_label">Channel stopped</string>
+    <string name="tile_channel_stopped_subtitle">Tap to start the server</string>
+
+    <string name="session_none_title">No active session</string>
+    <string name="session_none_body">When your AI is working, this card shows it live — and the STOP here, on the banner, and in Quick Settings all end it at once.</string>
+    <string name="session_paused_chip">PAUSED</string>
+    <string name="session_active_chip">ACTIVE SESSION</string>
+    <string name="session_paused_body">%1$s is paused — you have the phone</string>
+    <string name="session_resume">Resume the session</string>
+    <string name="session_stopped_toast">Session stopped.</string>
+    <string name="session_actions">%1$d actions</string>
+    <string name="home_no_one_in_phone">No one is in your phone right now.</string>
+    <string name="home_agent_in_phone">%1$s is in your phone right now.</string>
+    <string name="home_connected_not_session">Connected — not in a session</string>
+    <string name="home_invisible_apps_not_built">Invisible apps — not in this build</string>
+    <string name="gate_deny_and_end">Deny and end session</string>
+    <string name="gate_draft_not_sent">DRAFT · NOT SENT</string>
+    <string name="gate_asked_from_chat">Asked from Agent chat</string>
+    <string name="gate_no_session_allow">There is no allow-for-this-session. Every gated action asks on its own.</string>
+    <string name="session_provider_line">What %1$s\'s provider does with what it sees is outside this app.</string>
+    <string name="session_vendor_line">Nowhere else — DeskGuest sends nothing to anyone.</string>
+    <string name="session_replay_not_built">Replay isn\'t in this build</string>
+    <string name="session_not_seen">Not seen: %1$s</string>
+    <string name="session_seen_so_far">%1$d screens seen so far in this session</string>
+    <string name="session_presence_on_frames">The presence layer is part of the screens the agent receives — it is never hidden from the agent.</string>
+    <string name="presence_youre_driving">Paused — you\'re driving</string>
+    <string name="presence_watchdog_line">This app can\'t confirm whether anything is controlling this phone.</string>
+    <string name="presence_screen_not_shown">This screen can\'t be shown to %1$s</string>
+    <string name="chat_sent_count">%1$d messages sent from chat</string>
+    <string name="wizard_waiting_for_ai">Waiting for your AI</string>
+    <string name="wizard_sas_check">Is this %1$s? Check the words — they must match what your AI shows.</string>
+    <string name="wizard_sas_phrase">Safety words: %1$s — they must match what your AI shows.</string>
+    <string name="wizard_step_of">Step %1$d of %2$d</string>
+    <string name="wizard_click_budget">Setup takes about 5–8 taps on your own phone. An Android endpoint takes about 10–14 taps, including the steps Android reserves for itself.</string>
+    <string name="chat_destination">Messages go to %1$s on %2$s</string>
+    <string name="chat_gate_note">Opens the approval gate. Chat cannot approve.</string>
+    <string name="chat_thread_ended">This pairing ended, so this thread is closed.</string>
+    <string name="chat_ask_to_act">Ask to act</string>
+    <string name="access_full_control_confirm">Give %1$s full control of this phone? From then on it can act on everything you allow here, without asking each time.</string>
+    <string name="access_look_only_copy">Look only — it can see the screen and read phone info, but it cannot tap, type, or change anything.</string>
+    <string name="presence_selftest_pass">Presence check passed — the box, the ring, and the glow all drew.</string>
+    <string name="presence_selftest_fail">Presence check failed — a session can\'t start until presence can be shown.</string>
+    <string name="session_frames_sent">%1$d screens sent to %2$s</string>
+    <string name="session_frames_uncounted">Screens could not be counted where they were captured, so no screen count is shown for them.</string>
+    <string name="policy_consent_floor_title">Always on — no one can change this</string>
+    <string name="mdm_notice_title">Your organisation changed this phone</string>
+    <string name="backup_keysheet_title">Your backup key</string>
+    <string name="backup_keysheet_body">Write this key down and keep it somewhere safe. Without it, an encrypted backup cannot be opened — not by this app, and not by anyone else.</string>
+    <string name="home_readiness_title">This phone</string>
+    <string name="home_who_may_connect">Who may connect</string>
+    <string name="home_recent_title">Recent sessions</string>
+    <string name="home_standing_title">Standing</string>
+</resources>

@@ -1,0 +1,44 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <!-- DeskGuest design tokens v2.0.0 (design-tokens.json of record,
+         Lane W64 TOKEN-SHEET). ONE token source for the Agent UI.
+         One blue: #2F8BC9. The old safety-cyan is deleted outright (Q2 signed).
+         Gold #E5A93B = warmth/success/hello/Report only (Q1/L3) —
+         never warning, never presence-state. Red #DC2626 strict:
+         STOP / danger only. Beige shell palette wholly replaced. -->
+    <!-- Identity layer -->
+    <Color x:Key="DgNavy">#0F2537</Color>
+    <Color x:Key="DgNavyElevated">#163147</Color>
+    <Color x:Key="DgNavyBorder">#234663</Color>
+    <Color x:Key="DgActionBlue">#2F8BC9</Color>
+    <Color x:Key="DgTeal">#438E8E</Color>
+    <Color x:Key="DgGold">#E5A93B</Color>
+    <Color x:Key="DgRed">#DC2626</Color>
+    <Color x:Key="DgRedHover">#B91C1C</Color>
+    <!-- Theme-owned semantic layer (light values; dark re-based on
+         the navy surfaces above) -->
+    <Color x:Key="DgBgCanvas">#F2F6F9</Color>
+    <Color x:Key="DgBgSurface">#FFFFFF</Color>
+    <Color x:Key="DgBgSubtle">#E6EEF4</Color>
+    <Color x:Key="DgTextPrimary">#0F2537</Color>
+    <Color x:Key="DgTextSecondary">#486175</Color>
+    <Color x:Key="DgBorderSubtle">#D5E1EA</Color>
+    <SolidColorBrush x:Key="DgCanvasBrush" Color="{StaticResource DgBgCanvas}"/>
+    <SolidColorBrush x:Key="DgSurfaceBrush" Color="{StaticResource DgBgSurface}"/>
+    <SolidColorBrush x:Key="DgSubtleBrush" Color="{StaticResource DgBgSubtle}"/>
+    <SolidColorBrush x:Key="DgTextBrush" Color="{StaticResource DgTextPrimary}"/>
+    <SolidColorBrush x:Key="DgMutedBrush" Color="{StaticResource DgTextSecondary}"/>
+    <SolidColorBrush x:Key="DgBorderBrush" Color="{StaticResource DgBorderSubtle}"/>
+    <SolidColorBrush x:Key="DgNavyBrush" Color="{StaticResource DgNavy}"/>
+    <SolidColorBrush x:Key="DgBlueBrush" Color="{StaticResource DgActionBlue}"/>
+    <SolidColorBrush x:Key="DgTealBrush" Color="{StaticResource DgTeal}"/>
+    <SolidColorBrush x:Key="DgGoldBrush" Color="{StaticResource DgGold}"/>
+    <SolidColorBrush x:Key="DgRedBrush" Color="{StaticResource DgRed}"/>
+    <SolidColorBrush x:Key="DgWhiteBrush" Color="#FFFFFF"/>
+    <!-- Geometry of record: card 16 / button 12 / sm 8 / xl 24 / pill 9999 -->
+    <CornerRadius x:Key="DgCardRadius">16</CornerRadius>
+    <CornerRadius x:Key="DgButtonRadius">12</CornerRadius>
+    <CornerRadius x:Key="DgSmallRadius">8</CornerRadius>
+    <FontFamily x:Key="DgFont">Segoe UI Variable, Segoe UI</FontFamily>
+    <FontFamily x:Key="DgMonoFont">Cascadia Mono, Consolas</FontFamily>
+</ResourceDictionary>

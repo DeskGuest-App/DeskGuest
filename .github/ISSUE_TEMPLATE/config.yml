@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and conversation
+    url: https://github.com/DeskGuest-App/DeskGuest/discussions
+    about: Ask a question or talk something through in Discussions instead of opening an issue.
+  - name: Report a security problem (private)
+    url: https://github.com/DeskGuest-App/DeskGuest/security/advisories/new
+    about: Please report security problems privately, never as a public issue.

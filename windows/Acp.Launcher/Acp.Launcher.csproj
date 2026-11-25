@@ -1,0 +1,14 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>AcpLauncher</AssemblyName>
+    <RootNamespace>Acp.Launcher</RootNamespace>
+    <!-- The stable shim the SCM service registration points at. It
+         never updates itself; it reads the A/B pointer and execs the
+         Core from the active slot (DESIGN §4.6). -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Acp.Shared\Acp.Shared.csproj" />
+  </ItemGroup>
+</Project>

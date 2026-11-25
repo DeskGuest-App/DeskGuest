@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- RMM-31: device-admin policies ACP may use when the user grants
+     the admin in Settings. Lock is the only policy requested at the
+     personal tier; wipe/reset capabilities are exercised only at
+     the ownership tiers the MDM model permits (device owner). -->
+<device-admin xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-policies>
+        <force-lock />
+        <wipe-data />
+        <reset-password />
+    </uses-policies>
+</device-admin>

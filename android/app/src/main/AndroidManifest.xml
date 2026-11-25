@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="io.agenticcontrol.app"
+    android:versionCode="24"
+    android:versionName="1.0.0">
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- C19: lets the boot receiver restart the control channel
+         after a reboot (see server/BootReceiver.kt). -->
+    <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_SPECIAL_USE" />
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <!-- Local discovery (D19): UDP broadcast announcement/browse on the
+         local network only. Normal permissions, granted at install. -->
+    <!-- RMM-22 camera-share (Lane B3): the phone IS the camera. Runtime
+         permission, requested only on the owner-initiated share surface;
+         no inbound share start exists. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_MULTICAST_STATE" />
+    <!-- Driving lockout (SPEC §7.7): lets the detector ask whether a
+         car Bluetooth profile is connected. Runtime permission; when
+         it is not granted the detector treats the signal as absent
+         and says so — it never guesses. -->
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+
+    <!-- Lets the wizard detect Tailscale without broad package access (SPEC §5.1). -->
+    <queries>
+        <package android:name="com.tailscale.ipn" />
+    </queries>
+
+    <application
+        android:name=".App"
+        android:allowBackup="false"
+        android:dataExtractionRules="@xml/data_extraction_rules"
+        android:label="DeskGuest"
+        android:icon="@mipmap/ic_launcher"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@android:style/Theme.Material.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".WizardActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".PresenceActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AgentChatActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".WindowsDeviceActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".EndpointActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".RosterActivity"
+            android:exported="false" />
+
+        <activity
+            android:name=".SessionsActivity"
+            android:exported="false" />
+
+        <!-- Session replay surface (FEATURES §7, W11-B): the owner
+             reads the recorded session-event timeline in-app. -->
+        <activity
+            android:name=".ReplayActivity"
+            android:exported="false" />
+
+        <!-- Quick Settings tile: status glance + one-tap session STOP. -->
+        <service
+            android:name=".tile.AgenticTileService"
+            android:exported="true"
+            android:icon="@drawable/ic_tile"
+            android:label="DeskGuest"
+            android:permission="android.permission.BIND_QUICK_SETTINGS_TILE">
+            <intent-filter>
+                <action android:name="android.service.quicksettings.action.QS_TILE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.service.quicksettings.ACTIVE_TILE"
+                android:value="true" />
+        </service>
+
+        <service
+            android:name=".access.ControlAccessibilityService"
+            android:exported="false"
+            android:permission="android.permission.BIND_ACCESSIBILITY_SERVICE">
+            <intent-filter>
+                <action android:name="android.accessibilityservice.AccessibilityService" />
+            </intent-filter>
+            <meta-data
+                android:name="android.accessibilityservice"
+                android:resource="@xml/accessibility_service_config" />
+        </service>
+
+        <!-- C19: channel self-healing after reboot. Not exported;
+             the system alone delivers BOOT_COMPLETED. No
+             LOCKED_BOOT_COMPLETED leg: this app's storage is
+             credential-protected and unavailable before the first
+             unlock, so the channel can only return after it. -->
+        <receiver
+            android:name=".server.BootReceiver"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- notifications_read (SPEC §6): bound by the system only
+             while the user has granted notification access in system
+             Settings. Never exported beyond the system's binding. -->
+        <service
+            android:name=".notify.AcpNotificationListener"
+            android:exported="false"
+            android:label="DeskGuest"
+            android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
+            <intent-filter>
+                <action android:name="android.service.notification.NotificationListenerService" />
+            </intent-filter>
+        </service>
+
+        <service
+            android:name=".server.ControlService"
+            android:exported="false"
+            android:foregroundServiceType="specialUse">
+            <property
+                android:name="android.app.PROPERTY_SPECIAL_USE_FGS_SUBTYPE"
+                android:value="User-operated AI agent control channel, started and stopped by the user in the app" />
+        </service>
+
+        <!-- RMM-07 (Lane B1): on-device Effective Policy view. -->
+        <activity
+            android:name=".RmmNoticesActivity"
+            android:exported="false" />
+        <activity
+            android:name=".rmmspine.EffectivePolicyActivity"
+            android:exported="false" />
+
+        <!-- RMM-31 (Lane B1): device-admin receiver for the MDM
+             executor binding (lock; wipe/reset only at the ownership
+             tiers the MDM model permits). Admin activation is the
+             user's grant in Settings — never requested silently. -->
+        <receiver
+            android:name=".rmmspine.AcpDeviceAdminReceiver"
+            android:exported="true"
+            android:label="DeskGuest"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/device_admin" />
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
+            </intent-filter>
+        </receiver>
+
+        <!-- Hands verified update APKs to the system installer (updater). -->
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="io.agenticcontrol.app.files"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/file_paths" />
+        </provider>
+    </application>
+
+</manifest>
