@@ -1791,6 +1791,11 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
                 : null));
         Tools.Register(new SessionStartModule(Sessions, State, CommandGate));
         Tools.Register(new SessionStopModule(Sessions, State, Ipc));
+        // FR-134 / item (16) amendment (issue #25): the Terms
+        // acknowledgment as a standard tool, beside the protocol
+        // method — one TermsAckService operation behind both.
+        Tools.Register(new TermsAcknowledgeModule(
+            new Services.TermsAckService(Pairings, Audit, State, Services.TermsBundleProvider.Current)));
         Tools.Register(new ShellExecSystemModule(runner, CommandGate));
         Tools.Register(new FileReadModule(fileScope));
         Tools.Register(new FileWriteModule(fileScope));

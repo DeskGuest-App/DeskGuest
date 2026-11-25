@@ -35,6 +35,12 @@ public class TermsPairingTests
     private static string CallBody(string name) =>
         Rpc("tools/call", $"{{\"name\":\"{name}\",\"arguments\":{{}}}}");
 
+    private static string CallBodyArgs(string name, string argsJson) =>
+        Rpc("tools/call", $"{{\"name\":\"{name}\",\"arguments\":{argsJson}}}");
+
+    private static string ToolAckBody(string version, string hash) =>
+        CallBodyArgs(TermsBundle.AckToolName, $"{{\"terms_version\":\"{version}\",\"terms_sha256\":\"{hash}\"}}");
+
     private static string AckBody(string version, string hash) =>
         Rpc(TermsBundle.AckMethod, $"{{\"terms_version\":\"{version}\",\"terms_sha256\":\"{hash}\"}}");
 
@@ -42,16 +48,17 @@ public class TermsPairingTests
         McpHandler Handler, PairingService Pairings, Pairing Pairing, string Token,
         FileAuditLog Audit, SessionManager Sessions);
 
-    private static Rig MakeRig(TermsBundle? terms, PairingService? pairings = null, SessionManager? sessions = null)
+    private static Rig MakeRig(TermsBundle? terms, PairingService? pairings = null, SessionManager? sessions = null,
+        IReadOnlySet<string>? scopes = null)
     {
         Pairing pairing; string token;
         if (pairings is null)
         {
-            (pairings, pairing, token) = TestUtil.MakePairing(Scopes.All);
+            (pairings, pairing, token) = TestUtil.MakePairing(scopes ?? Scopes.All);
         }
         else
         {
-            var code = pairings.CreatePairingCode("test-agent", TimeSpan.FromMinutes(5), Scopes.All);
+            var code = pairings.CreatePairingCode("test-agent", TimeSpan.FromMinutes(5), scopes ?? Scopes.All);
             var exchange = pairings.ExchangeCode(code, "test-agent");
             Assert.NotNull(exchange);
             pairing = pairings.List().Single(p => p.Id == exchange!.PairingId);
@@ -62,6 +69,8 @@ public class TermsPairingTests
         var registry = new ToolRegistry();
         registry.Register(new SessionStartModule(sessions, state));
         var audit = TestUtil.AuditLog(TestUtil.TempDir());
+        if (terms is not null)
+            registry.Register(new TermsAcknowledgeModule(new TermsAckService(pairings, audit, state, terms)));
         var handler = new McpHandler(pairings, new PolicyEngine(), registry, audit, state, sessions,
             TestUtil.TempDir(), terms: terms);
         return new Rig(handler, pairings, pairing, token, audit, sessions);
@@ -388,5 +397,175 @@ public class TermsPairingTests
         var started = await Call(rig, CallBody("session_start"));
         Assert.DoesNotContain("terms_", started);
         Assert.NotNull(rig.Sessions.Current);
+    }
+
+    // ---------- the tool form (item (16) amendment, issue #25) ----------
+    // The battery's run 4: a tool-surface host read the Terms and
+    // hashed the exact text, but could not emit the custom method.
+    // These pins hold the tool form to the method's exact contract.
+
+    private static async Task<string[]> ToolNames(Rig rig)
+    {
+        var json = await Call(rig, Rpc("tools/list"));
+        using var doc = JsonDocument.Parse(json);
+        return doc.RootElement.GetProperty("result").GetProperty("tools")
+            .EnumerateArray().Select(t => t.GetProperty("name").GetString()!).ToArray();
+    }
+
+    private static (bool IsError, string Text) ToolOutcome(string json)
+    {
+        using var doc = JsonDocument.Parse(json);
+        var result = doc.RootElement.GetProperty("result");
+        var text = result.GetProperty("content")[0].GetProperty("text").GetString()!;
+        return (result.GetProperty("isError").GetBoolean(), text);
+    }
+
+    [Fact]
+    public async Task ToolAck_InCatalog_PreAck_ForObserveAndFullPairings()
+    {
+        var bundle = TermsBundleProvider.Current;
+        // Full pairing: the tool is listed before any ack exists.
+        var full = MakeRig(bundle);
+        Assert.Contains(TermsBundle.AckToolName, await ToolNames(full));
+        Assert.False(full.Pairings.CurrentPairing(full.Pairing.Id)!.HasCurrentTermsAck(bundle.Sha256));
+        // Observe-only pairing (the battery's own shape): the tool
+        // is in its catalog too — Observe scope is the floor every
+        // preset holds, so no pairing is catalog-blind to the ack.
+        var observe = MakeRig(bundle, scopes: Scopes.Preset("look_only"));
+        Assert.Contains(TermsBundle.AckToolName, await ToolNames(observe));
+        Assert.False(observe.Pairings.CurrentPairing(observe.Pairing.Id)!.HasCurrentTermsAck(bundle.Sha256));
+    }
+
+    [Fact]
+    public async Task ToolAck_UnlocksSession_AndWritesTheSameAcceptanceRecord()
+    {
+        var bundle = TermsBundleProvider.Current;
+        var rig = MakeRig(bundle);
+        var locked = await Call(rig, CallBody("session_start"));
+        Assert.Contains("terms_ack_required", locked);
+        Assert.Null(rig.Sessions.Current);
+
+        var (isError, text) = ToolOutcome(await Call(rig, ToolAckBody(bundle.Version, bundle.Sha256)));
+        Assert.False(isError);
+        using (var doc = JsonDocument.Parse(text))
+        {
+            Assert.True(doc.RootElement.GetProperty("acknowledged").GetBoolean());
+            Assert.Equal(bundle.Version, doc.RootElement.GetProperty("terms_version").GetString());
+            Assert.Equal(bundle.Sha256, doc.RootElement.GetProperty("terms_sha256").GetString());
+            Assert.True(doc.RootElement.TryGetProperty("acknowledged_utc", out _));
+        }
+        // The acceptance record is the method's record, byte for
+        // byte: same store fields, same audit outcome string,
+        // under the agent's own name.
+        var current = rig.Pairings.CurrentPairing(rig.Pairing.Id)!;
+        Assert.True(current.HasCurrentTermsAck(bundle.Sha256));
+        Assert.Equal(bundle.Version, current.TermsAckVersion);
+        Assert.NotNull(current.TermsAckUtc);
+        Assert.Contains(rig.Audit.ReadTail(50), e =>
+            e.Outcome == $"terms_acknowledged:version={bundle.Version};sha256={bundle.Sha256}" &&
+            e.AgentName == "test-agent");
+
+        var started = await Call(rig, CallBody("session_start"));
+        Assert.DoesNotContain("terms_ack_required", started);
+        Assert.NotNull(rig.Sessions.Current);
+    }
+
+    [Fact]
+    public async Task ToolAck_WrongHash_RefusedRecorded_StillLocked()
+    {
+        var bundle = TermsBundleProvider.Current;
+        var rig = MakeRig(bundle);
+        var (isError, text) = ToolOutcome(await Call(rig, ToolAckBody(bundle.Version, new string('0', 64))));
+        Assert.True(isError);
+        Assert.Contains("terms acknowledgment refused", text);
+        Assert.Contains(bundle.Sha256, text);
+        Assert.False(rig.Pairings.CurrentPairing(rig.Pairing.Id)!.HasCurrentTermsAck(bundle.Sha256));
+        Assert.True(AuditHas(rig.Audit, "terms_ack_refused"));
+        Assert.False(AuditHas(rig.Audit, "terms_acknowledged"));
+        var locked = await Call(rig, CallBody("session_start"));
+        Assert.Contains("terms_ack_required", locked);
+    }
+
+    [Fact]
+    public async Task ToolAck_UnservedHash_Refused_EvenWhenWellFormed()
+    {
+        var bundle = TermsBundleProvider.Current;
+        var rig = MakeRig(bundle);
+        // A real SHA-256 — of some OTHER text. The rule is exact
+        // match against the served bundle, not hash-shapedness:
+        // there is no way to ack a text this host is not serving.
+        var otherHash = Sha256Hex("some other terms text entirely");
+        var (isError, _) = ToolOutcome(await Call(rig, ToolAckBody(bundle.Version, otherHash)));
+        Assert.True(isError);
+        Assert.False(rig.Pairings.CurrentPairing(rig.Pairing.Id)!.HasCurrentTermsAck(bundle.Sha256));
+        // And a fabricated version with the true hash refuses too.
+        var (isError2, _) = ToolOutcome(await Call(rig, ToolAckBody("9.9", bundle.Sha256)));
+        Assert.True(isError2);
+        Assert.False(rig.Pairings.CurrentPairing(rig.Pairing.Id)!.HasCurrentTermsAck(bundle.Sha256));
+    }
+
+    [Fact]
+    public async Task ToolAck_ObservePairing_AcksAndUnlocks()
+    {
+        var bundle = TermsBundleProvider.Current;
+        var rig = MakeRig(bundle, scopes: Scopes.Preset("look_only"));
+        var locked = await Call(rig, CallBody("session_start"));
+        Assert.Contains("terms_ack_required", locked);
+        var (isError, _) = ToolOutcome(await Call(rig, ToolAckBody(bundle.Version, bundle.Sha256)));
+        Assert.False(isError);
+        Assert.True(rig.Pairings.CurrentPairing(rig.Pairing.Id)!.HasCurrentTermsAck(bundle.Sha256));
+        var started = await Call(rig, CallBody("session_start"));
+        Assert.DoesNotContain("terms_ack_required", started);
+        Assert.NotNull(rig.Sessions.Current);
+    }
+
+    [Fact]
+    public async Task TermsUpdate_ReLocksToolAckedPairing_ToolReAckUnlocks()
+    {
+        var v1 = TermsBundleProvider.Current;
+        var (pairings, _, token) = TestUtil.MakePairing(Scopes.All);
+        var sessions = new SessionManager();
+        McpHandler HandlerFor(TermsBundle t)
+        {
+            var state = new CoreState();
+            var registry = new ToolRegistry();
+            registry.Register(new SessionStartModule(sessions, state));
+            var audit = TestUtil.AuditLog(TestUtil.TempDir());
+            registry.Register(new TermsAcknowledgeModule(new TermsAckService(pairings, audit, state, t)));
+            return new McpHandler(pairings, new PolicyEngine(), registry,
+                audit, state, sessions, TestUtil.TempDir(), terms: t);
+        }
+        async Task<string> Call2(McpHandler h, string body)
+        {
+            var resp = await h.HandleAsync(body, $"Bearer {token}", new HashSet<string>(), default);
+            Assert.Equal(200, resp.HttpStatus);
+            return resp.Json!;
+        }
+
+        // Ack v1 THROUGH THE TOOL on the first Core; session opens.
+        var coreA = HandlerFor(v1);
+        var (errA, _) = ToolOutcome(await Call2(coreA, ToolAckBody(v1.Version, v1.Sha256)));
+        Assert.False(errA);
+        var started = await Call2(coreA, CallBody("session_start"));
+        Assert.DoesNotContain("terms_", started);
+        Assert.NotNull(sessions.Current);
+        sessions.Stop();
+
+        // The update lands. A tool-acked pairing re-locks exactly
+        // like a method-acked one.
+        var v2Text = v1.Text + "\n\nTEST-ONLY ADDENDUM: these are the updated Terms.\n";
+        var v2 = new TermsBundle("1.1", Sha256Hex(v2Text), v2Text, TermsBundle.AgentRulebook);
+        var coreB = HandlerFor(v2);
+        var locked = await Call2(coreB, CallBody("session_start"));
+        Assert.Contains("terms_update_pending", locked);
+        // The tool cannot ack the OLD hash against the new Terms.
+        var (errStale, _) = ToolOutcome(await Call2(coreB, ToolAckBody(v1.Version, v1.Sha256)));
+        Assert.True(errStale);
+        // The tool ack of the NEW hash unlocks.
+        var (errB, _) = ToolOutcome(await Call2(coreB, ToolAckBody(v2.Version, v2.Sha256)));
+        Assert.False(errB);
+        var started2 = await Call2(coreB, CallBody("session_start"));
+        Assert.DoesNotContain("terms_update_pending", started2);
+        Assert.NotNull(sessions.Current);
     }
 }

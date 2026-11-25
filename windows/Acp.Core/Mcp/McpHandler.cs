@@ -365,7 +365,7 @@ public sealed class McpHandler
                     {
                         ["uri"] = TermsBundle.ResourceUri,
                         ["name"] = $"DeskGuest Terms of Service (v{_terms.Version})",
-                        ["description"] = "The full Terms governing this pairing, with the agent rulebook. Acknowledge the exact sha256 via " + TermsBundle.AckMethod + ".",
+                        ["description"] = "The full Terms governing this pairing, with the agent rulebook. Acknowledge the exact sha256 via " + TermsBundle.AckMethod + " or the " + TermsBundle.AckToolName + " tool.",
                         ["mimeType"] = "text/markdown"
                     });
                 }
@@ -423,41 +423,26 @@ public sealed class McpHandler
         {
             return new McpResponse(200, ErrorJson(id, -32602, "invalid params: terms_version and terms_sha256 must be strings"));
         }
-        if (!string.Equals(version, _terms.Version, StringComparison.Ordinal) ||
-            !string.Equals(hash, _terms.Sha256, StringComparison.Ordinal))
+        // The decision — exact-match judgment, the store write,
+        // and both audit entries — lives in TermsAckService, the
+        // one operation behind this method and the
+        // terms_acknowledge tool (item (16) amendment): the two
+        // surfaces can never drift apart.
+        var ack = new TermsAckService(_pairings, _audit, _state, _terms).Acknowledge(pairing, version, hash);
+        return ack.Outcome switch
         {
-            try
+            TermsAckOutcome.RefusedMismatch =>
+                new McpResponse(200, ErrorJson(id, -32602, ack.RefusalMessage!)),
+            TermsAckOutcome.RefusedPairingInvalid =>
+                new McpResponse(200, ErrorJson(id, -32001, ack.RefusalMessage!)),
+            _ => new McpResponse(200, ResultJson(id, new JsonObject
             {
-                _audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", pairing.Id, pairing.AgentName,
-                    null, null, null,
-                    $"terms_ack_refused:agent returned version '{version ?? "(none)"}' sha256 '{hash ?? "(none)"}'; " +
-                    $"this host serves Terms v{_terms.Version} sha256 {_terms.Sha256}",
-                    "Agent", null));
-            }
-            catch { _state.NoteAuditWriteFailure(); }
-            return new McpResponse(200, ErrorJson(id, -32602,
-                $"terms acknowledgment refused: this host serves Terms v{_terms.Version} with sha256 {_terms.Sha256}. " +
-                $"Read the full current text at {TermsBundle.ResourceUri} (resources/read) and acknowledge its exact version and hash."));
-        }
-        var (ok, ackUtc) = _pairings.RecordTermsAck(pairing.Id, _terms.Version, _terms.Sha256);
-        if (!ok || ackUtc is null)
-            return new McpResponse(200, ErrorJson(id, -32001, "terms acknowledgment refused: this pairing is no longer valid"));
-        try
-        {
-            _audit.Append(new AuditEntry(ackUtc.Value, "system", pairing.Id, pairing.AgentName,
-                null, null, null,
-                $"terms_acknowledged:version={_terms.Version};sha256={_terms.Sha256}",
-                "Agent", null));
-        }
-        catch { _state.NoteAuditWriteFailure(); }
-        var result = new JsonObject
-        {
-            ["acknowledged"] = true,
-            ["terms_version"] = _terms.Version,
-            ["terms_sha256"] = _terms.Sha256,
-            ["acknowledged_utc"] = ackUtc.Value.ToString("o")
+                ["acknowledged"] = true,
+                ["terms_version"] = _terms.Version,
+                ["terms_sha256"] = _terms.Sha256,
+                ["acknowledged_utc"] = ack.AckUtc!.Value.ToString("o")
+            })),
         };
-        return new McpResponse(200, ResultJson(id, result));
     }
 
     private async Task<McpResponse> CallToolAsync(JsonObject obj, JsonNode? id, Pairing pairing, IReadOnlySet<string> approvedGateClasses, CancellationToken ct)
@@ -493,9 +478,9 @@ public sealed class McpHandler
         {
             decision = PolicyDecision.Deny(pairing.TermsAckHash is null
                 ? $"terms_ack_required: this pairing has not acknowledged the DeskGuest Terms (current version {_terms.Version}, sha256 {_terms.Sha256}). " +
-                  $"Read the full text at resource {TermsBundle.ResourceUri} and return the protocol acknowledgment ({TermsBundle.AckMethod} with the exact terms_version and terms_sha256); sessions stay locked until then"
+                  $"Read the full text at resource {TermsBundle.ResourceUri} and return the acknowledgment ({TermsBundle.AckMethod} method, or the {TermsBundle.AckToolName} tool, with the exact terms_version and terms_sha256); sessions stay locked until then"
                 : $"terms_update_pending: this pairing acknowledged Terms v{pairing.TermsAckVersion}, but the current Terms are v{_terms.Version} (sha256 {_terms.Sha256}). " +
-                  $"The full current text — never a diff — is at resource {TermsBundle.ResourceUri}; re-acknowledge its exact hash via {TermsBundle.AckMethod} before the next session");
+                  $"The full current text — never a diff — is at resource {TermsBundle.ResourceUri}; re-acknowledge its exact hash via {TermsBundle.AckMethod} or the {TermsBundle.AckToolName} tool before the next session");
         }
         // W9 per-action gate (design of record §3, live caller): a
         // call denied ONLY by the sensitive-action gate leg, in a
@@ -1048,6 +1033,7 @@ public sealed class PairingHandler
                     ["rulebook"] = terms.Rulebook,
                     ["resource_uri"] = TermsBundle.ResourceUri,
                     ["ack_method"] = TermsBundle.AckMethod,
+                    ["ack_tool"] = TermsBundle.AckToolName,
                     ["ack_required_before_session"] = true
                 };
                 _audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", exchange.PairingId, boundName, null, null, null,
