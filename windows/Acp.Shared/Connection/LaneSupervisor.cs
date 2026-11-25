@@ -165,6 +165,30 @@ public sealed class LaneSupervisor
         }
     }
 
+    /// <summary>FR-143: force a bound lane back through the bind
+    /// path so a policy change that alters HOW the lane is served
+    /// (the HTTPS-only scheme flip) takes effect without waiting
+    /// for the lane's address to change. Returns true when the
+    /// lane was Bound and is now reset to NoAddress with an
+    /// immediate re-probe; the host must stop the running listener
+    /// itself (the supervisor emits no transition for this — the
+    /// next Tick emits the bind, and the bind reads the new policy
+    /// state). A lane that is not Bound needs no forcing: its next
+    /// bind already reads current policy.</summary>
+    public bool ForceRebind(LaneKind lane)
+    {
+        lock (_gate)
+        {
+            var book = _lanes[lane];
+            if (book.Phase != LanePhase.Bound) return false;
+            book.Phase = LanePhase.NoAddress;
+            book.Address = null;
+            book.Failures = 0;
+            book.NextRetry = _clock.UtcNow; // re-probe on the next tick, no backoff
+            return true;
+        }
+    }
+
     public LaneStatus Status(LaneKind lane)
     {
         lock (_gate)

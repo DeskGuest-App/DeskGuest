@@ -204,7 +204,10 @@ public class Rmm03_07D38FixTests
         // (Lane W73, 2026-11-23 — the tunable-takeover fleet-default
         // layer's TOTAL POLICY CONTROL toggle; annotated bump per
         // the same precedent).
-        Assert.Equal(43, FeatureToggleRegistry.Seeded().All.Count);
+        // + FR-143's HTTPS-only toggle connections.https_only.enabled
+        // (2026-11-25 — the owner-raised IT requirement; annotated
+        // bump per the same precedent).
+        Assert.Equal(44, FeatureToggleRegistry.Seeded().All.Count);
     }
 
     // ---- F5: nonce store crash consistency ------------------------
