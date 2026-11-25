@@ -1,6 +1,7 @@
 using System.Security.Cryptography.X509Certificates;
 using Acp.Core.Mcp;
 using Acp.Shared.Connection;
+using Acp.Shared.Policy;
 using Acp.Shared.Security;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -37,6 +38,15 @@ public sealed class LaneHostManager : IAsyncDisposable
     // unique live roster user). Null (no resolver wired) means
     // every sensitive mesh verb FAILS CLOSED with 401.
     private readonly Func<HttpContext, string?>? _meshIdentity;
+    // FR-143: the mesh lane's TLS host certificate (the same device
+    // certificate the LAN lane serves), the signed-policy HTTPS-only
+    // callback, and the refusal sink (audit + narration, wired by
+    // the host). All optional: an unwired host serves exactly as
+    // before — CoreRuntime always wires them, with the registry
+    // default making enforcement ON.
+    private readonly X509Certificate2? _meshCertificate;
+    private readonly Func<bool>? _httpsOnly;
+    private readonly Action<string, string?, string?>? _onHttpsRefusal;
     private readonly Dictionary<string, WebApplication> _hosts = new(); // key: lane name or "loopback"
     private readonly SemaphoreSlim _gate = new(1, 1);
 
@@ -44,12 +54,17 @@ public sealed class LaneHostManager : IAsyncDisposable
     /// certificate. The LAN lane is served ONLY over TLS with this
     /// certificate (clients pin it at pairing); without one the LAN
     /// lane refuses to start — cleartext LAN service is not a
-    /// fallback (H1 remainder closure). Tailnet (WireGuard-encrypted)
-    /// and loopback lanes are unchanged.</param>
+    /// fallback (H1 remainder closure). FR-143: the mesh lane's
+    /// scheme is policy-decided (see HttpsOnlyDecision) — HTTPS
+    /// with the device certificate while connections.https_only is
+    /// on (the default), plain HTTP inside the mesh tunnel while
+    /// off; loopback stays plain HTTP, exempt by name.</param>
     public LaneHostManager(McpHandler mcp, PairingHandler pairing, Func<IReadOnlySet<string>> approvedGates, int port,
         X509Certificate2? lanCertificate = null, MeshService? mesh = null, StreamService? stream = null,
         Acp.Shared.QuickAssist.QuickAssistService? quickAssist = null,
-        Func<HttpContext, string?>? meshIdentity = null)
+        Func<HttpContext, string?>? meshIdentity = null,
+        X509Certificate2? meshCertificate = null, Func<bool>? httpsOnly = null,
+        Action<string, string?, string?>? onHttpsRefusal = null)
     {
         _mcp = mcp;
         _pairing = pairing;
@@ -60,7 +75,16 @@ public sealed class LaneHostManager : IAsyncDisposable
         _stream = stream;
         _quickAssist = quickAssist;
         _meshIdentity = meshIdentity;
+        _meshCertificate = meshCertificate;
+        _httpsOnly = httpsOnly;
+        _onHttpsRefusal = onHttpsRefusal;
     }
+
+    /// <summary>FR-143: the current HTTPS-only policy state. An
+    /// unwired host (unit rigs) reports OFF — CoreRuntime always
+    /// wires the signed-policy callback, whose registry default
+    /// is ON, so production enforcement is default-on.</summary>
+    private bool HttpsOnly() => _httpsOnly?.Invoke() ?? false;
 
     /// <summary>BD-WIN-CORE-3/F1: the authenticated roster user id
     /// behind this mesh request, resolved ONCE per request through
@@ -96,6 +120,18 @@ public sealed class LaneHostManager : IAsyncDisposable
             var isLan = laneName == nameof(LaneKind.Lan);
             if (isLan && _lanCertificate is null)
                 return false; // no certificate, no LAN lane — never cleartext
+            // FR-143: the scheme decision is pure and pinned
+            // (HttpsOnlyDecision). The mesh lane's certificate is
+            // the dedicated mesh cert when wired, else the LAN
+            // cert — CoreRuntime passes the one device certificate
+            // for both. Enforcement ON with no certificate at all
+            // REFUSES the lane (fail closed), never cleartext.
+            var meshCert = _meshCertificate ?? _lanCertificate;
+            var transport = HttpsOnlyDecision.TransportFor(laneName, HttpsOnly(), meshCert is not null);
+            if (transport == LaneTransport.RefuseStart)
+                return false; // policy demands HTTPS; no certificate — no lane
+            var useTls = transport == LaneTransport.Https;
+            var tlsCert = isLan ? _lanCertificate! : meshCert!;
             var builder = WebApplication.CreateSlimBuilder();
             builder.Logging.ClearProviders();
             // C18 destruction pass (header leakage): no Server
@@ -103,12 +139,12 @@ public sealed class LaneHostManager : IAsyncDisposable
             // door must not advertise the stack, and neither should
             // the rest of the surface.
             builder.WebHost.ConfigureKestrel(kestrel => kestrel.AddServerHeader = false);
-            if (isLan)
+            if (useTls)
             {
                 builder.WebHost.UseUrls($"https://{address}:{_port}");
                 builder.WebHost.ConfigureKestrel(kestrel =>
                     kestrel.ConfigureEndpointDefaults(listen =>
-                        listen.UseHttps(_lanCertificate!)));
+                        listen.UseHttps(tlsCert)));
             }
             else
             {
@@ -147,6 +183,28 @@ public sealed class LaneHostManager : IAsyncDisposable
 
     private void MapEndpoints(WebApplication app, bool allowPairing, string laneName = "")
     {
+        // FR-143 defence in depth: the bind-time scheme decision
+        // (StartLaneAsync) is the authority, but a policy flip can
+        // land while a plain-HTTP lane is still bound (the rebind
+        // follows on the Core's next lane tick). In that window —
+        // and only there — a plain-HTTP request on a non-loopback
+        // lane meets this guard: a NAMED refusal, reported through
+        // the host's refusal sink (hash-chained audit + narration),
+        // never a silent drop. Loopback is exempt by name.
+        app.Use(async (http, next) =>
+        {
+            if (HttpsOnlyDecision.RefusePlainHttp(laneName, http.Request.IsHttps, HttpsOnly()))
+            {
+                _onHttpsRefusal?.Invoke(laneName, http.Connection.RemoteIpAddress?.ToString(), http.Request.Path.Value);
+                http.Response.StatusCode = 403;
+                http.Response.ContentType = "application/json";
+                await http.Response.WriteAsync(
+                    "{\"error\":\"https_required: this device requires HTTPS for agent connections (policy connections.https_only.enabled) — plain HTTP is refused; connect over HTTPS and check the certificate against the pin from your pairing\"}",
+                    http.RequestAborted);
+                return;
+            }
+            await next();
+        });
         // W97 / S09(b): this lane's rung id, handed to every
         // handler below — the connection-path policy can only be
         // enforced where the arrival path is KNOWN, and this is

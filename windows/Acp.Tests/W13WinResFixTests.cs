@@ -407,7 +407,7 @@ public class W13WinResFixTests
     public void P7F1_SeedPosture_CountsAndOffReasons_AreAsRecorded()
     {
         var seeded = FeatureToggleRegistry.Seeded();
-        Assert.Equal(43, seeded.All.Count); // 40 through W13 + A2/A3 toggles (Wave 19 Lane C, 2026-11-23 — annotated bump per the U4 precedent) + FR-120's takeover-modes toggle (Lane W73, 2026-11-23 — default ON, so the OFF list below is unchanged; annotated bump per the same precedent)
+        Assert.Equal(44, seeded.All.Count); // 40 through W13 + A2/A3 toggles (Wave 19 Lane C, 2026-11-23 — annotated bump per the U4 precedent) + FR-120's takeover-modes toggle (Lane W73, 2026-11-23 — default ON, so the OFF list below is unchanged; annotated bump per the same precedent) + FR-143's HTTPS-only toggle connections.https_only.enabled (2026-11-25 — default ON, so the OFF list below is unchanged; annotated bump per the same precedent)
         var off = seeded.All.Where(t => !t.DefaultEnabled).Select(t => t.Key).OrderBy(k => k).ToList();
         Assert.Equal(new[]
         {

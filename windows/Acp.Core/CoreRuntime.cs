@@ -117,6 +117,10 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
     private ISecretProtector _protector = null!;
     private string _identityPath = "";
     private bool _identityMintedThisRun;
+    /// <summary>FR-143: the HTTPS-only policy value the mesh lane
+    /// was last bound under; null until the lane tick's first read.
+    /// A change rebinds the lane (see the lane tick).</summary>
+    private bool? _httpsOnlyApplied;
     /// <summary>W113: when this Core started on the operator's
     /// one-time liveness override (indeterminate enumeration),
     /// the detail to write into the audit chain at StartAsync;
@@ -2418,8 +2422,23 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
         // authentication McpHandler applies) and the host-bound
         // pairing name to the unique live roster user.
         MeshIdentity = new Services.MeshIdentityResolver(Pairings, Roster);
+        // FR-143: HTTPS-only for agent connections — the signed
+        // policy engine's verdict for this device (registry default
+        // ON), read by LaneHostManager at bind time and at request
+        // time. The refusal sink is the no-silent-failures surface:
+        // a hash-chained audit entry plus a plain-language line on
+        // the narration the companion renders.
+        Func<bool> httpsOnly = () => ManagementPolicies.Engine.IsEnabled(
+            Shared.ManagementPolicy.StaticDeviceFacts.Of(Identity.DeviceId, ""), HttpsOnlyPolicyKeys.FeatureToggle);
         LaneHosts = new LaneHostManager(Mcp, pairingHandler, ReadApprovedGates, options.Port, lanCert, mesh, Stream, QuickAssist,
-            meshIdentity: http => MeshIdentity.ResolveUserId(http.Request.Headers.Authorization.ToString()));
+            meshIdentity: http => MeshIdentity.ResolveUserId(http.Request.Headers.Authorization.ToString()),
+            meshCertificate: lanCert, httpsOnly: httpsOnly,
+            onHttpsRefusal: (lane, remote, path) =>
+            {
+                Audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", null, null, null, null, null,
+                    $"https_only_refused: plain-HTTP agent connection refused on lane {lane} from {remote ?? "unknown"} ({path ?? "/"}) — this device requires HTTPS for agent connections (policy {HttpsOnlyPolicyKeys.FeatureToggle})", "SYSTEM", null));
+                State.LastNarration = "Refused a plain-HTTP agent connection — this device requires HTTPS for agent connections. The attempt was written to the audit log.";
+            });
 
         var launcher = options.AgentLauncher ?? (OperatingSystem.IsWindows()
             ? new WindowsAgentLauncher(() => ipcToken)
@@ -5684,6 +5703,26 @@ public sealed class CoreRuntime : IHostedService, IAsyncDisposable
                         _ = NotifyReleaseInputsSafelyAsync(); // U7: session end releases held input
                     }
                     if (stopPresent) EndHumanSessionsOnStop("stop_file");
+                }
+
+                // FR-143: a policy flip on connections.https_only
+                // rebinds the mesh lane under the new scheme. The
+                // first read only records the state (the lane binds
+                // under it); a CHANGE is audit-chained, and a bound
+                // lane is stopped + forced through the bind path so
+                // this same tick rebinds it reading the new value.
+                var httpsOnlyNow = ManagementPolicies.Engine.IsEnabled(
+                    Shared.ManagementPolicy.StaticDeviceFacts.Of(Identity.DeviceId, ""), HttpsOnlyPolicyKeys.FeatureToggle);
+                if (_httpsOnlyApplied is null) _httpsOnlyApplied = httpsOnlyNow;
+                else if (httpsOnlyNow != _httpsOnlyApplied.Value)
+                {
+                    _httpsOnlyApplied = httpsOnlyNow;
+                    Audit.Append(new AuditEntry(DateTimeOffset.UtcNow, "system", null, null, null, null, null,
+                        httpsOnlyNow
+                            ? "https_only_policy_applied: Require HTTPS for agent connections is now ON — the mesh listener rebinds over HTTPS"
+                            : "https_only_policy_applied: Require HTTPS for agent connections is now OFF — the mesh listener rebinds over plain HTTP (still inside the mesh's encrypted tunnel)", "SYSTEM", null));
+                    if (Lanes.ForceRebind(LaneKind.Tailscale))
+                        await LaneHosts.StopLaneAsync("Tailscale").WaitAsync(TimeSpan.FromSeconds(10), ct);
                 }
 
                 // Lanes: the state machine decides; the manager acts.
