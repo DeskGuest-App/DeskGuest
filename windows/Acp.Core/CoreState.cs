@@ -88,6 +88,13 @@ public sealed class CoreState
     }
 
     public bool StopInForce { get { lock (_gate) return _session.StopInForce; } }
+
+    /// <summary>FR-137: the STOP FILE's own state, apart from the
+    /// combined StopInForce (file OR user stop). The supervisor's
+    /// transition check must compare the file against this — while
+    /// a user stop is latched, comparing against the combined
+    /// state reads as a fresh "cleared" transition every tick.</summary>
+    public bool StopFilePresent { get { lock (_gate) return _stopFilePresent; } }
     public void SetLastWord(string? word) { lock (_gate) _lastWord = word; }
     public void SetPreviousRun(PreviousRunInfo? info) { lock (_gate) _previousRun = info; }
     public void RecordAgentCrash() { lock (_gate) _agentCrashCount++; }

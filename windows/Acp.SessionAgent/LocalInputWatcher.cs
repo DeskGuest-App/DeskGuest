@@ -1,3 +1,4 @@
+using Acp.Shared.Input;
 using Acp.Shared.Presence;
 
 namespace Acp.SessionAgent;
@@ -36,13 +37,20 @@ namespace Acp.SessionAgent;
 /// C1): this watcher does NOT claim that injected input never
 /// advances the tick. W73's live record shows the windows-mcp
 /// bridge's injected input DID advance this laptop's tick and
-/// the watcher fired on it exactly as designed; the agent's own
-/// SendInput path has not been separately proven either way. So
-/// no injected-vs-physical distinction is made anywhere here:
-/// signals are classified by class (mouse/keyboard) only, from
-/// the signals actually available. A distinction, if ever
-/// needed, must be built from an available signal (e.g. the
-/// hook's injected flag) and proven per injection path.
+/// the watcher fired on it exactly as designed — and still
+/// does: input injected by any OTHER process classifies by
+/// class (mouse/keyboard) only, from the signals actually
+/// available.
+///
+/// FR-130 amendment: the one distinction that now exists is
+/// this process's OWN injections. The desktop engine notes
+/// every raw send it makes in the shared SelfInputWindow
+/// (Acp.Shared.Input); evidence inside that window is consumed
+/// (baselines and pressed-since bits advance as usual) but
+/// never signalled — the agent must not yield driving to
+/// itself, and with FR-136 the engine moves the real cursor on
+/// every click, so unbracketed it would yield on its own first
+/// action of every session.
 ///
 /// The watcher reports SIGNALS, never content: no key identity
 /// leaves this class (the chord is a fixed, published constant,
@@ -233,13 +241,20 @@ public sealed class LocalInputWatcher : IDisposable
 
     private void PollOnce()
     {
+        // FR-130: is this poll's evidence inside the window of
+        // the agent's OWN last injection? Sampling still runs
+        // either way (it consumes the pressed-since bits and
+        // advances the baselines, so self-evidence is never
+        // replayed as a fresh signal after the window) — only
+        // the SIGNALLING is suppressed.
+        var selfInput = SelfInputWindow.Shared.Covers(DateTime.UtcNow);
         // W111: ONE keyboard sample per poll serves the chord and
         // the keyboard class (see KeyboardState). The chord is
         // checked on its own edge, independent of the tick: it
         // must yield even in HotkeyOnly, where ordinary keyboard
         // input is ignored for control.
         var (keysDown, keysPressedSince, chord) = KeyboardState();
-        if (chord && !_chordWasDown) _presence.TakeoverHotkeyPressed();
+        if (chord && !_chordWasDown && !selfInput) _presence.TakeoverHotkeyPressed();
         _chordWasDown = chord;
         // The keyboard signal is latched from the sample whether
         // or not the tick advanced: the pressed-since bit IS the
@@ -252,7 +267,7 @@ public sealed class LocalInputWatcher : IDisposable
                 AnyKeyDown: keysDown,
                 AnyKeyPressedSinceLastPoll: keysPressedSince),
             _keyboardLatch);
-        if (keyboardSignal && !chord) _presence.SetOwnerDrivingFromKeyboard(true);
+        if (keyboardSignal && !chord && !selfInput) _presence.SetOwnerDrivingFromKeyboard(true);
 
         // Wheel pulses are consumed on every poll, tick or not:
         // the hook observed real activity; the classifier decides
@@ -279,7 +294,7 @@ public sealed class LocalInputWatcher : IDisposable
                 AnyButtonPressedSinceLastPoll: buttonsPressedSince,
                 WheelActivity: wheel),
             _buttonLatch);
-        if (mouseSignal) _presence.SetOwnerDriving(true);
+        if (mouseSignal && !selfInput) _presence.SetOwnerDriving(true);
     }
 
     public void Dispose() => Stop();

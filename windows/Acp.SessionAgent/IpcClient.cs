@@ -139,14 +139,28 @@ public sealed class AgentIpcClient
         // runs only while a session is live (presence case below).
         _watcher ??= new LocalInputWatcher(_presence);
         _presence.TakeoverYielded += inputClass =>
+        {
             _ = SendTakeoverEventQuietAsync(TakeoverRecordKinds.Yield, TakeoverActors.LocalInput,
                 TakeoverRecordDetail.Yield(inputClass));
+            _ = SendSessionStateQuietAsync();
+        };
         _presence.TakeoverHotkeyYielded += () =>
+        {
             _ = SendTakeoverEventQuietAsync(TakeoverRecordKinds.Hotkey, TakeoverActors.OwnerHotkey,
                 "takeover hotkey yielded driving to the owner");
+            _ = SendSessionStateQuietAsync();
+        };
         _presence.TakeoverHandedBack += actor =>
+        {
             _ = SendTakeoverEventQuietAsync(TakeoverRecordKinds.HandBack, actor,
                 TakeoverRecordDetail.HandBack(actor));
+            _ = SendSessionStateQuietAsync();
+        };
+        // FR-130: the boundary reconciliation is an audit fact —
+        // a latched pill corrected itself, and the chain says so.
+        _presence.TakeoverReconciled += () =>
+            _ = SendTakeoverEventQuietAsync(TakeoverRecordKinds.Reconciled,
+                TakeoverActors.PresenceReconciliation, TakeoverRecordDetail.Reconciled());
         _presence.TakeoverModesChanged += (oldMouse, oldKeyboard, newMouse, newKeyboard) =>
         {
             // The actor distinction (FR-120 ownership rule): a
@@ -410,7 +424,7 @@ public sealed class AgentIpcClient
             // Explicit dev posture ONLY (ACP_DEV_ALLOW_NO_TOKEN=1):
             // unauthenticated interop, labelled in the version slot
             // so the Core's log shows this agent ran unauthenticated.
-            await SendAsync(new IpcMessage(IpcKinds.Hello, null, null, null, null, null, _agentVersion + " (DEV-UNAUTHENTICATED)", DesktopUnlocked, false, null, fgTitle, fgProcess), ct);
+            await SendAsync(new IpcMessage(IpcKinds.Hello, null, null, null, null, null, _agentVersion + " (DEV-UNAUTHENTICATED)", DesktopUnlocked, _presence.OwnerDrivingNow, null, fgTitle, fgProcess), ct);
             _coreAuthenticated = true;
             return;
         }
@@ -432,7 +446,7 @@ public sealed class AgentIpcClient
         // (env|file) — metadata for the Core's audit log, never the
         // token itself.
         var helloArgs = JsonSerializer.Serialize(new { nonce, tokenSource = IpcTokenFile.SourceLabel(tokenSource) });
-        await SendAsync(new IpcMessage(IpcKinds.Hello, null, null, helloArgs, null, null, _agentVersion, DesktopUnlocked, false, null, fgTitle, fgProcess), ct);
+        await SendAsync(new IpcMessage(IpcKinds.Hello, null, null, helloArgs, null, null, _agentVersion, DesktopUnlocked, _presence.OwnerDrivingNow, null, fgTitle, fgProcess), ct);
         using var ackTimeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
         ackTimeout.CancelAfter(TimeSpan.FromSeconds(10));
         var json = await IpcFraming.ReadAsync(_pipe!, ackTimeout.Token);
@@ -460,7 +474,7 @@ public sealed class AgentIpcClient
             throw new InvalidOperationException("the install trust record carried no usable Core identity key — refusing to trust any pipe host (fail closed, W28)");
         if (!CoreIdentity.VerifyHelloAckProof(pinnedCoreKey, nonce, ack.ArgumentsJson))
             throw new InvalidOperationException("the pipe host failed the Core identity signature check — refusing to trust it (possible fake Core, W25)");
-        await SendAsync(new IpcMessage(IpcKinds.Auth, null, null, null, null, token, _agentVersion, DesktopUnlocked, false, null, fgTitle, fgProcess), ct);
+        await SendAsync(new IpcMessage(IpcKinds.Auth, null, null, null, null, token, _agentVersion, DesktopUnlocked, _presence.OwnerDrivingNow, null, fgTitle, fgProcess), ct);
         _coreAuthenticated = true;
         // FR-119: a successful authentication (env or the file
         // fallback) clears the retry policy's accounting.
@@ -475,25 +489,51 @@ public sealed class AgentIpcClient
     private async Task HeartbeatLoopAsync(CancellationToken ct)
     {
         var lastUnlocked = DesktopUnlocked;
+        var lastTakeover = _presence.OwnerDrivingNow;
         var (lastFgTitle, lastFgProcess) = ForegroundWindow.Current();
         while (!ct.IsCancellationRequested && _pipe is { IsConnected: true })
         {
             await SendAsync(new IpcMessage(IpcKinds.Heartbeat, null, null, null, null, null, null, null, null, null), ct);
             var nowUnlocked = DesktopUnlocked;
+            var nowTakeover = _presence.OwnerDrivingNow;
             var (fgTitle, fgProcess) = ForegroundWindow.Current();
             // Session-state is reported on ANY change the policy layer
             // consumes: lock transitions AND the protected-targets
             // foreground feed (M5) — a protected window coming to the
             // front must reach the Core before the next agent call.
-            if (nowUnlocked != lastUnlocked || fgTitle != lastFgTitle || fgProcess != lastFgProcess)
+            // FR-130: the takeover state is reported too, with its
+            // REAL value — this sender hardcoded false, so the
+            // Core's takeover_status could never reflect the pill
+            // and the two faces of one fact diverged silently.
+            if (nowUnlocked != lastUnlocked || fgTitle != lastFgTitle || fgProcess != lastFgProcess
+                || nowTakeover != lastTakeover)
             {
                 lastUnlocked = nowUnlocked;
+                lastTakeover = nowTakeover;
                 lastFgTitle = fgTitle;
                 lastFgProcess = fgProcess;
-                await SendAsync(new IpcMessage(IpcKinds.SessionState, null, null, null, null, null, null, nowUnlocked, false, null, fgTitle, fgProcess), ct);
+                await SendAsync(new IpcMessage(IpcKinds.SessionState, null, null, null, null, null, null, nowUnlocked, nowTakeover, null, fgTitle, fgProcess), ct);
             }
             await Task.Delay(5000, ct);
         }
+    }
+
+    /// <summary>FR-130: an immediate session-state report on a
+    /// takeover transition, carrying the REAL takeover value, so
+    /// the Core's takeover_status converges on the transition
+    /// itself instead of the next heartbeat change. Best-effort
+    /// like the takeover-event feed: a failed send leaves the
+    /// heartbeat carrying the same truth within seconds.</summary>
+    private async Task SendSessionStateQuietAsync()
+    {
+        try
+        {
+            if (_pipe is null || !_coreAuthenticated) return;
+            var (fgTitle, fgProcess) = ForegroundWindow.Current();
+            await SendAsync(new IpcMessage(IpcKinds.SessionState, null, null, null, null, null, null,
+                DesktopUnlocked, _presence.OwnerDrivingNow, null, fgTitle, fgProcess), CancellationToken.None);
+        }
+        catch { }
     }
 
     /// <summary>Send a gate approval (or its revocation) from the

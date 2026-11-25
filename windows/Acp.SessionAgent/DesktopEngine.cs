@@ -235,12 +235,42 @@ public sealed class DesktopEngine
     /// injection path — narration + ghost-cursor glide (the user's
     /// interruption window) BEFORE the button moves. Every agent
     /// click routes through here; the glide-free path remains only
-    /// for the floor holder's own manual-drive tools.</summary>
+    /// for the floor holder's own manual-drive tools.
+    /// FR-136: the glide moves the GHOST only — the button event
+    /// lands wherever the REAL cursor happens to sit, so before
+    /// the button moves, the real cursor is positioned at the
+    /// target. Without this the click fired at a stale position:
+    /// silently on nothing, or on whatever UI sat under the
+    /// cursor — in the FR-136 filing incident, on the presence
+    /// pill's own STOP button, engaging the kill switch with an
+    /// agent click that was aimed at a sidebar.</summary>
     private async Task InjectClickAtAsync(int x, int y, string button, string narration)
     {
         _narrate(narration);
         await _glideTo(x, y);
+        PositionCursor(x, y);
         MouseButton(button, down: true); MouseButton(button, down: false);
+    }
+
+    /// <summary>FR-136: place the REAL cursor at (x, y). Bracketed
+    /// in the self-input window (FR-130): our own cursor travel
+    /// must never read as the owner taking over.</summary>
+    private static void PositionCursor(int x, int y)
+    {
+        SelfInputWindow.Shared.Note(DateTime.UtcNow);
+        NativeMethods.SetCursorPos(x, y);
+        SelfInputWindow.Shared.Note(DateTime.UtcNow);
+    }
+
+    /// <summary>FR-130: every raw SendInput this engine makes is
+    /// noted in the self-input window before and after the send,
+    /// so the local-input watcher can tell the agent's own
+    /// injections from outside input.</summary>
+    private static void SendInputNoted(NativeMethods.INPUT[] inputs)
+    {
+        SelfInputWindow.Shared.Note(DateTime.UtcNow);
+        NativeMethods.SendInput((uint)inputs.Length, inputs, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.INPUT>());
+        SelfInputWindow.Shared.Note(DateTime.UtcNow);
     }
 
     // ---------- Perception ----------
@@ -454,7 +484,7 @@ public sealed class DesktopEngine
                 new NativeMethods.INPUT { type = NativeMethods.INPUT_KEYBOARD, U = new NativeMethods.InputUnion { ki = new NativeMethods.KEYBDINPUT { wScan = ch, dwFlags = NativeMethods.KEYEVENTF_UNICODE } } },
                 new NativeMethods.INPUT { type = NativeMethods.INPUT_KEYBOARD, U = new NativeMethods.InputUnion { ki = new NativeMethods.KEYBDINPUT { wScan = ch, dwFlags = NativeMethods.KEYEVENTF_UNICODE | NativeMethods.KEYEVENTF_KEYUP } } }
             };
-            NativeMethods.SendInput(2, inputs, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.INPUT>());
+            SendInputNoted(inputs);
         }
         await Task.CompletedTask;
         return (true, $"typed {text.Length} characters");
@@ -501,7 +531,7 @@ public sealed class DesktopEngine
             type = NativeMethods.INPUT_MOUSE,
             U = new NativeMethods.InputUnion { mi = new NativeMethods.MOUSEINPUT { dwFlags = NativeMethods.MOUSEEVENTF_WHEEL, mouseData = unchecked((uint)delta) } }
         };
-        NativeMethods.SendInput(1, new[] { input }, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.INPUT>());
+        SendInputNoted(new[] { input });
         return (true, $"scrolled {delta}");
     }
 
@@ -509,6 +539,9 @@ public sealed class DesktopEngine
     {
         var x = GetInt(args, "x"); var y = GetInt(args, "y");
         await _glideTo(x, y);
+        // FR-136: the report says "cursor at x,y" — make it true
+        // of the real cursor, not only the ghost.
+        PositionCursor(x, y);
         return (true, $"cursor at {x},{y}");
     }
 
@@ -516,8 +549,23 @@ public sealed class DesktopEngine
     {
         var (x1, y1, x2, y2) = (GetInt(args, "from_x"), GetInt(args, "from_y"), GetInt(args, "to_x"), GetInt(args, "to_y"));
         await _glideTo(x1, y1);
+        // FR-136: the drag starts where the real cursor is, and
+        // the real cursor travels with the ghost while the button
+        // is held — a drop lands where the cursor ENDS, so a real
+        // cursor left at the start would drop at the start.
+        PositionCursor(x1, y1);
         MouseButton("left", true);
-        try { await _glideTo(x2, y2); }
+        try
+        {
+            var glide = _glideTo(x2, y2);
+            const int steps = 12;
+            for (var i = 1; i <= steps; i++)
+            {
+                PositionCursor(x1 + (x2 - x1) * i / steps, y1 + (y2 - y1) * i / steps);
+                if (i < steps) await Task.Delay(40);
+            }
+            await glide;
+        }
         finally { MouseButton("left", false); } // a drag owns its hold: a glide failure mid-drag never leaves the button down (U7)
         return (true, $"dragged {x1},{y1} → {x2},{y2}");
     }
@@ -534,7 +582,9 @@ public sealed class DesktopEngine
         {
             foreach (var p in pts.EnumerateArray())
             {
-                await _glideTo(GetInt(p, "x"), GetInt(p, "y"));
+                var px = GetInt(p, "x"); var py = GetInt(p, "y");
+                await _glideTo(px, py);
+                PositionCursor(px, py); // FR-136: the button lands on the point, not on the stale cursor
                 MouseButton("left", true); MouseButton("left", false);
             }
         }
@@ -919,7 +969,7 @@ public sealed class DesktopEngine
             _ => NativeMethods.MOUSEEVENTF_LEFTDOWN
         };
         var input = new NativeMethods.INPUT { type = NativeMethods.INPUT_MOUSE, U = new NativeMethods.InputUnion { mi = new NativeMethods.MOUSEINPUT { dwFlags = flag } } };
-        NativeMethods.SendInput(1, new[] { input }, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.INPUT>());
+        SendInputNoted(new[] { input });
     }
 
     private static void SendKeyRaw(ushort vk, bool down)
@@ -930,7 +980,7 @@ public sealed class DesktopEngine
             type = NativeMethods.INPUT_KEYBOARD,
             U = new NativeMethods.InputUnion { ki = new NativeMethods.KEYBDINPUT { wVk = vk, dwFlags = down ? 0 : NativeMethods.KEYEVENTF_KEYUP } }
         };
-        NativeMethods.SendInput(1, new[] { input }, System.Runtime.InteropServices.Marshal.SizeOf<NativeMethods.INPUT>());
+        SendInputNoted(new[] { input });
     }
 
     // BD-WIN-AGENT F7: key-name resolution is the guard's ONE map —
