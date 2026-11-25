@@ -27,17 +27,50 @@
 <a class="btn small" href="download.html">Download (Coming Soon)</a>
 </div></header>
 <main id="main">
-<section class="page-hero"><div class="wrap">
-<h1 class="page-title">Security &amp; the threat model</h1>
-<p class="page-sub">What DeskGuest is built to withstand, what each defense is, and — just as important — what it does not claim to protect against.</p>
-</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
+<section class="stage"><div class="wrap">
+<div class="stage-grid">
+<div>
+<span class="pill teal hero-tag">SECURITY ARCHITECTURE</span>
+<h1 class="display" style="margin:22px 0 18px">Security built into the math — not a promise on a slide.</h1>
+<p class="lede">Your device generates its own cryptographic identity key. No central account server to breach, no silent background access, and an instant STOP you always own.</p>
+</div>
+<div class="d2d" role="img" aria-label="Diagram: two devices linked directly with encryption, a 34-word local recovery sheet, and a STOP approval gate">
+<div class="d2d-row">
+<div class="d2d-unit"><img src="assets/a3-mark.webp" alt="" width="384" height="244"></div>
+<div class="d2d-mid"><div class="t">Direct Encrypted Device-to-Device Link</div><div class="d2d-link"><span class="ln"></span><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></span><span class="ln"></span></div><div class="b">D2D Direct Link<br>(zero cloud middleman)</div></div>
+<div class="d2d-unit"><img src="assets/a3-mark.webp" alt="" width="384" height="244"></div>
+</div>
+<div class="d2d-row" style="margin-top:16px">
+<div class="d2d-unit"><div class="sheet-mini" aria-hidden="true"><i class="gold"></i><i></i><i></i><i></i><i></i></div><div class="cap">34-Word Local Recovery Sheet</div></div>
+<div class="d2d-unit"><div class="octagon" aria-hidden="true">STOP</div><div class="cap">Credential-Refusal Approval Gate</div></div>
+</div>
+</div>
+</div>
+</div></section>
+
+<section class="section" style="padding-top:34px;padding-bottom:64px"><div class="wrap">
+<div class="quad reveal">
+<div class="p4 rv"><h3>Device-Generated Cryptographic Keys</h3>
+<div class="p4-viz"><span class="ic" style="width:74px;height:74px;border-radius:18px"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="width:40px;height:40px"><path d="M12 3l7 3v5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6z"/><circle cx="12" cy="10.5" r="2.4"/><path d="M12 12.9V16"/></svg></span></div>
+<p>Your identity is a key made on your device. DeskGuest has no copy of it and cannot reset it for you.</p></div>
+<div class="p4 rv"><h3>10-Minute Single-Use Pairing Codes</h3>
+<div class="p4-viz"><div class="viz-code" style="width:100%"><div class="vc-cap">Quick-refresh passcode</div><div class="vc-num">3 8 9 8</div><div class="vc-exp">Single-use · gone in <strong>10 minutes</strong></div></div></div>
+<p>On the Full Platform, pairing begins with a code the device itself shows. <a class="more" href="quick-fix.html">Quick Fix begins from an invite link instead</a></p></div>
+<div class="p4 rv"><h3>Plain-English Approval Gates &amp; Credential Refusal</h3>
+<div class="p4-viz" style="flex-direction:column;gap:10px"><div class="viz-approve" style="margin-top:0;width:100%"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6z"/><path d="M9 11.6l2.2 2.2L15.4 9.6"/></svg>Approve the exact action</div><div class="viz-approve" style="margin-top:0;width:100%"><span style="background:var(--red);color:#fff;font-weight:800;font-size:12px;border-radius:7px;padding:3px 10px;flex:none">STOP</span>Credentials are refused, always</div></div>
+<p>Sensitive actions show you exactly what will happen before they run — and passwords are never typed by a helper.</p></div>
+<div class="p4 rv"><h3>Open-Source Code &amp; Local Activity Ledger</h3>
+<div class="p4-viz"><div class="viz-slip" style="width:100%;max-width:230px;text-align:left"><strong style="color:var(--text)">&lt;/&gt; Public code</strong><br>✓ Auditable by anyone<br>✓ Record stays on the device</div></div>
+<p>The code is open for inspection, and the record of what happened never leaves the device unless you send it.</p></div>
+</div>
+</div></section>
 
 <section class="section"><div class="wrap">
 <div class="sec-head reveal"><h2>What is being protected</h2>
 <p>Your device and everything on it; the screen and input during a session; your identity key and your ways back in; and the Activity Record that proves what happened.</p></div>
 <div class="sec-head reveal"><h2>Who it is protected against</h2></div>
 <div class="cards reveal">
-<div class="card rv"><h3>The fake helper</h3><p>A scammer who phones or messages claiming to be support and asks you to "let them in." Defense: a session can only begin when you open DeskGuest and hand out a one-time code; the helper is named on screen the whole time; and DeskGuest never presses Yes on system prompts. <a class="more" href="scam.html">Is this a scam?</a></p></div>
+<div class="card rv"><h3>The fake helper</h3><p>A scammer who phones or messages claiming to be support and asks you to "let them in." Defense: help can only begin when you start it — on the Full Platform you open DeskGuest and hand out a one-time code; in Quick Fix, you open the invite link your helper sent. Either way the helper is named on screen the whole time, and DeskGuest never presses Yes on system prompts. <a class="more" href="scam.html">Is this a scam?</a></p></div>
 <div class="card rv"><h3>A helper who oversteps</h3><p>A paired person or AI agent doing more than you allowed. Defense: per-helper permission levels set by you; sensitive actions arrive as approval cards before they run; presence that cannot be hidden; STOP that cuts input first; and an Activity Record that can't be quietly edited.</p></div>
 <div class="card rv"><h3>Someone watching the wire</h3><p>An observer on the network, or a relay carrying your session. Defense: sessions are sealed between the devices. Relays and coordination services can carry a session but cannot read one; the swarm phone-book finds devices without any server knowing the list.</p></div>
 <div class="card rv"><h3>A lost or stolen device</h3><p>Defense: your identity is a key held on the device, and any surviving device of yours can strike a lost device's key from your circle. Recovery doors (a sealed file, a trusted person, split pieces, a word sheet) restore you — never a central reset DeskGuest controls.</p></div>

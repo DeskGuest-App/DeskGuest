@@ -28,9 +28,25 @@
 </div></header>
 <main id="main">
 <section class="page-hero"><div class="wrap">
-<h1 class="page-title">Verify a download</h1>
-<p class="page-sub">Every DeskGuest release publishes a File Check Code (SHA-256) beside its downloads. Comparing the code takes a minute, and it proves the file you have is the file that was published.</p>
-</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
+<h1 class="page-title">Verify your download — in plain words.</h1>
+<p class="page-sub">Drop your installer file or paste its SHA-256 check code to confirm it matches the official release. Runs locally in your browser — the file never leaves your device.</p>
+</div></section>
+
+<section class="section" style="padding-top:26px;padding-bottom:64px"><div class="wrap">
+<div class="drop-card reveal">
+<div class="drop-zone" id="dropZone">
+<p class="dz-text">Drop DeskGuest installer here or paste SHA-256 code</p>
+<div class="drop-row">
+<label class="btn" for="fileInput" style="cursor:pointer">Choose File</label>
+<input type="file" id="fileInput" class="sr-only" aria-label="Choose the downloaded file to check">
+<input type="text" id="publishedCode" placeholder="Paste the published File Check Code" aria-label="Paste the published File Check Code" autocomplete="off" spellcheck="false">
+<button class="btn teal" id="compareBtn" type="button">Compare</button>
+</div>
+<p class="dz-file" id="fileStatus">No file chosen yet. The check runs entirely on this device — nothing is uploaded.</p>
+</div>
+</div>
+<div id="resultSlot" aria-live="polite"></div>
+</div></section>
 
 <section class="section"><div class="wrap">
 <div class="sec-head reveal"><h2>On Windows</h2></div>
@@ -41,7 +57,7 @@
 </div>
 <div class="sec-head reveal" style="margin-top:48px"><h2>What the result means</h2></div>
 <div class="cards reveal">
-<div class="card rv"><h3>The codes match</h3><p>Your file is byte-for-byte the file that was published. Install it with confidence.</p></div>
+<div class="card rv"><h3>The codes match</h3><p>Your file is byte-for-byte the file that was published. <strong>The file matches the published File Check Code.</strong></p></div>
 <div class="card rv"><h3>The codes don't match</h3><p>Do not install the file. Delete it and download again from this site or the project's releases page — nowhere else. If a fresh download still doesn't match, <a href="support.html">report it</a>: that's exactly the kind of thing we need to hear.</p></div>
 </div>
 <div class="notice red reveal"><strong>Only two places are official:</strong> this website's Download page and <a href="https://github.com/DeskGuest-App/DeskGuest">the DeskGuest project on GitHub</a>. DeskGuest is not in the Microsoft Store or Google Play, and no other site is authorised to offer it. A "DeskGuest" download from anywhere else is not DeskGuest.</div>
@@ -65,5 +81,44 @@
 Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>
 </div></footer>
 <script src="site.js"></script>
+<script>
+(function(){
+  var zone=document.getElementById('dropZone'), input=document.getElementById('fileInput'),
+      pub=document.getElementById('publishedCode'), btn=document.getElementById('compareBtn'),
+      status=document.getElementById('fileStatus'), slot=document.getElementById('resultSlot'),
+      fileHash=null, fileName='';
+  function clean(s){ return (s||'').replace(/[^0-9a-fA-F]/g,'').toLowerCase(); }
+  function showResult(match){
+    var div=document.createElement('div');
+    div.className='result-card '+(match?'match':'mismatch');
+    div.innerHTML = match
+      ? '<h3><span class="mark">✓</span>Match</h3><p class="ok-line">The file matches the published File Check Code.</p><p>This matches the official release — the file you have is byte-for-byte the file that was published.</p><span class="hash">SHA-256: '+fileHash+'</span>'
+      : '<h3><span class="mark">✗</span>Mismatch</h3><p class="ok-line">This does not match — do not install.</p><p>Delete the file and download again from this site or the project\u2019s releases page — nowhere else.</p><span class="hash">SHA-256: '+fileHash+'</span>';
+    slot.innerHTML=''; slot.appendChild(div);
+  }
+  function hashFile(file){
+    fileName=file.name; slot.innerHTML='';
+    status.textContent='Reading '+fileName+' locally…';
+    file.arrayBuffer().then(function(buf){
+      return crypto.subtle.digest('SHA-256', buf);
+    }).then(function(d){
+      fileHash=Array.prototype.map.call(new Uint8Array(d),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
+      status.innerHTML='<strong>'+fileName+'</strong> — its File Check Code:<span class="hash">SHA-256: '+fileHash+'</span>';
+    }).catch(function(){
+      fileHash=null; status.textContent='That file could not be read. Try choosing it again.';
+    });
+  }
+  input.addEventListener('change',function(){ if(input.files[0]) hashFile(input.files[0]); });
+  ['dragenter','dragover'].forEach(function(ev){ zone.addEventListener(ev,function(e){ e.preventDefault(); zone.classList.add('drag'); }); });
+  ['dragleave','drop'].forEach(function(ev){ zone.addEventListener(ev,function(e){ e.preventDefault(); zone.classList.remove('drag'); }); });
+  zone.addEventListener('drop',function(e){ var f=e.dataTransfer.files&&e.dataTransfer.files[0]; if(f) hashFile(f); });
+  btn.addEventListener('click',function(){
+    var want=clean(pub.value);
+    if(!fileHash){ status.textContent='Choose or drop the downloaded file first — its code is computed here, on your device.'; return; }
+    if(want.length!==64){ slot.innerHTML=''; status.textContent='Paste the full published File Check Code (64 characters) beside the download, then Compare.'; return; }
+    showResult(want===fileHash);
+  });
+})();
+</script>
 </body>
 </html>
