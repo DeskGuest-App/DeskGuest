@@ -75,6 +75,7 @@ DeskGuest works with any AI agent that uses MCP, the open connection standard. *
 | **[Trust & Security](https://deskguest.pages.dev/trust)** | The consent floor: what no setting and no policy can switch off |
 | **[Security](https://deskguest.pages.dev/security)** | The threat model, in plain words — including what DeskGuest does not claim |
 | **[Privacy](https://deskguest.pages.dev/privacy)** | No account, no cloud, no telemetry — and what that means in practice |
+| **[Terms of Service](https://deskguest.pages.dev/terms)** | The full terms (v1.0) — the same text the installer shows on its first page, before anything is installed, and a pairing asks an agent to acknowledge |
 | **[Verify a download](https://deskguest.pages.dev/verify)** | Check a file's File Check Code (SHA-256) before you run it |
 | **[Is this a scam?](https://deskguest.pages.dev/scam)** | The three signs of a genuine DeskGuest session, and the red flags |
 | **[For Workplaces](https://deskguest.pages.dev/workplaces)** | Groups, signed policy and local audit — without a fleet roster on endpoints |
