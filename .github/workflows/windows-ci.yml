@@ -1,0 +1,38 @@
+name: Windows CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "windows/**"
+      - ".github/workflows/windows-ci.yml"
+  pull_request:
+    branches: [main]
+    paths:
+      - "windows/**"
+      - ".github/workflows/windows-ci.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    name: Build & test (Release)
+    runs-on: windows-latest
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@v4
+
+      - name: Set up .NET 10
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: "10.0.x"
+
+      - name: Restore
+        run: dotnet restore windows/AcpWindows.slnx
+
+      - name: Build (Release)
+        run: dotnet build windows/AcpWindows.slnx --configuration Release --no-restore
+
+      - name: Test
+        run: dotnet test windows/AcpWindows.slnx --configuration Release --no-build --verbosity normal
