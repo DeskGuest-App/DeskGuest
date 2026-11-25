@@ -24,6 +24,18 @@ public sealed record TermsBundle(string Version, string Sha256, string Text, str
     /// completes only when the hash is the exact current one.</summary>
     public const string AckMethod = "deskguest/terms_acknowledge";
 
+    /// <summary>The same acknowledgment as a standard MCP tool
+    /// (BUILD-PROGRAMME item (16) amendment, 2026-11-25 — Muse
+    /// decision under delegation; GitHub issue #25). The battery's
+    /// run 4 proved mainstream AI hosts (ChatGPT/Codex first) give
+    /// the model tools + resource reads only — no way to emit a
+    /// custom protocol method — so a method-only ack is a wall no
+    /// tool-surface host can pass. The tool form carries identical
+    /// semantics through TermsAckService: exact match against the
+    /// served bundle or a recorded refusal, the same store fields,
+    /// the same audit-chain acceptance entry.</summary>
+    public const string AckToolName = "terms_acknowledge";
+
     /// <summary>The agent-facing rulebook (item 16(a)): what the
     /// scopes mean, STOP is absolute, presence is non-negotiable,
     /// an agent may never widen its own access or pair itself, and
@@ -66,8 +78,8 @@ public sealed record TermsBundle(string Version, string Sha256, string Text, str
     /// and what stays locked until it does.</summary>
     public string Instructions =>
         $"DeskGuest Terms of Service v{Version} (SHA-256 {Sha256}) govern this pairing. " +
-        $"Read the full text at resource {ResourceUri} (resources/read), then acknowledge the exact hash by calling the {AckMethod} method " +
-        $"with {{\"terms_version\":\"{Version}\",\"terms_sha256\":\"{Sha256}\"}}. " +
+        $"Read the full text at resource {ResourceUri} (resources/read), then acknowledge the exact hash — call the {AckMethod} method, " +
+        $"or the {AckToolName} tool, with {{\"terms_version\":\"{Version}\",\"terms_sha256\":\"{Sha256}\"}}. " +
         "Sessions stay locked until the acknowledgment is recorded. The bundle delivered at pairing also carried the agent rulebook. " +
         "The full current text is always served at that resource — never a diff; if the Terms change, re-read and re-acknowledge before your next session.";
 }
