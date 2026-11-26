@@ -32,6 +32,7 @@
 - **No account, no cloud, nothing phoning home.** Your identity is a key made on your device. We have no copy of it, run no cloud of our own, and collect no telemetry.
 - **Your AI, on your leash.** Pair the AI agent you already use. It connects under its own name, starts at look-only, and stops to ask before anything sensitive.
 - **Everything is written down, on your device.** Every session leaves a plain-language record you own: who was here, what they did.
+- **Everything they can do — free.** Everything the established remote tools can do, DeskGuest can — or will be able to — do, and all of it is free. The [Features page](https://deskguest.app/features) checks that claim row by row in the open, and the rows that aren't built yet are labelled, not hidden.
 
 ## Two installs per platform — that's the whole choice
 
