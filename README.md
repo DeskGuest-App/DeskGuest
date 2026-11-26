@@ -22,9 +22,13 @@
   <img src=".github/assets/presence-strip.png" alt="What you see while someone helps: The Box — a banner naming who is connected, carrying the STOP button. The Ghost — your helper's pointer, a ring carrying their initial. The Glow — a soft edge of light around your screen while a session is live." width="100%">
 </p>
 
-<!-- REAL-CAPTURE SLOT: when a genuine screenshot of the shipping app exists
-     in .github/assets (a live session with the presence box up), place it
-     here with honest alt text. Artwork and mock-ups never go in this slot. -->
+<p align="center">
+  <img src=".github/assets/live-session.png" alt="A genuine live DeskGuest session, captured as it happened: the banner at the top of the screen reads 'Axle (AI Agent) is controlling your computer \u2014 You see everything' with a red STOP (ESC) button beside it, and the DeskGuest window below shows the same session in progress, with its own STOP button." width="100%">
+</p>
+
+<p align="center">
+  <em>A live session, captured as it happened \u2014 not artwork, not a mock-up. The banner names who is connected, and STOP is always on screen.</em>
+</p>
 
 ## Why it's different
 
