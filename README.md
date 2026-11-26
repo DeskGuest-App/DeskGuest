@@ -23,11 +23,11 @@
 </p>
 
 <p align="center">
-  <img src=".github/assets/live-session.png" alt="A genuine live DeskGuest session, captured as it happened: the banner at the top of the screen reads 'Axle (AI Agent) is controlling your computer \u2014 You see everything' with a red STOP (ESC) button beside it, and the DeskGuest window below shows the same session in progress, with its own STOP button." width="100%">
+  <img src=".github/assets/live-session.png" alt="A genuine live DeskGuest session, captured as it happened: the banner at the top of the screen reads 'Axle (AI Agent) is controlling your computer — You see everything' with a red STOP (ESC) button beside it, and the DeskGuest window below shows the same session in progress, with its own STOP button." width="100%">
 </p>
 
 <p align="center">
-  <em>A live session, captured as it happened \u2014 not artwork, not a mock-up. The banner names who is connected, and STOP is always on screen.</em>
+  <em>A live session, captured as it happened — not artwork, not a mock-up. The banner names who is connected, and STOP is always on screen.</em>
 </p>
 
 ## Why it's different
