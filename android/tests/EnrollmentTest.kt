@@ -1,8 +1,8 @@
-import io.agenticcontrol.app.adb.Ed25519
-import io.agenticcontrol.app.crypto.AesGcmLineCipher
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollPayload
-import io.agenticcontrol.app.enrollment.EnrollmentStore
+import io.deskguest.app.adb.Ed25519
+import io.deskguest.app.crypto.AesGcmLineCipher
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollPayload
+import io.deskguest.app.enrollment.EnrollmentStore
 import java.io.File
 import java.nio.file.Files
 import java.util.Base64
@@ -41,7 +41,7 @@ private fun wrongCodeFor(liveDisplay: String): String {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-enrollment-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-enrollment-test").toFile()
 
     // ---- RFC 8032 §7.1 TEST 1: sign + verify, exact bytes ----
     val seed1 = unhex("9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60")
@@ -324,8 +324,8 @@ fun main() {
     val qrCode = store.mint("company", "group-42", "Work")
     // mint on `store` opened a new live code; use its raw form.
     val payload = EnrollPayload.build(qrCode, "company", "group-42")
-    check("QR payload has the exact acp://enroll/1 shape",
-        payload.startsWith("acp://enroll/1?c=") && payload.contains("&s=company") && payload.contains("&g=group-42"))
+    check("QR payload has the exact deskguest://enroll/1 shape",
+        payload.startsWith("deskguest://enroll/1?c=") && payload.contains("&s=company") && payload.contains("&g=group-42"))
     val parsed = EnrollPayload.parse(payload)
     check("QR roundtrip preserves code/scope/group",
         parsed != null &&
@@ -336,25 +336,25 @@ fun main() {
     check("QR parse rejects wrong scheme",
         EnrollPayload.parse("http://enroll/1?c=${parsed!!.code}&s=company&g=group-42") == null)
     check("QR parse rejects wrong version",
-        EnrollPayload.parse("acp://enroll/2?c=${parsed.code}&s=company&g=group-42") == null)
+        EnrollPayload.parse("deskguest://enroll/2?c=${parsed.code}&s=company&g=group-42") == null)
     check("QR parse rejects wrong path",
-        EnrollPayload.parse("acp://pair/1?c=${parsed.code}&s=company&g=group-42") == null)
+        EnrollPayload.parse("deskguest://pair/1?c=${parsed.code}&s=company&g=group-42") == null)
     check("QR parse rejects missing code",
-        EnrollPayload.parse("acp://enroll/1?s=company&g=group-42") == null)
+        EnrollPayload.parse("deskguest://enroll/1?s=company&g=group-42") == null)
     check("QR parse rejects blank code",
-        EnrollPayload.parse("acp://enroll/1?c=&s=company&g=group-42") == null)
+        EnrollPayload.parse("deskguest://enroll/1?c=&s=company&g=group-42") == null)
     check("QR parse rejects missing scope",
-        EnrollPayload.parse("acp://enroll/1?c=${parsed.code}&g=group-42") == null)
+        EnrollPayload.parse("deskguest://enroll/1?c=${parsed.code}&g=group-42") == null)
     check("QR parse rejects missing group",
-        EnrollPayload.parse("acp://enroll/1?c=${parsed.code}&s=company") == null)
+        EnrollPayload.parse("deskguest://enroll/1?c=${parsed.code}&s=company") == null)
     check("QR parse rejects unknown scope",
-        EnrollPayload.parse("acp://enroll/1?c=${parsed.code}&s=galaxy&g=group-42") == null)
+        EnrollPayload.parse("deskguest://enroll/1?c=${parsed.code}&s=galaxy&g=group-42") == null)
     check("QR parse rejects garbage", EnrollPayload.parse("not a payload at all") == null)
     check("QR parse rejects empty string", EnrollPayload.parse("") == null)
     check("QR parse rejects null", EnrollPayload.parse(null) == null)
-    check("QR parse rejects bare prefix", EnrollPayload.parse("acp://enroll/1") == null)
+    check("QR parse rejects bare prefix", EnrollPayload.parse("deskguest://enroll/1") == null)
     check("QR parse rejects malformed code chars",
-        EnrollPayload.parse("acp://enroll/1?c=0000000000&s=company&g=group-42") == null)
+        EnrollPayload.parse("deskguest://enroll/1?c=0000000000&s=company&g=group-42") == null)
 
     // ================= D38 reconciliation (S1-AND findings) =================
     run {
@@ -509,7 +509,7 @@ fun main() {
         val f9Store = EnrollmentStore(File(dir, "d38-f9.tsv"), cipher)
         val f9Code = f9Store.mint("personal", "gpers", "Personal Group")
         val tamperedPayload =
-            "acp://enroll/1?c=${EnrollmentStore.normalizeCode(f9Code)}&s=company&g=dg-evil"
+            "deskguest://enroll/1?c=${EnrollmentStore.normalizeCode(f9Code)}&s=company&g=dg-evil"
         val f9Parsed = EnrollPayload.parse(tamperedPayload)
         val f9Device = DeviceIdentity.generate()
         check("D38/F9 a tampered QR (scope/group rewritten) still redeems under the MINT's scope + group",

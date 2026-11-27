@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Agentic Control Platform — toolchain setup v3 (single run, fails whole).
+# DeskGuest — toolchain setup v3 (single run, fails whole).
 # Why v3: this VM's egress proxy breaks the JDK's built-in HTTP tunnelling
 # (sdkmanager dies in HttpURLConnection.doTunneling0 even with proxy -D
 # flags). curl handles the proxy fine, so SDK packages are fetched with

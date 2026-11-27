@@ -1,23 +1,23 @@
-import io.agenticcontrol.app.aipack.AiPackManifest
-import io.agenticcontrol.app.aipack.AiPackService
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.quickassist.QuickAssistService
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.session.TerminalService
-import io.agenticcontrol.app.session.TerminalSink
-import io.agenticcontrol.app.transport.Ipv6Reachability
-import io.agenticcontrol.app.transport.Ipv6Rung
-import io.agenticcontrol.app.transport.OwnPathPeer
-import io.agenticcontrol.app.transport.OwnPathPeerSet
-import io.agenticcontrol.app.transport.OwnPathRung
-import io.agenticcontrol.app.transport.OwnPathValidation
-import io.agenticcontrol.app.transport.TorConfig
-import io.agenticcontrol.app.transport.TorRung
-import io.agenticcontrol.app.transport.TransportTarget
-import io.agenticcontrol.app.transport.WireGuardConfigGenerator
-import io.agenticcontrol.app.aipack.PackFile
+import io.deskguest.app.aipack.AiPackManifest
+import io.deskguest.app.aipack.AiPackService
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.quickassist.QuickAssistService
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.session.TerminalService
+import io.deskguest.app.session.TerminalSink
+import io.deskguest.app.transport.Ipv6Reachability
+import io.deskguest.app.transport.Ipv6Rung
+import io.deskguest.app.transport.OwnPathPeer
+import io.deskguest.app.transport.OwnPathPeerSet
+import io.deskguest.app.transport.OwnPathRung
+import io.deskguest.app.transport.OwnPathValidation
+import io.deskguest.app.transport.TorConfig
+import io.deskguest.app.transport.TorRung
+import io.deskguest.app.transport.TransportTarget
+import io.deskguest.app.transport.WireGuardConfigGenerator
+import io.deskguest.app.aipack.PackFile
 import java.io.File
 import java.nio.file.Files
 import java.security.MessageDigest
@@ -93,7 +93,7 @@ private class FakeSink : TerminalSink {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-blockf").toFile()
+    val dir = Files.createTempDirectory("deskguest-blockf").toFile()
 
     // ---- ipv6 classification: only global unicast passes ----
     check("ipv6: global unicast passes", Ipv6Reachability.classify("2606:4700:4700::1111").first)

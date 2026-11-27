@@ -1,14 +1,14 @@
-import io.agenticcontrol.app.backup.BackupCrypto
-import io.agenticcontrol.app.backup.BackupPolicy
-import io.agenticcontrol.app.backup.BackupService
-import io.agenticcontrol.app.backup.SafTree
-import io.agenticcontrol.app.backup.StoreSource
-import io.agenticcontrol.app.cameraview.ChainedAudit
-import io.agenticcontrol.app.recovery.RecoveryBlob
-import io.agenticcontrol.app.server.EventSubscriptions
-import io.agenticcontrol.app.server.EventToolHost
-import io.agenticcontrol.app.server.PairingStore
-import io.agenticcontrol.app.server.SessionEvents
+import io.deskguest.app.backup.BackupCrypto
+import io.deskguest.app.backup.BackupPolicy
+import io.deskguest.app.backup.BackupService
+import io.deskguest.app.backup.SafTree
+import io.deskguest.app.backup.StoreSource
+import io.deskguest.app.cameraview.ChainedAudit
+import io.deskguest.app.recovery.RecoveryBlob
+import io.deskguest.app.server.EventSubscriptions
+import io.deskguest.app.server.EventToolHost
+import io.deskguest.app.server.PairingStore
+import io.deskguest.app.server.SessionEvents
 import java.io.File
 import java.nio.file.Files
 import java.security.MessageDigest
@@ -61,7 +61,7 @@ fun main() {
         val dest = MemTree()
         val svc = BackupService(stores, ChainedAudit(), { tick() }, manifestKey, payloadKey)
         val m = svc.backup(dest).getOrThrow()
-        val storedRoster = dest.files["${m.id}/acp/roster.tsv"]!!
+        val storedRoster = dest.files["${m.id}/deskguest/roster.tsv"]!!
         check("W5-1 payload at rest is ciphertext (magic present, plaintext absent)",
             BackupCrypto.isEncrypted(storedRoster) &&
                 !String(storedRoster, Charsets.UTF_8).contains("roster-secret-rows"))
@@ -73,8 +73,8 @@ fun main() {
         val target = MemTree()
         check("W5-1 round-trip restores byte-equal plaintext",
             svc.restore(dest, m.id, target).isSuccess &&
-                target.files["acp/roster.tsv"]!!.contentEquals("roster-secret-rows".toByteArray()) &&
-                target.files["acp/pairings.tsv"]!!.contentEquals("pairing-token-material".toByteArray()))
+                target.files["deskguest/roster.tsv"]!!.contentEquals("roster-secret-rows".toByteArray()) &&
+                target.files["deskguest/pairings.tsv"]!!.contentEquals("pairing-token-material".toByteArray()))
 
         // DESTRUCTION: wrong key — refused, target byte-identical.
         val victim = MemTree()
@@ -95,7 +95,7 @@ fun main() {
         // only the GCM tag can catch it).
         val tampered = MemTree()
         dest.files.forEach { (k, v) -> tampered.files[k] = v.copyOf() }
-        val entryName = "acp/roster.tsv"
+        val entryName = "deskguest/roster.tsv"
         val raw = tampered.files["${m.id}/$entryName"]!!
         raw[raw.size - 1] = (raw[raw.size - 1] + 1).toByte()
         val lines = String(tampered.files["${m.id}/manifest.txt"]!!, Charsets.UTF_8).lines().toMutableList()
@@ -115,12 +115,12 @@ fun main() {
         // the same way) — the AAD name binding must refuse.
         val swapped = MemTree()
         dest.files.forEach { (k, v) -> swapped.files[k] = v.copyOf() }
-        val a = swapped.files["${m.id}/acp/roster.tsv"]!!
-        val b = swapped.files["${m.id}/acp/pairings.tsv"]!!
-        swapped.files["${m.id}/acp/roster.tsv"] = b
-        swapped.files["${m.id}/acp/pairings.tsv"] = a
+        val a = swapped.files["${m.id}/deskguest/roster.tsv"]!!
+        val b = swapped.files["${m.id}/deskguest/pairings.tsv"]!!
+        swapped.files["${m.id}/deskguest/roster.tsv"] = b
+        swapped.files["${m.id}/deskguest/pairings.tsv"] = a
         val sLines = String(swapped.files["${m.id}/manifest.txt"]!!, Charsets.UTF_8).lines().toMutableList()
-        for (n in listOf("acp/roster.tsv", "acp/pairings.tsv")) {
+        for (n in listOf("deskguest/roster.tsv", "deskguest/pairings.tsv")) {
             val i = sLines.indexOfFirst { it.startsWith("$n\t") }
             sLines[i] = "$n\t${sha(swapped.files["${m.id}/$n"]!!)}"
         }
@@ -146,7 +146,7 @@ fun main() {
         val target = MemTree()
         check("W5-2 passphrase round-trip byte-equal",
             svc.restore(dest, m.id, target).isSuccess &&
-                target.files["acp/roster.tsv"]!!.contentEquals("roster-secret-rows".toByteArray()))
+                target.files["deskguest/roster.tsv"]!!.contentEquals("roster-secret-rows".toByteArray()))
         val wrongPass = BackupService(stores, ChainedAudit(), { tick() }, manifestKey, null, "wrong horse battery")
         val victim = MemTree()
         check("W5-2 DESTRUCTION wrong passphrase refused, nothing written",

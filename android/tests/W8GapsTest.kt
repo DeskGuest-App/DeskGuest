@@ -1,19 +1,19 @@
-import io.agenticcontrol.app.chat.AgentChatStore
-import io.agenticcontrol.app.design.EffectivePolicyModel
-import io.agenticcontrol.app.design.GateModel
-import io.agenticcontrol.app.design.SetupWizardModel
-import io.agenticcontrol.app.enterprise.ChainedAuditLog
-import io.agenticcontrol.app.rmmspine.EffectivePolicyView
-import io.agenticcontrol.app.rmmspine.ManagementPolicyDocument
-import io.agenticcontrol.app.rmmspine.ManagementPolicyEngine
-import io.agenticcontrol.app.rmmspine.MdmDeviceNotice
-import io.agenticcontrol.app.rmmspine.MdmWiring
-import io.agenticcontrol.app.rmmspine.PolicyLevels
-import io.agenticcontrol.app.rmmspine.StaticDeviceFacts
-import io.agenticcontrol.app.server.ChatToolHost
-import io.agenticcontrol.app.server.DataFlows
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.chat.AgentChatStore
+import io.deskguest.app.design.EffectivePolicyModel
+import io.deskguest.app.design.GateModel
+import io.deskguest.app.design.SetupWizardModel
+import io.deskguest.app.enterprise.ChainedAuditLog
+import io.deskguest.app.rmmspine.EffectivePolicyView
+import io.deskguest.app.rmmspine.ManagementPolicyDocument
+import io.deskguest.app.rmmspine.ManagementPolicyEngine
+import io.deskguest.app.rmmspine.MdmDeviceNotice
+import io.deskguest.app.rmmspine.MdmWiring
+import io.deskguest.app.rmmspine.PolicyLevels
+import io.deskguest.app.rmmspine.StaticDeviceFacts
+import io.deskguest.app.server.ChatToolHost
+import io.deskguest.app.server.DataFlows
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 
@@ -61,11 +61,11 @@ object W8GapsTest {
     @JvmStatic
     fun main(args: Array<String>) {
         val root = File(args[0])
-        val src = File(root, "app/src/main/java/io/agenticcontrol/app")
+        val src = File(root, "app/src/main/java/io/deskguest/app")
         fun text(rel: String) = File(src, rel).readText()
 
         // ================= Item 1: chat transport =================
-        val dir = File(System.getProperty("java.io.tmpdir"), "acp-w8-" + System.nanoTime())
+        val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-w8-" + System.nanoTime())
         dir.mkdirs()
         val chatDir = File(dir, "agent-chat")
         val store = PairingStore(File(dir, "pairings.tsv"))
@@ -167,8 +167,8 @@ object W8GapsTest {
         // Absent-source honesty: no facts ⇒ executeAction refuses
         // closed at the policy gate, nothing is executed silently.
         val (outcome, why) = service2.executeAction(
-            io.agenticcontrol.app.rmmspine.MdmActionRequest(
-                "cmd-2", "phone-1", io.agenticcontrol.app.rmmspine.MdmActionKinds.LOCK,
+            io.deskguest.app.rmmspine.MdmActionRequest(
+                "cmd-2", "phone-1", io.deskguest.app.rmmspine.MdmActionKinds.LOCK,
                 noticeText = "locking", issuedMs = 1000L, expiresMs = 2000L
             ), null, "hub", 1500L
         )
@@ -179,7 +179,7 @@ object W8GapsTest {
             rmmAct.contains("ControlService.sharedMdmService") &&
                 rmmAct.contains("MdmWiring.liveNoticeRows"))
         check("mdm wiring: ControlService constructs + publishes the live service",
-            svc.contains("sharedMdmService = io.agenticcontrol.app.rmmspine.MdmWiring.build") &&
+            svc.contains("sharedMdmService = io.deskguest.app.rmmspine.MdmWiring.build") &&
                 svc.contains("var sharedMdmService"))
 
         // ================= Item 3: wizard =================
@@ -206,7 +206,7 @@ object W8GapsTest {
                 wiz.indexOf("step = Step.ACCESS") < wiz.indexOf("step = Step.SELFCHECK"))
         // SAS: a real enrollment-derived phrase renders through the
         // model; the line is bound to the enrollment record.
-        val sas = io.agenticcontrol.app.enrollment.PairingSas.compute(
+        val sas = io.deskguest.app.enrollment.PairingSas.compute(
             ByteArray(32) { it.toByte() }, ByteArray(32) { (it + 7).toByte() }, "code-123"
         )!!
         check("wizard SAS: phrase line renders the real derived phrase",
@@ -278,19 +278,19 @@ object W8GapsTest {
             effAct.contains("PolicyGate.engine") && effAct.contains("EffectivePolicyView.render(boundEngine, boundFacts)"))
 
         // ================= Item 5: OI-13 injection fixtures =================
-        val own = "io.agenticcontrol.app"
-        check("OI-13 fixture: own package is an ACP window target",
-            GateModel.targetIsAcpWindow(own, own))
+        val own = "io.deskguest.app"
+        check("OI-13 fixture: own package is an DeskGuest window target",
+            GateModel.targetIsDeskGuestWindow(own, own))
         check("OI-13 fixture: another package is not refused by this rule",
-            !GateModel.targetIsAcpWindow("com.example.other", own))
-        check("OI-13 fixture: unknown (null) target is not treated as ACP",
-            !GateModel.targetIsAcpWindow(null, own) && !GateModel.targetIsAcpWindow("", own))
-        check("OI-13 fixture: gesture path decision refuses ACP target",
-            GateModel.agentActionOnAcpWindowRefused(
-                GateModel.InjectionPath.GESTURE, GateModel.targetIsAcpWindow(own, own)))
-        check("OI-13 fixture: node-action path decision refuses ACP target",
-            GateModel.agentActionOnAcpWindowRefused(
-                GateModel.InjectionPath.NODE_ACTION, GateModel.targetIsAcpWindow(own, own)))
+            !GateModel.targetIsDeskGuestWindow("com.example.other", own))
+        check("OI-13 fixture: unknown (null) target is not treated as DeskGuest",
+            !GateModel.targetIsDeskGuestWindow(null, own) && !GateModel.targetIsDeskGuestWindow("", own))
+        check("OI-13 fixture: gesture path decision refuses DeskGuest target",
+            GateModel.agentActionOnDeskGuestWindowRefused(
+                GateModel.InjectionPath.GESTURE, GateModel.targetIsDeskGuestWindow(own, own)))
+        check("OI-13 fixture: node-action path decision refuses DeskGuest target",
+            GateModel.agentActionOnDeskGuestWindowRefused(
+                GateModel.InjectionPath.NODE_ACTION, GateModel.targetIsDeskGuestWindow(own, own)))
         check("OI-13 fixture: shell 'input tap' refused (unresolvable target)",
             GateModel.shellInputRefused("input tap 500 500", own))
         check("OI-13 fixture: shell chained input refused",
@@ -298,7 +298,7 @@ object W8GapsTest {
         check("OI-13 fixture: shell input swipe/keyevent refused",
             GateModel.shellInputRefused("input swipe 1 2 3 4", own) &&
                 GateModel.shellInputRefused("input keyevent 66", own))
-        check("OI-13 fixture: shell launch of ACP itself refused",
+        check("OI-13 fixture: shell launch of DeskGuest itself refused",
             GateModel.shellInputRefused("am start -n $own/.MainActivity", own))
         check("OI-13 fixture: ordinary shell work is NOT refused",
             !GateModel.shellInputRefused("settings get global device_name", own) &&
@@ -311,7 +311,7 @@ object W8GapsTest {
                 // — a non-null node can expose a null packageName, so
                 // the node/launch action decision is the fail-closed
                 // GateModel.nodeTargetRefused, not the bare
-                // targetIsAcpWindow classification).
+                // targetIsDeskGuestWindow classification).
                 a11y.contains("GateModel.nodeTargetRefused") &&
                 a11y.contains("targetIsOwnWindow(live.packageName") &&
                 // W13 superseded pin (cause: P1-F2 — the gesture

@@ -47,8 +47,8 @@ echo "[5/6] package dex + zipalign"
 (cd "$OUT/dex" && zip -q ../app-unsigned.apk classes*.dex)
 "$BT/zipalign" -f 4 "$OUT/app-unsigned.apk" "$OUT/app-aligned.apk"
 
-echo "[6/6] apksigner (release key by default; ACP_DEBUG_SIGN=1 for the debug key)"
-if [ "${ACP_DEBUG_SIGN:-0}" = "1" ]; then
+echo "[6/6] apksigner (release key by default; DESKGUEST_DEBUG_SIGN=1 for the debug key)"
+if [ "${DESKGUEST_DEBUG_SIGN:-0}" = "1" ]; then
   KEYSTORE=$HOME/workspace/tools/debug.keystore
   if [ ! -f "$KEYSTORE" ]; then
     keytool -genkeypair -keystore "$KEYSTORE" -storepass android -keypass android \
@@ -57,9 +57,9 @@ if [ "${ACP_DEBUG_SIGN:-0}" = "1" ]; then
   fi
   KS_PASS=android; KEY_ALIAS=androiddebugkey
 else
-  KEYSTORE=$HOME/.config/agentic-control/release.keystore
-  KS_PASS=$(cat "$HOME/.config/agentic-control/keystore-password")
-  KEY_ALIAS=agentic-control
+  KEYSTORE=$HOME/.config/deskguest/release.keystore
+  KS_PASS=$(cat "$HOME/.config/deskguest/keystore-password")
+  KEY_ALIAS=deskguest
 fi
 "$BT/apksigner" sign --ks "$KEYSTORE" --ks-pass "pass:$KS_PASS" --key-pass "pass:$KS_PASS" \
   --ks-key-alias "$KEY_ALIAS" \

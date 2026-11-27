@@ -1,24 +1,24 @@
 // Wave 12 Lane B — round-1 disposition regression pins (Android).
 // Each check names the packet/finding it pins. Pure/model layer only.
-import io.agenticcontrol.app.backup.BackupCrypto
-import io.agenticcontrol.app.backup.BackupPolicy
-import io.agenticcontrol.app.backup.BackupService
-import io.agenticcontrol.app.backup.SafTree
-import io.agenticcontrol.app.backup.StoreSource
-import io.agenticcontrol.app.cameraview.ChainedAudit
-import io.agenticcontrol.app.design.PresenceLaw
-import io.agenticcontrol.app.design.GateModel
-import io.agenticcontrol.app.enrollment.PairingSas
-import io.agenticcontrol.app.rmm.RmmToggles
-import io.agenticcontrol.app.rmmspine.ConsentFloorGuard
-import io.agenticcontrol.app.rmmspine.GroupDefinition
-import io.agenticcontrol.app.rmmspine.GroupRule
-import io.agenticcontrol.app.rmmspine.ManagementPolicyDocument
-import io.agenticcontrol.app.rmmspine.ManagementPolicyEngine
-import io.agenticcontrol.app.rmmspine.PolicyLevels
-import io.agenticcontrol.app.rmmspine.StaticDeviceFacts
-import io.agenticcontrol.app.server.ApprovalPending
-import io.agenticcontrol.app.update.UpdateGuards
+import io.deskguest.app.backup.BackupCrypto
+import io.deskguest.app.backup.BackupPolicy
+import io.deskguest.app.backup.BackupService
+import io.deskguest.app.backup.SafTree
+import io.deskguest.app.backup.StoreSource
+import io.deskguest.app.cameraview.ChainedAudit
+import io.deskguest.app.design.PresenceLaw
+import io.deskguest.app.design.GateModel
+import io.deskguest.app.enrollment.PairingSas
+import io.deskguest.app.rmm.RmmToggles
+import io.deskguest.app.rmmspine.ConsentFloorGuard
+import io.deskguest.app.rmmspine.GroupDefinition
+import io.deskguest.app.rmmspine.GroupRule
+import io.deskguest.app.rmmspine.ManagementPolicyDocument
+import io.deskguest.app.rmmspine.ManagementPolicyEngine
+import io.deskguest.app.rmmspine.PolicyLevels
+import io.deskguest.app.rmmspine.StaticDeviceFacts
+import io.deskguest.app.server.ApprovalPending
+import io.deskguest.app.update.UpdateGuards
 import org.json.JSONObject
 import java.io.File
 
@@ -36,7 +36,7 @@ private class W12MemTree : SafTree {
 }
 
 fun main() {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
 
     // ---- P1 F1 (BLOCKER): shell synthetic-input filter bypasses ----
     check("W12 P1-F1 path-prefixed input refused", GateModel.shellInputRefused("/system/bin/input tap 1 1", own))
@@ -143,16 +143,16 @@ fun main() {
 
     // ---- P1 F11/F20: chat thread file injectivity + endThread ----
     val dir = File(System.getProperty("java.io.tmpdir"), "w12chat-${System.nanoTime()}"); dir.mkdirs()
-    io.agenticcontrol.app.chat.AgentChatStore.append(dir, "a:b", "agent", "one", 1L)
-    io.agenticcontrol.app.chat.AgentChatStore.append(dir, "a/b", "agent", "two", 2L)
+    io.deskguest.app.chat.AgentChatStore.append(dir, "a:b", "agent", "one", 1L)
+    io.deskguest.app.chat.AgentChatStore.append(dir, "a/b", "agent", "two", 2L)
     check("W12 P1-F11 colliding sanitised ids keep separate threads",
-        io.agenticcontrol.app.chat.AgentChatStore.load(dir, "a:b").size == 1 &&
-            io.agenticcontrol.app.chat.AgentChatStore.load(dir, "a/b").size == 1 &&
-            io.agenticcontrol.app.chat.AgentChatStore.load(dir, "a:b")[0].body == "one")
+        io.deskguest.app.chat.AgentChatStore.load(dir, "a:b").size == 1 &&
+            io.deskguest.app.chat.AgentChatStore.load(dir, "a/b").size == 1 &&
+            io.deskguest.app.chat.AgentChatStore.load(dir, "a:b")[0].body == "one")
     check("W12 P1-F20 endThread reports success and the thread is gone",
-        io.agenticcontrol.app.chat.AgentChatStore.endThread(dir, "a:b") &&
-            !io.agenticcontrol.app.chat.AgentChatStore.threadExists(dir, "a:b") &&
-            io.agenticcontrol.app.chat.AgentChatStore.threadExists(dir, "a/b"))
+        io.deskguest.app.chat.AgentChatStore.endThread(dir, "a:b") &&
+            !io.deskguest.app.chat.AgentChatStore.threadExists(dir, "a:b") &&
+            io.deskguest.app.chat.AgentChatStore.threadExists(dir, "a/b"))
     dir.deleteRecursively()
 
     println("W12AndDsTest: $passes PASS / $failures FAIL")

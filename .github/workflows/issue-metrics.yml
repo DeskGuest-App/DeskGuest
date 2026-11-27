@@ -19,4 +19,4 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           REPORT_TITLE: "Issue metrics — last 30 days"
-          SEARCH_QUERY: "repo:DeskGuest/deskguest is:issue created:@today-30d..today"
+          SEARCH_QUERY: "repo:DeskGuest-App/DeskGuest is:issue created:@today-30d..today"

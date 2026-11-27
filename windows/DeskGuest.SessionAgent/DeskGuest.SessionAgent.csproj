@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <!-- Block D: the Media Foundation codec path copies frames into
+         IMFMediaBuffer memory through raw pointers (H264Codec). -->
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- DeskGuest brand kit (A3 GREETER, decision 2026-11-23): kit app icon is the app icon. -->
+    <ApplicationIcon>deskguest.ico</ApplicationIcon>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\DeskGuest.Shared\DeskGuest.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- The encode ladder's bottom rung: the bundled software
+         H.264 encoder (OpenH264 2.6.0, Cisco BSD — license text
+         beside it), copied next to the agent binary where
+         OpenH264Encoder looks for it. SHA-256 of the shipped DLL:
+         2076cb5675ec6c1a4c70e7a2a322552f547b6eeed649d6dfcd9e02a543b24691 -->
+    <None Include="openh264-2.6.0-win64.dll" CopyToOutputDirectory="PreserveNewest" />
+    <None Include="openh264-LICENSE.txt" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="deskguest-lockup.png" />
+    <Resource Include="deskguest-icon.png" />
+    <Resource Include="deskguest-mark-tight.png" />
+    <Resource Include="deskguest-wave.png" />
+    <Resource Include="deskguest-pill-mark.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="System.Drawing.Common" Version="10.0.0" />
+    <!-- On Windows these resolve from the WindowsDesktop framework.
+         Cross-building from Linux, the SDK does not probe the ref pack
+         for plain references, so point at the ref-pack assemblies. -->
+    <Reference Include="UIAutomationClient" Condition="'$(OS)' == 'Windows_NT'" />
+    <Reference Include="UIAutomationTypes" Condition="'$(OS)' == 'Windows_NT'" />
+    <Reference Include="UIAutomationClient" Condition="'$(OS)' != 'Windows_NT'">
+      <HintPath>$(NuGetPackageRoot)microsoft.windowsdesktop.app.ref\10.0.15\ref\net10.0\UIAutomationClient.dll</HintPath>
+    </Reference>
+    <Reference Include="UIAutomationTypes" Condition="'$(OS)' != 'Windows_NT'">
+      <HintPath>$(NuGetPackageRoot)microsoft.windowsdesktop.app.ref\10.0.15\ref\net10.0\UIAutomationTypes.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+</Project>

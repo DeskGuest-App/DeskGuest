@@ -1,11 +1,11 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.server.DataFlows
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.SessionBudget
-import io.agenticcontrol.app.server.PairingStore
-import io.agenticcontrol.app.session.StandaloneTransferStore
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.server.DataFlows
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.SessionBudget
+import io.deskguest.app.server.PairingStore
+import io.deskguest.app.session.StandaloneTransferStore
 import org.json.JSONObject
 import java.io.File
 
@@ -314,7 +314,7 @@ private fun callRaw(core: McpCore, token: String, rawBody: String): McpCore.Repl
 /** Exact byte reconciliation at the McpCore dispatch choke point. */
 private fun dispatchReconciliation() {
     DataFlows.resetForTest()
-    val dir = File(System.getProperty("java.io.tmpdir"), "acp-dataflow-" + System.nanoTime())
+    val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-dataflow-" + System.nanoTime())
     dir.mkdirs()
     val store = PairingStore(File(dir, "pairings.tsv"))
     val core = McpCore(store, dispatchHost())
@@ -386,7 +386,7 @@ private fun dispatchReconciliation() {
  *  pairings into one row. */
 private fun nameCollisionAttack() {
     DataFlows.resetForTest()
-    val dir = File(System.getProperty("java.io.tmpdir"), "acp-dataflow-twin-" + System.nanoTime())
+    val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-dataflow-twin-" + System.nanoTime())
     dir.mkdirs()
     val store = PairingStore(File(dir, "pairings.tsv"))
     val core = McpCore(store, dispatchHost())
@@ -426,7 +426,7 @@ private fun nameCollisionAttack() {
  *  counts nothing, an ended (done) job keeps its totals. */
 private fun transferPathReconciliation() {
     DataFlows.resetForTest()
-    val dir = File(System.getProperty("java.io.tmpdir"), "acp-dataflow-xfer-" + System.nanoTime())
+    val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-dataflow-xfer-" + System.nanoTime())
     dir.mkdirs()
     val enrollment = EnrollmentStore(File(dir, "enroll.tsv"))
     val roster = RosterStore(File(dir, "roster.tsv"), enrollment)

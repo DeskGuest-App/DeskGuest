@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.rmmspine.FeatureToggleRegistry
-import io.agenticcontrol.app.server.ClipboardPolicy
+import io.deskguest.app.rmmspine.FeatureToggleRegistry
+import io.deskguest.app.server.ClipboardPolicy
 
 /**
  * U1 JVM tests: clipboard direction policy + sensitive-item skip,

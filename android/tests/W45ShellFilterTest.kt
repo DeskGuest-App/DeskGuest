@@ -32,7 +32,7 @@
 //      string literals; the embedded-command scan joins
 //      them before judging system()/pipe strings, and
 //      checks every system() call. Pure/model layer only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 
 private var failures = 0
 private var passes = 0
@@ -41,7 +41,7 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
 
@@ -57,7 +57,7 @@ fun main(args: Array<String>) {
     check("W45 variable-path busybox shell with denied payload refused",
         refused("\$HOME/bin/busybox sh -c 'input tap 1 1'"))
     check("W45 variable-path shell with own-package payload refused",
-        refused("\$HOME/bin/sh -c 'am start -n io.agenticcontrol.app/.MainActivity'"))
+        refused("\$HOME/bin/sh -c 'am start -n io.deskguest.app/.MainActivity'"))
     check("W45 braced variable-path shell with denied payload refused",
         refused("\${HOME}/bin/sh -c 'input tap 1 1'"))
     check("W45 variable-path denied verb by name still refused",

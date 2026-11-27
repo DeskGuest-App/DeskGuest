@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.server.AccessControl
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.server.AccessControl
+import io.deskguest.app.server.PairingStore
 import java.io.File
 import java.nio.file.Files
 
@@ -107,7 +107,7 @@ fun main(args: Array<String>) {
             ac.accessLabelForScopes(setOf("observe", "drive")) == PairingStore.ACCESS_CUSTOM)
 
     // ---- Store: updateScopes apply, refusal, and audit-on-change ----
-    val dir = Files.createTempDirectory("acp-w89-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-w89-test").toFile()
     val file = File(dir, "pairings.tsv")
     val store = PairingStore(file)
     val audits = mutableListOf<Triple<String, Boolean, String>>()
@@ -183,10 +183,10 @@ fun main(args: Array<String>) {
 
     // Source pins: the surface is wired as built, not just modelled.
     val root = args.getOrElse(0) { "." }
-    val uikit = File(root, "app/src/main/java/io/agenticcontrol/app/ui/UiKit.kt").readText()
-    val main = File(root, "app/src/main/java/io/agenticcontrol/app/MainActivity.kt").readText()
-    val wizard = File(root, "app/src/main/java/io/agenticcontrol/app/WizardActivity.kt").readText()
-    val service = File(root, "app/src/main/java/io/agenticcontrol/app/server/ControlService.kt").readText()
+    val uikit = File(root, "app/src/main/java/io/deskguest/app/ui/UiKit.kt").readText()
+    val main = File(root, "app/src/main/java/io/deskguest/app/MainActivity.kt").readText()
+    val wizard = File(root, "app/src/main/java/io/deskguest/app/WizardActivity.kt").readText()
+    val service = File(root, "app/src/main/java/io/deskguest/app/server/ControlService.kt").readText()
     check("surface: editor stages via AccessControl and applies only through the preview",
         uikit.contains("AccessControl") && uikit.contains("This changes:") &&
             uikit.contains("Apply changes"))

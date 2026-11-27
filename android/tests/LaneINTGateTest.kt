@@ -1,10 +1,10 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enterprise.ChainedAuditLog
-import io.agenticcontrol.app.rmmspine.SignedCommandClasses
-import io.agenticcontrol.app.rmmspine.SignedCommandSigner
-import io.agenticcontrol.app.server.CommandGateWiring
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enterprise.ChainedAuditLog
+import io.deskguest.app.rmmspine.SignedCommandClasses
+import io.deskguest.app.rmmspine.SignedCommandSigner
+import io.deskguest.app.server.CommandGateWiring
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 import java.util.Base64
@@ -57,7 +57,7 @@ private class GateFixture(val dir: File) {
 }
 
 private fun freshDir(tag: String): File =
-    File(System.getProperty("java.io.tmpdir"), "acp-int-gate-$tag-" + System.nanoTime()).apply { mkdirs() }
+    File(System.getProperty("java.io.tmpdir"), "deskguest-int-gate-$tag-" + System.nanoTime()).apply { mkdirs() }
 
 fun main() {
     val customer = DeviceIdentity.fromSeed(ByteArray(32) { 7 })

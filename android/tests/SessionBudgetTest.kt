@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.server.SessionBudget
-import io.agenticcontrol.app.server.SessionManager
+import io.deskguest.app.server.SessionBudget
+import io.deskguest.app.server.SessionManager
 
 /**
  * U4 regression tests (Android mirror): per-session budgets +

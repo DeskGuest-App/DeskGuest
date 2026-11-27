@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <AssemblyName>DeskGuestLauncher</AssemblyName>
+    <RootNamespace>DeskGuest.Launcher</RootNamespace>
+    <!-- The stable shim the SCM service registration points at. It
+         never updates itself; it reads the A/B pointer and execs the
+         Core from the active slot (DESIGN §4.6). -->
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeskGuest.Shared\DeskGuest.Shared.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <!-- R1 fix (2026-11-26): the Generic Host + Windows Service
+         lifetime (the same stack the Core hosts through) so the SCM
+         gets its SERVICE_RUNNING handshake at host start instead of
+         timing the first start out at 30s (SCM 7009/7000). -->
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.0" />
+  </ItemGroup>
+</Project>

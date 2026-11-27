@@ -1,6 +1,6 @@
-import io.agenticcontrol.app.server.ConnectionPath
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.server.ConnectionPath
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 import java.nio.file.Files
@@ -96,7 +96,7 @@ fun main(args: Array<String>) {
         } && cp.normalize(ConnectionPath.Setting("restricted", setOf("zzz"))).rungs == setOf("zzz"))
 
     // ---- Store: mint binding, the ONE apply path, audit ----
-    val dir = Files.createTempDirectory("acp-w98-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-w98-test").toFile()
     val file = File(dir, "pairings.tsv")
     val store = PairingStore(file)
     val audits = mutableListOf<Triple<String, Boolean, String>>()
@@ -196,7 +196,7 @@ fun main(args: Array<String>) {
         store.lastConnection("deadbeef") == null)
 
     // ---- Choke point: the real McpCore, real arrivals ----
-    val coreDir = Files.createTempDirectory("acp-w98-core").toFile()
+    val coreDir = Files.createTempDirectory("deskguest-w98-core").toFile()
     val coreStore = PairingStore(File(coreDir, "pairings.tsv"))
     val core = McpCore(coreStore, fakeHost())
     val coreAudits = mutableListOf<Triple<String, Boolean, String>>()
@@ -299,12 +299,12 @@ fun main(args: Array<String>) {
     // ---- Source pins: enforcement and surface wired as built ----
     val root = args.getOrElse(0) { "." }
     fun src(path: String) = File(root, path).readText()
-    val http = src("app/src/main/java/io/agenticcontrol/app/server/McpHttpServer.kt")
-    val coreSrc = src("app/src/main/java/io/agenticcontrol/app/server/McpCore.kt")
-    val uikit = src("app/src/main/java/io/agenticcontrol/app/ui/UiKit.kt")
-    val main = src("app/src/main/java/io/agenticcontrol/app/MainActivity.kt")
-    val wizard = src("app/src/main/java/io/agenticcontrol/app/WizardActivity.kt")
-    val service = src("app/src/main/java/io/agenticcontrol/app/server/ControlService.kt")
+    val http = src("app/src/main/java/io/deskguest/app/server/McpHttpServer.kt")
+    val coreSrc = src("app/src/main/java/io/deskguest/app/server/McpCore.kt")
+    val uikit = src("app/src/main/java/io/deskguest/app/ui/UiKit.kt")
+    val main = src("app/src/main/java/io/deskguest/app/MainActivity.kt")
+    val wizard = src("app/src/main/java/io/deskguest/app/WizardActivity.kt")
+    val service = src("app/src/main/java/io/deskguest/app/server/ControlService.kt")
     check("wiring: the HTTP server classifies arrival by listener and hands it to the core",
         http.contains("ConnectionPath.PATH_LOOPBACK") && http.contains("ConnectionPath.PATH_MESH") &&
             http.contains("core.handle(body, token, sessionHeader, arrivalPath)"))

@@ -1,21 +1,21 @@
-import io.agenticcontrol.app.chat.AgentChatStore
-import io.agenticcontrol.app.design.AgentChatModel
-import io.agenticcontrol.app.design.EffectivePolicyModel
-import io.agenticcontrol.app.design.GateModel
-import io.agenticcontrol.app.design.HeroThemes
-import io.agenticcontrol.app.design.QrCode
-import io.agenticcontrol.app.design.QrReferenceFixtures
-import io.agenticcontrol.app.design.SetupWizardModel
-import io.agenticcontrol.app.rmmspine.EffectivePolicyView
-import io.agenticcontrol.app.rmmspine.ManagementPolicyDocument
-import io.agenticcontrol.app.rmmspine.ManagementPolicyEngine
-import io.agenticcontrol.app.rmmspine.PolicyLevels
-import io.agenticcontrol.app.rmmspine.StaticDeviceFacts
-import io.agenticcontrol.app.server.ApprovalGate
-import io.agenticcontrol.app.server.ChatToolHost
-import io.agenticcontrol.app.server.GateDenyAndEnd
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.chat.AgentChatStore
+import io.deskguest.app.design.AgentChatModel
+import io.deskguest.app.design.EffectivePolicyModel
+import io.deskguest.app.design.GateModel
+import io.deskguest.app.design.HeroThemes
+import io.deskguest.app.design.QrCode
+import io.deskguest.app.design.QrReferenceFixtures
+import io.deskguest.app.design.SetupWizardModel
+import io.deskguest.app.rmmspine.EffectivePolicyView
+import io.deskguest.app.rmmspine.ManagementPolicyDocument
+import io.deskguest.app.rmmspine.ManagementPolicyEngine
+import io.deskguest.app.rmmspine.PolicyLevels
+import io.deskguest.app.rmmspine.StaticDeviceFacts
+import io.deskguest.app.server.ApprovalGate
+import io.deskguest.app.server.ChatToolHost
+import io.deskguest.app.server.GateDenyAndEnd
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 
@@ -71,7 +71,7 @@ object W10V3FixTest {
     @JvmStatic
     fun main(args: Array<String>) {
         val root = File(args[0])
-        val src = File(root, "app/src/main/java/io/agenticcontrol/app")
+        val src = File(root, "app/src/main/java/io/deskguest/app")
         fun text(rel: String) = File(src, rel).readText()
 
         // ================= F1: gate parity =================
@@ -175,7 +175,7 @@ object W10V3FixTest {
         )
 
         // ================= F3: wizard binding =================
-        val dir = File(System.getProperty("java.io.tmpdir"), "acp-w10-" + System.nanoTime())
+        val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-w10-" + System.nanoTime())
         dir.mkdirs()
         val storeFile = File(dir, "pairings.tsv")
         val storeA = PairingStore(storeFile)
@@ -256,7 +256,7 @@ object W10V3FixTest {
         check(
             "wizard: pairing offer is the endpoint + code, one offer two renderings",
             SetupWizardModel.pairingOffer("http://100.64.0.1:8931/mcp", "123456") ==
-                "acp://pair?endpoint=http%3A%2F%2F100.64.0.1%3A8931%2Fmcp&code=123456"
+                "deskguest://pair?endpoint=http%3A%2F%2F100.64.0.1%3A8931%2Fmcp&code=123456"
         )
 
         // ================= QR vs external reference =================
@@ -270,12 +270,12 @@ object W10V3FixTest {
         }
         qrCheck("V1 HELLO", "HELLO", 0, QrReferenceFixtures.HELLO_mask0)
         qrCheck(
-            "V5 offer", "acp://pair?endpoint=http%3A%2F%2F100.64.0.1%3A8931%2Fmcp&code=123456",
+            "V5 offer", "deskguest://pair?endpoint=http%3A%2F%2F100.64.0.1%3A8931%2Fmcp&code=123456",
             6, QrReferenceFixtures.OFFER_mask6
         )
         qrCheck(
             "V7 long",
-            "ACP pairing offer: connect to http://100.64.0.1:8931/mcp and redeem code 123456 within 10 minutes. The code works once.",
+            "DeskGuest pairing offer: connect to http://100.64.0.1:8931/mcp and redeem code 123456 within 10 minutes. The code works once.",
             3, QrReferenceFixtures.LONG_mask3
         )
         check(

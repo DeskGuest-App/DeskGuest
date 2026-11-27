@@ -1,7 +1,7 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.roster.TransportPolicy
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.roster.TransportPolicy
 import java.io.File
 import java.nio.file.Files
 
@@ -63,7 +63,7 @@ private fun basicCompany(roster: RosterStore) {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-roster-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-roster-test").toFile()
 
     // ================= D8 scope isolation =================
     run {

@@ -1,17 +1,17 @@
-import io.agenticcontrol.app.bgtools.B1SignedCommandVerifier
-import io.agenticcontrol.app.bgtools.BgToolExecutor
-import io.agenticcontrol.app.bgtools.BgToolService
-import io.agenticcontrol.app.bgtools.BgToolsPolicy
-import io.agenticcontrol.app.bgtools.SignedEnvelope
-import io.agenticcontrol.app.cameraview.ChainedAudit
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.rmmspine.CustomerCommandKeyRing
-import io.agenticcontrol.app.rmmspine.InMemoryReplayGuard
-import io.agenticcontrol.app.rmmspine.IsoTime
-import io.agenticcontrol.app.rmmspine.SignedCommandClasses
-import io.agenticcontrol.app.rmmspine.SignedCommandEnvelope
-import io.agenticcontrol.app.rmmspine.SignedCommandSigner
-import io.agenticcontrol.app.rmmspine.SignedCommandVerifier as B1Verifier
+import io.deskguest.app.bgtools.B1SignedCommandVerifier
+import io.deskguest.app.bgtools.BgToolExecutor
+import io.deskguest.app.bgtools.BgToolService
+import io.deskguest.app.bgtools.BgToolsPolicy
+import io.deskguest.app.bgtools.SignedEnvelope
+import io.deskguest.app.cameraview.ChainedAudit
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.rmmspine.CustomerCommandKeyRing
+import io.deskguest.app.rmmspine.InMemoryReplayGuard
+import io.deskguest.app.rmmspine.IsoTime
+import io.deskguest.app.rmmspine.SignedCommandClasses
+import io.deskguest.app.rmmspine.SignedCommandEnvelope
+import io.deskguest.app.rmmspine.SignedCommandSigner
+import io.deskguest.app.rmmspine.SignedCommandVerifier as B1Verifier
 
 /** Lane INT (2026-11-21) — binding proof: B3's bgtools service runs
  *  against Lane B1's REAL RMM-03 verifier via B1SignedCommandVerifier.

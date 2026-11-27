@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Report a Bug or Share Feedback — DeskGuest</title>
+<meta name="description" content="Tell us what went wrong, or what you'd love to see — right here, no account and no leaving the site. We read every report.">
+<link rel="canonical" href="https://deskguest.app/report">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/dex-favicon-32.png">
+<link rel="apple-touch-icon" href="assets/dex-favicon-180.png">
+<link rel="stylesheet" href="style.css">
+<meta name="theme-color" content="#0F2537">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="DeskGuest">
+<meta property="og:title" content="Report a Bug or Share Feedback — DeskGuest">
+<meta property="og:description" content="Tell us what went wrong, or what you'd love to see — right here, no account and no leaving the site.">
+<meta property="og:url" content="https://deskguest.app/report">
+<meta property="og:image" content="https://deskguest.app/assets/og-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Report a Bug or Share Feedback — DeskGuest">
+<meta name="twitter:description" content="Tell us what went wrong, or what you'd love to see — right here, no account and no leaving the site.">
+<meta name="twitter:image" content="https://deskguest.app/assets/og-card.jpg">
+<script>document.documentElement.className+=' js'</script>
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
+</head>
+<body>
+<a class="skip-link" href="#main">Skip to content</a>
+<header class="site-header"><div class="wrap">
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
+<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
+<a class="btn small" href="download.html">Download (Coming Soon)</a>
+</div></header>
+<main id="main">
+<section class="page-hero"><div class="wrap">
+<h1 class="page-title">Report a bug, or share an idea</h1>
+<p class="page-sub">Right here — no account, no leaving the site, nothing to install. Your report goes straight to the people who build DeskGuest, and we read every one. Prefer email? <a href="mailto:support@deskguest.app">support@deskguest.app</a> reaches the same people.</p>
+</div><img class="wm" src="assets/dex-mark.webp" alt="" aria-hidden="true"></section>
+
+<section class="section"><div class="wrap">
+<div class="report-card" id="report-card">
+<form id="report-form" novalidate>
+<div class="form-errors" id="form-errors" role="alert" tabindex="-1" hidden>
+<p class="form-errors-title">A couple of things need a look before this can send:</p>
+<ul id="form-errors-list"></ul>
+</div>
+
+<fieldset class="field">
+<legend>What is this about?</legend>
+<div class="choice-cards">
+<label class="choice-card">
+<input type="radio" name="kind" value="bug" checked>
+<span class="choice-card-body"><span class="choice-card-title">Something's broken</span>
+<span class="choice-card-desc">DeskGuest did something wrong — or didn't do something it should.</span></span>
+</label>
+<label class="choice-card">
+<input type="radio" name="kind" value="feedback">
+<span class="choice-card-body"><span class="choice-card-title">An idea or feedback</span>
+<span class="choice-card-desc">Something you'd like added, changed, or done differently.</span></span>
+</label>
+</div>
+</fieldset>
+
+<div class="field">
+<label for="f-summary" id="summary-label">In one line, what's happening?</label>
+<input type="text" id="f-summary" name="summary" maxlength="150" autocomplete="off" aria-describedby="summary-hint err-summary">
+<p class="hint" id="summary-hint">One short line — it becomes the title of your report. <span id="summary-count"></span></p>
+<p class="field-error" id="err-summary" hidden></p>
+</div>
+
+<fieldset class="field">
+<legend>What is it about?</legend>
+<div class="chips" id="area-chips">
+<label class="chip"><input type="radio" name="area" value="Windows app"><span>The Windows app</span></label>
+<label class="chip"><input type="radio" name="area" value="Android app"><span>The Android app</span></label>
+<label class="chip"><input type="radio" name="area" value="This website"><span>This website</span></label>
+<label class="chip"><input type="radio" name="area" value="Pairing &amp; connecting"><span>Pairing &amp; connecting</span></label>
+<label class="chip"><input type="radio" name="area" value="An AI session"><span>An AI session</span></label>
+<label class="chip"><input type="radio" name="area" value="Something else"><span>Something else</span></label>
+</div>
+<p class="field-error" id="err-area" hidden></p>
+</fieldset>
+
+<div class="bug-only">
+<div class="field">
+<label for="f-trying">What were you trying to do?</label>
+<textarea id="f-trying" name="trying" rows="2" maxlength="2000" aria-describedby="err-trying"></textarea>
+<p class="field-error" id="err-trying" hidden></p>
+</div>
+<div class="field">
+<label for="f-happened">What happened instead?</label>
+<textarea id="f-happened" name="happened" rows="4" maxlength="5000" aria-describedby="happened-hint err-happened"></textarea>
+<p class="hint" id="happened-hint">If the app showed an uh-oh message, its exact words help most — quote it if you can.</p>
+<p class="field-error" id="err-happened" hidden></p>
+</div>
+<div class="field">
+<label for="f-steps">Steps to make it happen again <span class="optional">(optional)</span></label>
+<textarea id="f-steps" name="steps" rows="3" maxlength="5000" aria-describedby="steps-hint err-steps"></textarea>
+<p class="hint" id="steps-hint">One step per line helps us retrace it exactly.</p>
+<p class="field-error" id="err-steps" hidden></p>
+</div>
+<fieldset class="field">
+<legend>How much does it affect you?</legend>
+<div class="chips">
+<label class="chip"><input type="radio" name="severity" value="It stops me using DeskGuest"><span>It stops me using DeskGuest</span></label>
+<label class="chip"><input type="radio" name="severity" value="It's wrong, but I can work around it"><span>It's wrong, but I can work around it</span></label>
+<label class="chip"><input type="radio" name="severity" value="It's minor — a glitch or something that looks off"><span>It's minor — a glitch or something that looks off</span></label>
+<label class="chip"><input type="radio" name="severity" value="Not sure" checked><span>Not sure</span></label>
+</div>
+</fieldset>
+<fieldset class="field">
+<legend>How were the devices connected? <span class="optional">(optional)</span></legend>
+<div class="chips">
+<label class="chip"><input type="radio" name="connection" value="Same network (both devices at home)"><span>Same network, at home</span></label>
+<label class="chip"><input type="radio" name="connection" value="DeskGuest hub"><span>DeskGuest hub</span></label>
+<label class="chip"><input type="radio" name="connection" value="Tailscale"><span>Tailscale</span></label>
+<label class="chip"><input type="radio" name="connection" value="NetBird"><span>NetBird</span></label>
+<label class="chip"><input type="radio" name="connection" value="Direct or relay"><span>Direct or relay</span></label>
+<label class="chip"><input type="radio" name="connection" value="I don't know"><span>I don't know</span></label>
+<label class="chip"><input type="radio" name="connection" value="Not about a connection"><span>Not about a connection</span></label>
+</div>
+</fieldset>
+<div class="field">
+<label for="f-ai">Was an AI agent involved? <span class="optional">(optional)</span></label>
+<select id="f-ai" name="ai">
+<option value="">Choose one…</option>
+<option>No AI — a person was helping me</option>
+<option>Claude</option>
+<option>ChatGPT</option>
+<option>DeepSeek</option>
+<option>Gemini</option>
+<option>Another AI agent</option>
+<option>Not sure</option>
+</select>
+</div>
+</div>
+
+<div class="feedback-only" hidden>
+<div class="field">
+<label for="f-details">Tell us more</label>
+<textarea id="f-details" name="details" rows="5" maxlength="5000" aria-describedby="details-hint err-details"></textarea>
+<p class="hint" id="details-hint">What would it do, and how would it help? A sentence or two is plenty — more is welcome.</p>
+<p class="field-error" id="err-details" hidden></p>
+</div>
+</div>
+
+<div class="field">
+<span class="field-label" id="attach-label">Add screenshots or files <span class="optional">(optional)</span></span>
+<div class="dropzone" id="dropzone" role="button" tabindex="0" aria-describedby="attach-hint err-files">
+<p class="dz-text">Drag files or a whole folder here, or paste a screenshot (Ctrl+V)</p>
+<div class="drop-row">
+<button class="btn ghost" type="button" id="pick-files">Choose files</button>
+<button class="btn ghost" type="button" id="pick-folder">Choose a folder</button>
+</div>
+</div>
+<input type="file" id="file-input" multiple hidden accept=".png,.jpg,.jpeg,.gif,.webp,.txt,.log,.md,.pdf,.zip,.mp4,.webm">
+<input type="file" id="folder-input" webkitdirectory hidden>
+<p class="hint" id="attach-hint">Up to 8 files, 10 MB each, 25 MB together. Screenshots, text and log files, PDFs, ZIPs and short videos. A folder of logs is welcome — please check it holds no passwords or keys first.</p>
+<ul class="file-list" id="file-list"></ul>
+<p class="field-error" id="err-files" hidden></p>
+</div>
+
+<div class="field detected-box">
+<span class="field-label">Details from this device</span>
+<p class="detected-text" id="detected-text">Reading this device's details…</p>
+<label class="checkline"><input type="checkbox" id="f-include-details" name="include_details" value="yes" checked>
+<span>Include these details with my report — they help us reproduce what happened. Nothing else is collected.</span></label>
+</div>
+
+<div class="field">
+<label for="f-contact">Email <span class="optional">(optional)</span></label>
+<input type="email" id="f-contact" name="contact" maxlength="200" autocomplete="email" aria-describedby="contact-hint err-contact">
+<p class="hint" id="contact-hint">Only if you'd like a reply — we never use it for anything else.</p>
+<p class="field-error" id="err-contact" hidden></p>
+</div>
+
+<div class="hp" aria-hidden="true"><label>Website<input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+<input type="hidden" name="form_ts" id="form-ts" value="">
+
+<div class="field">
+<div class="cf-turnstile" data-sitekey="0x4AAAAAAGTC32Hg_9FxhNwN" data-theme="auto"></div>
+</div>
+
+<p class="fineprint">Reports filed from here appear on the project's public tracker, so anyone can follow the fix. Please don't include passwords, recovery keys, pairing codes, or anything private — in your words or your files.</p>
+<div class="submit-row">
+<button class="btn large" type="submit" id="submit-btn">Send report</button>
+<p class="submit-status" id="submit-status" aria-live="polite"></p>
+</div>
+</form>
+<div class="report-success" id="report-success" hidden>
+<h2>Thanks — it's filed.</h2>
+<p>Your report is with the people who build DeskGuest. We read every one; if you left an email and we need a little more detail, we'll write to you.</p>
+<p><button class="btn ghost" type="button" id="another-btn">File another report</button></p>
+</div>
+</div>
+<noscript><p class="fineprint">This form needs JavaScript to send. See <a href="support.html">Help &amp; Support</a> for the other ways to reach us.</p></noscript>
+</div></section>
+</main>
+<footer class="site-footer"><div class="wrap">
+<div class="cols">
+<div>
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
+</div>
+<div><p class="fh">Product</p><nav aria-label="Product"><a href="features.html">Features</a><a href="about.html">About</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="download.html">Download</a></nav></div>
+<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Help &amp; Docs</a></nav></div>
+<div><p class="fh">For Work</p><nav aria-label="For Work"><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav></div>
+<div><p class="fh">Trust</p><nav aria-label="Trust">
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of Service</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+</nav></div>
+</div>
+<p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
+<a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
+We've made sure DeskGuest works on Windows 11 and the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full picture.</p>
+</div></footer>
+<script src="site.js"></script>
+</body>
+</html>

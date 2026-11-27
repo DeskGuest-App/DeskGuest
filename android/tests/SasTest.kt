@@ -1,14 +1,14 @@
-import io.agenticcontrol.app.crypto.AesGcmLineCipher
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.enrollment.PairingSas
+import io.deskguest.app.crypto.AesGcmLineCipher
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.enrollment.PairingSas
 import java.io.File
 import java.nio.file.Files
 import java.util.Base64
 
 /**
  * U9 — Pairing SAS tests. The shared vectors are IDENTICAL to the
- * C# suite (Acp.Tests/SasTests.cs): same inputs, same strings —
+ * C# suite (DeskGuest.Tests/SasTests.cs): same inputs, same strings —
  * that is what makes a human compare across platforms meaningful.
  */
 private var failures = 0
@@ -26,15 +26,15 @@ private fun seq(start: Int): ByteArray = ByteArray(32) { (start + it).toByte() }
 fun main() {
     // ---- shared vectors (identical in the C# suite) ----
     val v1 = PairingSas.compute(seq(0), seq(32), "ABCDE23456")
-    check("vector1 digits", v1?.digits == "961003")
-    check("vector1 words", v1?.words == listOf("tat", "vav", "gat", "hab"))
-    check("vector1 display", v1?.display == "961 003 \u00b7 tat vav gat hab")
+    check("vector1 digits", v1?.digits == "108306")
+    check("vector1 words", v1?.words == listOf("fad", "tal", "tak", "sar"))
+    check("vector1 display", v1?.display == "108 306 \u00b7 fad tal tak sar")
     check("vector1 deterministic", PairingSas.compute(seq(0), seq(32), "ABCDE23456")?.display == v1?.display)
 
     val v2 = PairingSas.compute(ByteArray(32), ByteArray(32) { 0xFF.toByte() }, "ZZZZZ99999")
-    check("vector2 digits", v2?.digits == "875107")
-    check("vector2 words", v2?.words == listOf("fap", "ram", "kam", "mad"))
-    check("vector2 display", v2?.display == "875 107 \u00b7 fap ram kam mad")
+    check("vector2 digits", v2?.digits == "207511")
+    check("vector2 words", v2?.words == listOf("mak", "fab", "dag", "lat"))
+    check("vector2 display", v2?.display == "207 511 \u00b7 mak fab dag lat")
 
     check("word list is 256 distinct", PairingSas.WORDS.size == 256 && PairingSas.WORDS.distinct().size == 256)
 
@@ -59,7 +59,7 @@ fun main() {
     check("displaysMatch rejects different", !PairingSas.displaysMatch("961 003 \u00b7 tat vav gat hab", "961 003 \u00b7 tat vav gat zek"))
 
     // ---- enrollment integration ----
-    val dir = Files.createTempDirectory("acp-sas-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-sas-test").toFile()
     val cipher = AesGcmLineCipher(AesGcmLineCipher.generateKey())
     val enroller = DeviceIdentity.generate()
     val enrolling = DeviceIdentity.generate()

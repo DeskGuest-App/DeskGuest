@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.crypto.AesGcmLineCipher
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.crypto.AesGcmLineCipher
+import io.deskguest.app.server.PairingStore
 import java.io.File
 import java.nio.file.Files
 
@@ -20,7 +20,7 @@ private fun check(name: String, condition: Boolean) {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-pairing-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-pairing-test").toFile()
     val cipher = AesGcmLineCipher(AesGcmLineCipher.generateKey())
 
     // Round-trip under the cipher: the token on disk is wrapped.

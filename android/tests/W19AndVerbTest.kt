@@ -1,7 +1,7 @@
 // Wave 19 Lane B — P1-F1 verb-slot LITERAL rule pins (Android).
 // round-3 (W18 confirmation) evaded the W17 structural
 // fix with a NON-empty expansion in the cmd verb slot:
-//   X=a; cmd ${X}ctivity start-activity -n io.agenticcontrol.app/.MainActivity
+//   X=a; cmd ${X}ctivity start-activity -n io.deskguest.app/.MainActivity
 // ${X} contributes the missing 'a'; empty-expansion normalisation
 // yields `ctivity`, so the W17 slot branch (fail-closed only when
 // the slot normalised to empty) was skipped and the shell ran
@@ -19,7 +19,7 @@
 //  - split spellings of the slot-parent word itself;
 //  - the ordinary-shell floor, unchanged (zero flips expected).
 // Pure/model layer only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 
 private var failures = 0
 private var passes = 0
@@ -28,13 +28,13 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
 
     // ============ round-3 exact evasion (permanent pin) ============
     check("W19 DS exact X=a; cmd \${X}ctivity start-activity own refused",
-        refused("X=a; cmd \${X}ctivity start-activity -n io.agenticcontrol.app/.MainActivity"))
+        refused("X=a; cmd \${X}ctivity start-activity -n io.deskguest.app/.MainActivity"))
     check("W19 DS evasion without assignment refused",
         refused("cmd \${X}ctivity start-activity -n $own/.MainActivity"))
     check("W19 DS evasion is context-free (other-package tail still refused)",

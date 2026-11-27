@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.mesh.MeshProtocol
+import io.deskguest.app.mesh.MeshProtocol
 import org.json.JSONObject
 
 /**
@@ -92,8 +92,8 @@ fun main() {
     fun envelope(headerJson: String, au: ByteArray): ByteArray {
         val header = headerJson.toByteArray(Charsets.UTF_8)
         val out = ByteArray(8 + header.size + au.size)
-        out[0] = 'A'.code.toByte(); out[1] = 'C'.code.toByte()
-        out[2] = 'P'.code.toByte(); out[3] = 'F'.code.toByte()
+        out[0] = 'D'.code.toByte(); out[1] = 'G'.code.toByte()
+        out[2] = 'S'.code.toByte(); out[3] = 'F'.code.toByte()
         out[4] = 1; out[5] = 0
         out[6] = (header.size and 0xFF).toByte(); out[7] = ((header.size shr 8) and 0xFF).toByte()
         header.copyInto(out, 8)
@@ -103,34 +103,34 @@ fun main() {
 
     val keyHeader = """{"seq":7,"ptsMs":100,"captureMs":1700000000000,"keyframe":true,"width":1920,"height":1080,"monitor":0,"codec":"h264","encoder":"Test MFT","hardware":true,"capture":"dxgi","cursorX":10,"cursorY":20}"""
     val parsedKey = MeshProtocol.StreamFrames.parse(envelope(keyHeader, keyAu))
-    check("ACPF keyframe parses with derived flag + cursor",
+    check("DGSF keyframe parses with derived flag + cursor",
         parsedKey != null && parsedKey.keyframe && parsedKey.seq == 7L &&
             parsedKey.width == 1920 && parsedKey.cursorX == 10 && parsedKey.cursorY == 20 &&
             parsedKey.accessUnit.contentEquals(keyAu))
 
     val deltaHeader = keyHeader.replace("\"seq\":7", "\"seq\":8").replace("\"keyframe\":true", "\"keyframe\":false")
     val parsedDelta = MeshProtocol.StreamFrames.parse(envelope(deltaHeader, deltaAu))
-    check("ACPF delta frame parses", parsedDelta != null && !parsedDelta.keyframe)
+    check("DGSF delta frame parses", parsedDelta != null && !parsedDelta.keyframe)
 
-    check("ACPF rejects bad magic",
+    check("DGSF rejects bad magic",
         MeshProtocol.StreamFrames.parse(
             envelope(keyHeader, keyAu).also { it[0] = 'X'.code.toByte() }) == null)
-    check("ACPF rejects a keyframe claim without IDR",
+    check("DGSF rejects a keyframe claim without IDR",
         MeshProtocol.StreamFrames.parse(envelope(keyHeader, deltaAu)) == null)
-    check("ACPF rejects SPS after IDR (config after picture)",
+    check("DGSF rejects SPS after IDR (config after picture)",
         MeshProtocol.StreamFrames.parse(envelope(keyHeader, idr + sps + pps)) == null)
-    check("ACPF rejects forbidden_zero_bit set",
+    check("DGSF rejects forbidden_zero_bit set",
         MeshProtocol.StreamFrames.parse(envelope(keyHeader,
             byteArrayOf(0, 0, 0, 1, (0x80 or 5).toByte(), 0x11))) == null)
-    check("ACPF rejects non-Annex-B payload",
+    check("DGSF rejects non-Annex-B payload",
         MeshProtocol.StreamFrames.parse(envelope(deltaHeader,
             byteArrayOf(0x11, 0x22, 0x33, 0x44))) == null)
-    check("ACPF rejects absurd dimensions",
+    check("DGSF rejects absurd dimensions",
         MeshProtocol.StreamFrames.parse(envelope(
             keyHeader.replace("\"width\":1920", "\"width\":99999"), keyAu)) == null)
-    check("ACPF rejects a truncated envelope",
+    check("DGSF rejects a truncated envelope",
         MeshProtocol.StreamFrames.parse(envelope(keyHeader, keyAu).copyOf(10)) == null)
-    check("ACPF rejects wrong codec",
+    check("DGSF rejects wrong codec",
         MeshProtocol.StreamFrames.parse(envelope(
             keyHeader.replace("\"h264\"", "\"vp9\""), keyAu)) == null)
 

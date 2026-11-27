@@ -51,7 +51,7 @@
 // (\$HOME form, \` escape, \\ and \n forms) keep exactly
 // their pre-W55 verdicts — no production change, so no
 // verdict in any prior suite moves. Pure/model only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 
 private var failures = 0
 private var passes = 0
@@ -60,7 +60,7 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
     val LF = "\n"
@@ -84,7 +84,7 @@ fun main(args: Array<String>) {
         refused("`sh -c 'in${BS}${LF}put tap 1 1'`"))
     check("W55 regulated names split in backtick body refused (monkey, am)",
         refused("`monk${BS}${LF}ey -p com.other`") &&
-            refused("`a${BS}${LF}m start -n io.agenticcontrol.app/.MainActivity`"))
+            refused("`a${BS}${LF}m start -n io.deskguest.app/.MainActivity`"))
 
     // ============ Benign controls: joined body is benign ============
     check("W55 benign verb split in backtick body allowed",

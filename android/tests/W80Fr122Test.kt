@@ -1,7 +1,7 @@
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
-import io.agenticcontrol.app.server.SessionEvents
-import io.agenticcontrol.app.server.SessionManager
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
+import io.deskguest.app.server.SessionEvents
+import io.deskguest.app.server.SessionManager
 import java.io.File
 
 /**
@@ -31,7 +31,7 @@ object W80Fr122Test {
     @JvmStatic
     fun main(args: Array<String>) {
         val root = File(args[0])
-        val src = File(root, "app/src/main/java/io/agenticcontrol/app")
+        val src = File(root, "app/src/main/java/io/deskguest/app")
         fun text(rel: String) = File(src, rel).readText()
 
         // ---- The predicate: what counts as a missing driver name ----
@@ -126,7 +126,7 @@ object W80Fr122Test {
             overlay.substringAfter("fun buildDefectBox").contains("SessionManager.stopByUser()"))
         check("renderer guard: named-box texts never overwrite the defect box",
             overlay.contains("if (SessionManager.isDriverNameMissing(session.agentName)) return"))
-        val tile = text("tile/AgenticTileService.kt")
+        val tile = text("tile/DeskGuestTileService.kt")
         check("QS tile: generic tile_default_agent fallback abolished",
             !tile.contains("tile_default_agent"))
         check("QS tile: blank driver name shows the defect line",

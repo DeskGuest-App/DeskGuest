@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.strings.ConsentStrings
+import io.deskguest.app.strings.ConsentStrings
 import java.io.File
 
 /**
@@ -67,11 +67,11 @@ object U8StringsTest {
         val surfaces = mapOf(
             "presence/PresenceOverlay.kt" to "R.string.presence_stop",
             "server/ApprovalOverlay.kt" to "R.string.approval_title",
-            "tile/AgenticTileService.kt" to "R.string.tile_stop_label",
+            "tile/DeskGuestTileService.kt" to "R.string.tile_stop_label",
             "MainActivity.kt" to "R.string.session_none_title",
             "ui/UiKit.kt" to "R.string.presence_stop",
         )
-        val srcRoot = File(root, "app/src/main/java/io/agenticcontrol/app")
+        val srcRoot = File(root, "app/src/main/java/io/deskguest/app")
         for ((rel, marker) in surfaces) {
             val f = File(srcRoot, rel)
             check("surface exists: $rel", f.isFile)

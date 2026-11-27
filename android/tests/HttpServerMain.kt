@@ -1,6 +1,6 @@
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.McpHttpServer
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.McpHttpServer
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 
@@ -17,7 +17,7 @@ import java.io.File
  */
 fun main(args: Array<String>) {
     val port = 18723
-    val workdir = File(args.getOrElse(0) { "/tmp/acp-http" })
+    val workdir = File(args.getOrElse(0) { "/tmp/deskguest-http" })
     workdir.mkdirs()
     val store = PairingStore(File(workdir, "pairings.tsv"))
     val host = object : McpCore.ToolHost {

@@ -1,6 +1,6 @@
-import io.agenticcontrol.app.server.ConnectionPath
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.server.ConnectionPath
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 import java.nio.file.Files
@@ -69,7 +69,7 @@ private fun loadSetting(dir: File, fileName: String, line: String, token: String
 
 fun main(args: Array<String>) {
     val cp = ConnectionPath
-    val dir = Files.createTempDirectory("acp-w108-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-w108-test").toFile()
     val failClosed = ConnectionPath.Setting.FAIL_CLOSED
 
     // ---- Corrupt cases: every present-but-corrupt shape fails closed ----
@@ -154,7 +154,7 @@ fun main(args: Array<String>) {
             PairingStore(qFile).pairingForToken("tok-quarantine")?.connection == loopOnly)
 
     // ---- Choke point: a corrupt-restricted pairing stays refused over mesh ----
-    val coreDir = Files.createTempDirectory("acp-w108-core").toFile()
+    val coreDir = Files.createTempDirectory("deskguest-w108-core").toFile()
     val coreFile = File(coreDir, "pairings.tsv")
     coreFile.writeText(record("Stuck", "tok-stuck", listOf("restricted", "mesh,lan", "")))
     val coreStore = PairingStore(coreFile)
@@ -195,14 +195,14 @@ fun main(args: Array<String>) {
 
     // ---- Source pins: the SSE loop actually re-checks per heartbeat ----
     val root = args.getOrElse(0) { "." }
-    val http = File(root, "app/src/main/java/io/agenticcontrol/app/server/McpHttpServer.kt").readText()
+    val http = File(root, "app/src/main/java/io/deskguest/app/server/McpHttpServer.kt").readText()
     val occurrences = http.split("core.isPathAllowed(token, arrivalPath)").size - 1
     check("stream wiring: isPathAllowed is consulted at attach AND again in the stream loop (>=2 calls)",
         occurrences >= 2)
     check("stream wiring: the loop's re-check is on the heartbeat cadence and breaks the loop",
         http.contains("per-heartbeat connection-path") &&
             http.contains("if (arrivalPath != null && !core.isPathAllowed(token, arrivalPath))"))
-    val uikit = File(root, "app/src/main/java/io/agenticcontrol/app/ui/UiKit.kt").readText()
+    val uikit = File(root, "app/src/main/java/io/deskguest/app/ui/UiKit.kt").readText()
     check("surface: the editor carries the needs-attention line for a fail-closed restore",
         uikit.contains("needsAttention") &&
             uikit.contains("could not be read, so no path is") &&

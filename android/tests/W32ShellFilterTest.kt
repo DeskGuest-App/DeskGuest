@@ -33,7 +33,7 @@
 //      side is implemented: su's trailing command is joined
 //      and recursed like a -c payload; ambiguous shapes
 //      refuse. Pure/model layer only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 
 private var failures = 0
 private var passes = 0
@@ -42,7 +42,7 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
 
@@ -112,7 +112,7 @@ fun main(args: Array<String>) {
 
     // ============ Point 3: expansion in wrapper position ============
     check("W32 R2 verbatim substance refused",
-        refused("env \$OPTS sh -c 'a\$(printf %s m) start -n \"io.agenticcontrol.ap\$(printf %s p)/.MainActivity\"'"))
+        refused("env \$OPTS sh -c 'a\$(printf %s m) start -n \"io.deskguest.ap\$(printf %s p)/.MainActivity\"'"))
     check("W32 wrapper expansion with benign payload still refused",
         refused("env \$OPTS sh -c 'echo hi'"))
     check("W32 wrapper flag-argument expansion refused", refused("env -u \$X sh -c 'echo hi'"))
@@ -152,7 +152,7 @@ fun main(args: Array<String>) {
     // ============ Prior-wave spot re-pins (unchanged) ============
     check("W32 regression prior refusals still refuse",
         refused("input tap 1 1") &&
-            refused("sh -c 'a\$(printf %s m) start -n \"io.agenticcontrol.ap\$(printf %s p)/.MainActivity\"'") &&
+            refused("sh -c 'a\$(printf %s m) start -n \"io.deskguest.ap\$(printf %s p)/.MainActivity\"'") &&
             refused("am start -n \$(cat /sdcard/c)"))
     check("W32 regression benign other-package payload still allowed",
         allowed("sh -c 'am start -n com.other/.Main'"))

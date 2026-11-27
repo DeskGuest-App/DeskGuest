@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <!-- DeskGuest: ONE-AUTHOR TEST (2026-11-24) — Settings > Recovery,
+       "Ways back in". A surface Gemini never designed, composed only from
+       the floor's design language (total-spec tokens + settings kit,
+       painted settings-page composition). Standalone WPF proof in the
+       product's own stack; NOT part of DeskGuestWindows.slnx; the installed
+       product is never touched. -->
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWPF>true</UseWPF>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>DeskGuestRecoveryProof</AssemblyName>
+    <RootNamespace>DeskGuest.RecoveryProof</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Resource Include="Fonts\*.ttf" />
+    <Resource Include="Assets\*.png" />
+  </ItemGroup>
+
+</Project>

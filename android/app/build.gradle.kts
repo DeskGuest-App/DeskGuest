@@ -5,12 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "io.agenticcontrol.app"
+    namespace = "io.deskguest.app"
     compileSdk = 36
 
     defaultConfig {
         // Working applicationId for the build programme; changeable until first release.
-        applicationId = "io.agenticcontrol.app"
+        applicationId = "io.deskguest.app"
         minSdk = 30 // Android 11 floor: wireless-debugging pairing protocol (SPEC §11.4)
         targetSdk = 36
         versionCode = 24

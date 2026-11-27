@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.server.SessionEvents
-import io.agenticcontrol.app.server.SessionManager
+import io.deskguest.app.server.SessionEvents
+import io.deskguest.app.server.SessionManager
 
 /**
  * JVM tests for the 0.4.0 session state machine: pause-by-user,

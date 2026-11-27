@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.rmm.*
+import io.deskguest.app.rmm.*
 private var failures=0; private fun check(n:String,c:Boolean){ if(c)println("PASS  $n") else {println("FAIL  $n");failures++} }
 fun main(){
  // RMM-01
@@ -11,7 +11,7 @@ fun main(){
  check("R01 gap does not clear active alert", run{ val cc=HealthAlertCentre(); cc.onEval("d",c1,Outcome.FIRING,0){}; cc.onEval("d",c1,Outcome.INDETERMINATE,1000){}; cc.isActive("d","a") })
  check("R01 availability names gaps, no continuity claim",AvailabilityHonesty.note(1000,listOf(0,1000,9000),10000).contains("gap") && AvailabilityHonesty.note(1000,listOf(0L,1000L),2000).contains("not a continuity guarantee"))
  // RMM-04
- val inv=InventoryScope.build("Pixel",null,35,"2026-01-05","0.4.9",mapOf("site" to "x"),listOf("io.agenticcontrol.app"))
+ val inv=InventoryScope.build("Pixel",null,35,"2026-01-05","0.4.9",mapOf("site" to "x"),listOf("io.deskguest.app"))
  check("R04 absent OS named",inv.absentSections.contains("os.version")); check("R04 software scope labelled",inv.installedSoftwareScope.contains("package-visibility-limited"))
  // RMM-02
  val pp=PatchPosture("2026-01-05","16",true,0); check("R02 patch level reported",pp.summary().contains("2026-01-05")); check("R02 deployment bound named Device-Owner",pp.deploymentBound.contains("Device-Owner-bounded"))

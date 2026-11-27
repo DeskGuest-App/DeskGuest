@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.update.ManifestVerifier
+import io.deskguest.app.update.ManifestVerifier
 import org.json.JSONObject
 import java.io.File
 import java.security.cert.CertificateFactory
@@ -21,12 +21,12 @@ private fun check(name: String, condition: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val dir = File(args.getOrElse(0) { "/tmp/acp-xcheck" })
+    val dir = File(args.getOrElse(0) { "/tmp/deskguest-xcheck" })
     val manifest = JSONObject(File(dir, "manifest.json").readText())
     val expectedCanonical = File(dir, "canonical.txt").readBytes()
 
     val configDir = args.getOrElse(1) {
-        System.getenv("HOME") + "/.config/agentic-control"
+        System.getenv("HOME") + "/.config/deskguest"
     }
     val certFile = File(configDir, "cert.pem")
     val cf = CertificateFactory.getInstance("X.509")

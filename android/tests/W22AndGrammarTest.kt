@@ -19,7 +19,7 @@
 // an unparseable COMMAND POSITION refuses only in an input-verb
 // / self-target context; redirections alone never refuse —
 // benign redirected commands stay allowed. Pure/model layer only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 
 private var failures = 0
 private var passes = 0
@@ -28,17 +28,17 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
 
     // ============ round-4 exact evasions (permanent pins) ============
     check("W22 DS exact (a) X=a; cmd >/dev/null \${X}ctivity own refused",
-        refused("X=a; cmd >/dev/null \${X}ctivity start-activity -n io.agenticcontrol.app/.MainActivity"))
+        refused("X=a; cmd >/dev/null \${X}ctivity start-activity -n io.deskguest.app/.MainActivity"))
     check("W22 DS exact (a) without assignment refused",
         refused("cmd >/dev/null \${X}ctivity start-activity -n $own/.MainActivity"))
     check("W22 DS exact (b) X=a; if cmd \${X}ctivity own refused",
-        refused("X=a; if cmd \${X}ctivity start-activity -n io.agenticcontrol.app/.MainActivity; then :; fi"))
+        refused("X=a; if cmd \${X}ctivity start-activity -n io.deskguest.app/.MainActivity; then :; fi"))
     check("W22 DS exact (b) without assignment refused",
         refused("if cmd \${X}ctivity start-activity -n $own/.MainActivity; then :; fi"))
     check("W22 DS combined if + redirection refused",

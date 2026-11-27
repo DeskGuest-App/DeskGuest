@@ -1,9 +1,9 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enterprise.ChainedAuditLog
-import io.agenticcontrol.app.rmmspine.*
-import io.agenticcontrol.app.server.ApprovalGate
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enterprise.ChainedAuditLog
+import io.deskguest.app.rmmspine.*
+import io.deskguest.app.server.ApprovalGate
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 
@@ -31,7 +31,7 @@ private class Fixture {
     val facts = StaticDeviceFacts("phone-1", "scope-1")
     val engine = ManagementPolicyEngine()
     init {
-        val dir = File(System.getProperty("java.io.tmpdir"), "acp-b1-" + System.nanoTime()); dir.mkdirs()
+        val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-b1-" + System.nanoTime()); dir.mkdirs()
         nonceFile = File(dir, "nonces.json")
         store = PersistedNonceStore(nonceFile)
         gate = SignedCommandGate(SignedCommandVerifier(ring, store), audit)
@@ -107,7 +107,7 @@ fun main() {
     // McpCore wiring: gate in front of tool execution
     run {
         val f = Fixture()
-        val dir = File(System.getProperty("java.io.tmpdir"), "acp-b1-mcp-" + System.nanoTime()); dir.mkdirs()
+        val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-b1-mcp-" + System.nanoTime()); dir.mkdirs()
         val store = PairingStore(File(dir, "pairings.tsv"))
         var shellRan: String? = null
         val host = object : McpCore.ToolHost {
@@ -228,7 +228,7 @@ fun main() {
         val j6b = JobJournal(null, identity(43).publicKey)
         check("R15 forged appended job_done on signed journal refuses at import", !j6b.importJson(forgedExport).ok)
         // Persistence round-trip via file
-        val dir = File(System.getProperty("java.io.tmpdir"), "acp-b1-j-" + System.nanoTime()); dir.mkdirs()
+        val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-b1-j-" + System.nanoTime()); dir.mkdirs()
         val jf = File(dir, "journal.json"); j2.saveToFile(jf)
         val j7 = JobJournal(); val v7 = j7.loadFromFile(jf)
         check("R15 file persistence round-trip", v7.ok && j7.getJob("job2") != null)
@@ -314,10 +314,10 @@ fun main() {
         check("R07 Effective Policy view: owner-words toggles + provenance, floor separate",
             view.contains("MDM subset") && view.contains("set by scope-1 IT") &&
                 !view.contains("Consent floor") &&
-                io.agenticcontrol.app.design.EffectivePolicyModel.CONSENT_FLOOR_ITEMS.all {
+                io.deskguest.app.design.EffectivePolicyModel.CONSENT_FLOOR_ITEMS.all {
                     EffectivePolicyView.floorText().contains(it)
                 })
-        val dir = File(System.getProperty("java.io.tmpdir"), "acp-b1-ep-" + System.nanoTime()); dir.mkdirs()
+        val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-b1-ep-" + System.nanoTime()); dir.mkdirs()
         val epStore = EffectivePolicyStore(File(dir, "effective-policy.txt"))
         epStore.save(view)
         check("R07 Effective Policy store round-trip for the on-device view", epStore.load() == view)
@@ -330,7 +330,7 @@ fun main() {
         f.engine.addDocument(ManagementPolicyDocument("mdm-on", PolicyLevels.ORG, "scope-1", mapOf("rmm.mdm.enabled" to "true"), 1))
         val factsFor = { id: String -> if (id == "phone-1") f.facts else null }
         val exec = RecordingMdmActionExecutor()
-        val limiterFile = File(System.getProperty("java.io.tmpdir"), "acp-b1-loc-" + System.nanoTime() + ".txt")
+        val limiterFile = File(System.getProperty("java.io.tmpdir"), "deskguest-b1-loc-" + System.nanoTime() + ".txt")
         val svc = MdmService(f.engine, f.gate, exec, f.audit, factsFor, LocateRateLimiter(limiterFile))
         val personal = MdmDeviceState("phone-1", "scope-1", "android", MdmOwnership.PERSONAL, "16", true, "pin_pattern", "0.4.9", reportedMs = T0)
         check("R31 state report accepted (personal, honest tiers)", svc.reportState(personal, "endpoint", T0).first != null)
@@ -362,14 +362,14 @@ fun main() {
         // Unsigned refuses
         check("R31 unsigned action refuses", svc.executeAction(lock.copy(commandId = "c3"), null, "hub", T0).first?.executed == false)
         // Signature swap: lock signature presented for a wipe
-        val wipe = MdmActionRequest("c4", "phone-1", MdmActionKinds.WIPE_ACP_DATA, listOf(AcpWipeTargets.CACHE), "Wiping ACP cache", T0, T0 + 600_000)
+        val wipe = MdmActionRequest("c4", "phone-1", MdmActionKinds.WIPE_DESKGUEST_DATA, listOf(DeskGuestWipeTargets.CACHE), "Wiping DeskGuest cache", T0, T0 + 600_000)
         check("R31 signature swap (lock sig for wipe) refuses via payload binding",
             svc.executeAction(wipe, mdmEnv(lock, "d3"), "hub", T0).first?.executed == false)
         // Wipe scope creep
         val creep = wipe.copy(commandId = "c5", wipeTargets = listOf("user_photos"))
         check("R31 wipe scope creep refuses at validation", svc.executeAction(creep, mdmEnv(creep, "d4"), "hub", T0).first?.executed == false)
         check("R31 wipe targets on a lock refuse", svc.executeAction(
-            lock.copy(commandId = "c6", wipeTargets = listOf(AcpWipeTargets.CACHE)), null, "hub", T0).first?.executed == false)
+            lock.copy(commandId = "c6", wipeTargets = listOf(DeskGuestWipeTargets.CACHE)), null, "hub", T0).first?.executed == false)
         // Full wipe on personal: refused, never substituted
         val fullWipe = MdmActionRequest("c7", "phone-1", MdmActionKinds.WIPE_FULL_DEVICE, noticeText = "Full wipe ordered", issuedMs = T0, expiresMs = T0 + 600_000)
         val (outFw, fwReason) = svc.executeAction(fullWipe, mdmEnv(fullWipe, "d5"), "hub", T0)
@@ -416,27 +416,27 @@ fun main() {
         val svc = RemediationService(f.engine, f.gate, exec, journal, f.audit)
         fun remEnv(action: String, runId: String, nonce: String) =
             f.env(SignedCommandClasses.AUTOMATION, RemediationActions.canonicalPayload(action, "phone-1", runId), nonce = nonce)
-        val out = svc.execute(RemediationActions.CLEAR_ACP_CACHE, "phone-1", "run1", "", remEnv(RemediationActions.CLEAR_ACP_CACHE, "run1", "e1"), f.facts, "hub", T0)
+        val out = svc.execute(RemediationActions.CLEAR_DESKGUEST_CACHE, "phone-1", "run1", "", remEnv(RemediationActions.CLEAR_DESKGUEST_CACHE, "run1", "e1"), f.facts, "hub", T0)
         check("R08 signed remediation executes + journal job done", out.executed &&
             journal.getJob("remediation-run1")?.state == JobStates.DONE)
         check("R08 unknown action refuses (closed catalogue)", !svc.execute("wipe_everything", "phone-1", "run2", "", null, f.facts, "hub", T0).executed)
         check("R08 unsigned remediation refuses, nothing performs", run {
             val before = exec.performed.size
-            !svc.execute(RemediationActions.CLEAR_ACP_CACHE, "phone-1", "run3", "", null, f.facts, "hub", T0).executed && exec.performed.size == before })
+            !svc.execute(RemediationActions.CLEAR_DESKGUEST_CACHE, "phone-1", "run3", "", null, f.facts, "hub", T0).executed && exec.performed.size == before })
         check("R08 envelope minted for another action refuses (payload binding)",
-            !svc.execute(RemediationActions.RESTART_ACP_COMPONENTS, "phone-1", "run4", "",
-                remEnv(RemediationActions.CLEAR_ACP_CACHE, "run4", "e2"), f.facts, "hub", T0).executed)
+            !svc.execute(RemediationActions.RESTART_DESKGUEST_COMPONENTS, "phone-1", "run4", "",
+                remEnv(RemediationActions.CLEAR_DESKGUEST_CACHE, "run4", "e2"), f.facts, "hub", T0).executed)
         // Policy kill switch
         f.engine.addDocument(ManagementPolicyDocument("rem-off", PolicyLevels.ORG, "scope-1", mapOf("rmm.remediation.enabled" to "false"), 1))
-        check("R08 policy OFF refuses (kill switch)", !svc.execute(RemediationActions.CLEAR_ACP_CACHE, "phone-1", "run5", "",
-            remEnv(RemediationActions.CLEAR_ACP_CACHE, "run5", "e3"), f.facts, "hub", T0).executed)
+        check("R08 policy OFF refuses (kill switch)", !svc.execute(RemediationActions.CLEAR_DESKGUEST_CACHE, "phone-1", "run5", "",
+            remEnv(RemediationActions.CLEAR_DESKGUEST_CACHE, "run5", "e3"), f.facts, "hub", T0).executed)
         // Failed action journals FAILED honestly
-        val f2 = Fixture(); val j2 = JobJournal(); val ex2 = RecordingRemediationExecutor().apply { failActions = setOf(RemediationActions.CLEAR_ACP_CACHE) }
+        val f2 = Fixture(); val j2 = JobJournal(); val ex2 = RecordingRemediationExecutor().apply { failActions = setOf(RemediationActions.CLEAR_DESKGUEST_CACHE) }
         val svc2 = RemediationService(f2.engine, f2.gate, ex2, j2, f2.audit)
-        val out2 = svc2.execute(RemediationActions.CLEAR_ACP_CACHE, "phone-1", "runF", "",
-            f2.env(SignedCommandClasses.AUTOMATION, RemediationActions.canonicalPayload(RemediationActions.CLEAR_ACP_CACHE, "phone-1", "runF"), nonce = "e4"), f2.facts, "hub", T0)
+        val out2 = svc2.execute(RemediationActions.CLEAR_DESKGUEST_CACHE, "phone-1", "runF", "",
+            f2.env(SignedCommandClasses.AUTOMATION, RemediationActions.canonicalPayload(RemediationActions.CLEAR_DESKGUEST_CACHE, "phone-1", "runF"), nonce = "e4"), f2.facts, "hub", T0)
         check("R08 executor failure journals FAILED, outcome honest", !out2.executed && j2.getJob("remediation-runF")?.state == JobStates.FAILED)
-        check("R08 rerun_failed_acp_job is the non-idempotent catalogue entry", !RemediationActions.isIdempotent(RemediationActions.RERUN_FAILED_ACP_JOB))
+        check("R08 rerun_failed_deskguest_job is the non-idempotent catalogue entry", !RemediationActions.isIdempotent(RemediationActions.RERUN_FAILED_DESKGUEST_JOB))
     }
 
     // ================= RMM-20 =================
@@ -445,14 +445,14 @@ fun main() {
         val journal = JobJournal()
         val remExec = RecordingRemediationExecutor()
         val remSvc = RemediationService(f.engine, f.gate, remExec, journal, f.audit)
-        val checks = RecordingRunbookCheckEvaluator(mapOf(RunbookChecks.ACP_RUNNING to true))
+        val checks = RecordingRunbookCheckEvaluator(mapOf(RunbookChecks.DESKGUEST_RUNNING to true))
         val tools = RecordingRunbookToolExecutor()
         val svc = RunbookService(f.engine, f.gate, checks, tools, journal, f.audit,
             approvalPolicyFor = { ApprovalGate.Policy.AUTO })
         svc.setRemediationStepExecutor { action, device, _, _ -> remExec.perform(action, device, "") }
         val def = RunbookDefinition("monthly-maintenance-android", "Monthly maintenance (Android)", 1, listOf(
-            RunbookStep("chk", RunbookStepKinds.CHECK, RunbookChecks.ACP_RUNNING),
-            RunbookStep("cache", RunbookStepKinds.REMEDIATION, RemediationActions.CLEAR_ACP_CACHE),
+            RunbookStep("chk", RunbookStepKinds.CHECK, RunbookChecks.DESKGUEST_RUNNING),
+            RunbookStep("cache", RunbookStepKinds.REMEDIATION, RemediationActions.CLEAR_DESKGUEST_CACHE),
             RunbookStep("sign", RunbookStepKinds.HUMAN_CONFIRMATION, "", prompt = "Confirm the site paperwork matches", requireDistinctAttester = true)
         ))
         check("R20 runbook admits", svc.admit(def).first)
@@ -474,7 +474,7 @@ fun main() {
             approvalPolicyFor = { ApprovalGate.Policy.ASK_FIRST }, approvalDecision = { _, _ -> false })
         svcAsk.setRemediationStepExecutor { a, d, _, _ -> remExec.perform(a, d, "") }
         val defGated = RunbookDefinition("gated", "Gated", 1, listOf(
-            RunbookStep("rst", RunbookStepKinds.REMEDIATION, RemediationActions.RESTART_ACP_COMPONENTS, requiresApproval = true)))
+            RunbookStep("rst", RunbookStepKinds.REMEDIATION, RemediationActions.RESTART_DESKGUEST_COMPONENTS, requiresApproval = true)))
         svcAsk.admit(defGated)
         val (runG, _) = svcAsk.startRun("gated", "phone-1", "rbG", "tech-1", f.facts,
             f.env(SignedCommandClasses.BACKGROUND_ACTION, RunbookDefinition.canonicalPayload("gated", "phone-1", "rbG"), nonce = "f2"), T0)
@@ -493,11 +493,11 @@ fun main() {
             f.env(SignedCommandClasses.BACKGROUND_ACTION, RunbookDefinition.canonicalPayload("gated", "phone-1", "rbB"), nonce = "f3"), T0)
         check("R20 ApprovalGate BLOCKED fails run, nothing executes", runB?.status == "failed" && remExec.performed.size == beforeBlock)
         // Check halt + recorded skip preserves the failure; run never reads succeeded
-        val checksFail = RecordingRunbookCheckEvaluator(mapOf(RunbookChecks.ACP_RUNNING to false))
+        val checksFail = RecordingRunbookCheckEvaluator(mapOf(RunbookChecks.DESKGUEST_RUNNING to false))
         val svcHalt = RunbookService(f.engine, f.gate, checksFail, tools, journal, f.audit,
             approvalPolicyFor = { ApprovalGate.Policy.AUTO })
         val defHalt = RunbookDefinition("halt-rb", "Halt", 1, listOf(
-            RunbookStep("chk", RunbookStepKinds.CHECK, RunbookChecks.ACP_RUNNING, failurePolicy = "halt"),
+            RunbookStep("chk", RunbookStepKinds.CHECK, RunbookChecks.DESKGUEST_RUNNING, failurePolicy = "halt"),
             RunbookStep("tool", RunbookStepKinds.BACKGROUND_TOOL, "device_info")))
         svcHalt.admit(defHalt)
         val (runH, _) = svcHalt.startRun("halt-rb", "phone-1", "rbH", "tech-1", f.facts,
@@ -506,13 +506,13 @@ fun main() {
             runH?.status == "halted_check_failed" && runH.renderCheck("tool") == "not yet known" && runH.renderCheck("chk") == "FAILED")
         check("R20 initiator cannot skip their own halted check", !svcHalt.skipStep("rbH", "chk", "tech-1", "just skip", T0).first)
         check("R20 unreasoned skip refuses", !svcHalt.skipStep("rbH", "chk", "tech-2", "", T0).first)
-        val (skipOk, _) = svcHalt.skipStep("rbH", "chk", "tech-2", "ACP service confirmed running by hand", T0)
+        val (skipOk, _) = svcHalt.skipStep("rbH", "chk", "tech-2", "DeskGuest service confirmed running by hand", T0)
         check("R20 recorded skip completes as partial_failure, failure preserved",
             skipOk && svcHalt.getRun("rbH")?.status == "partial_failure" &&
             svcHalt.getRun("rbH")!!.records.first { it.stepId == "chk" }.checkPassed == false)
         // Unobserved check never passes (shipped evaluator)
         check("R20 shipped check evaluator fails every check by name",
-            !HostWiringRunbookCheckEvaluator().observe(RunbookChecks.ACP_RUNNING, "", "phone-1").first)
+            !HostWiringRunbookCheckEvaluator().observe(RunbookChecks.DESKGUEST_RUNNING, "", "phone-1").first)
         // Policy OFF at start refuses
         val fOff = Fixture()
         fOff.engine.addDocument(ManagementPolicyDocument("rb-off", PolicyLevels.ORG, "scope-1", mapOf("rmm.runbooks.enabled" to "false"), 1))

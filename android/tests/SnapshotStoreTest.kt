@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.access.SnapshotStore
+import io.deskguest.app.access.SnapshotStore
 
 /**
  * JVM tests for snapshot ref discipline (SPEC §6): refs live and die

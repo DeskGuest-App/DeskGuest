@@ -1,14 +1,14 @@
-import io.agenticcontrol.app.backup.*
-import io.agenticcontrol.app.bgtools.*
-import io.agenticcontrol.app.camerashare.*
-import io.agenticcontrol.app.cameraview.*
-import io.agenticcontrol.app.deploy.*
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.insession.*
-import io.agenticcontrol.app.mobileop.*
-import io.agenticcontrol.app.probes.*
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.vendorpass.*
+import io.deskguest.app.backup.*
+import io.deskguest.app.bgtools.*
+import io.deskguest.app.camerashare.*
+import io.deskguest.app.cameraview.*
+import io.deskguest.app.deploy.*
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.insession.*
+import io.deskguest.app.mobileop.*
+import io.deskguest.app.probes.*
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.vendorpass.*
 import java.io.File
 import java.nio.file.Files
 import java.security.MessageDigest
@@ -105,7 +105,7 @@ fun main() {
             // phone1, nobody else does.
             override fun isPhoneOwner(s: String, o: String, p: String) = o == "owner" && p == "phone1"
         }
-        val svc = CameraShareService(parties, sink, AcpfValidator { it.isNotEmpty() && it[0] == 1.toByte() }, ChainedAudit(clock), clock)
+        val svc = CameraShareService(parties, sink, DeskGuestfValidator { it.isNotEmpty() && it[0] == 1.toByte() }, ChainedAudit(clock), clock)
         check("B3-2 DG-B3-09 watcher-side start refuses + audits", svc.requestShareFromWatcher("watcher", "phone1").isFailure &&
             svc.audit.entries().any { it.type == "camera_share_inbound_start_refused" })
         check("B3-2 DG-B3-10 AI cannot initiate", svc.initiateShare("co", "aiw", "phone1", "watcher").isFailure)
@@ -121,7 +121,7 @@ fun main() {
         check("B3-2 watcher joins -> sharing", svc.watcherJoin(share.id, "watcher"))
         check("B3-2 frame from owner delivered to named watcher only", svc.submitFrame(share.id, "owner", byteArrayOf(1, 9)) && delivered.contains("frame:watcher"))
         check("B3-2 DG-B3-13 frame from non-owner refused", !svc.submitFrame(share.id, "watcher", byteArrayOf(1, 9)))
-        check("B3-2 DG-B3-14 invalid ACPF envelope refused", !svc.submitFrame(share.id, "owner", byteArrayOf(7, 9)))
+        check("B3-2 DG-B3-14 invalid DGSF envelope refused", !svc.submitFrame(share.id, "owner", byteArrayOf(7, 9)))
         check("B3-2 annotation in range forwards", svc.sendAnnotation(share.id, "watcher", 500, 500))
         check("B3-2 DG-B3-15 annotation out of range refused", !svc.sendAnnotation(share.id, "watcher", 1001, 0))
         check("B3-2 voice enable refused while voice policy OFF", !svc.setVoice(share.id, "owner", true))
@@ -286,7 +286,7 @@ fun main() {
         }
         val svc = BackupService(StoreSource { mapOf("roster.tsv" to "data".toByteArray()) }, ChainedAudit(clock), clock, allowLegacyPlaintext = true) // W12-DS: legacy fixture opts in explicitly
         val m = svc.backup(dest, mapOf("docs" to mapOf("a.txt" to "hello".toByteArray()))).getOrThrow()
-        check("B3-8 backup covers ACP stores + SAF-granted folders", m.entries.keys.any { it.startsWith("acp/") } && m.entries.keys.any { it.startsWith("saf/docs/") })
+        check("B3-8 backup covers DeskGuest stores + SAF-granted folders", m.entries.keys.any { it.startsWith("deskguest/") } && m.entries.keys.any { it.startsWith("saf/docs/") })
         check("B3-8 verify passes on intact backup", svc.verify(dest, m.id).isSuccess)
         val key = dest.files.keys.first { it.endsWith("a.txt") }; dest.files[key] = "evil".toByteArray()
         check("B3-8 DG-B3-37 tampered file refuses whole restore/verify", svc.verify(dest, m.id).isFailure)

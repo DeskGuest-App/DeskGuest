@@ -1,7 +1,7 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.session.SessionStore
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.session.SessionStore
 import java.io.File
 import java.nio.file.Files
 
@@ -130,7 +130,7 @@ private class World(dir: File, tag: String) {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-session-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-session-test").toFile()
     val states = listOf("requested", "active", "paused", "blocked", "ended")
     val legal: Map<String, Set<String>> = mapOf(
         "requested" to setOf("active", "ended"),
@@ -485,7 +485,7 @@ fun main() {
                 listOf("created", "participant_added", "participant_added", "accepted", "started"))
         val snapshot = w.sessions.events(id)
         check("D36 set recording to video with a LOCAL path takes visible effect immediately",
-            w.sessions.setRecording(id, "host1", "video", "/storage/emulated/0/acp/session-r1.mp4") &&
+            w.sessions.setRecording(id, "host1", "video", "/storage/emulated/0/deskguest/session-r1.mp4") &&
                 w.sessions.session(id)?.isRecording == true && w.sessions.isRecording(id))
         check("D36 remote RecordingRefs are refused and change nothing (https, http, s3, protocol-relative, ftp)",
             listOf(
@@ -493,10 +493,10 @@ fun main() {
                 "s3://bucket/r1.mp4", "//cdn.example.com/r1.mp4", "ftp:files/r1.mp4"
             ).all { ref ->
                 !w.sessions.setRecording(id, "host1", "video", ref) &&
-                    w.sessions.session(id)?.recordingRef == "/storage/emulated/0/acp/session-r1.mp4"
+                    w.sessions.session(id)?.recordingRef == "/storage/emulated/0/deskguest/session-r1.mp4"
             })
         check("D36 local uri forms are accepted (file:, content:, drive path)",
-            w.sessions.setRecording(id, "host1", "video", "file:///storage/emulated/0/acp/r1.mp4") &&
+            w.sessions.setRecording(id, "host1", "video", "file:///storage/emulated/0/deskguest/r1.mp4") &&
                 w.sessions.setRecording(id, "host1", "video", "content://media/external/video/42") &&
                 w.sessions.setRecording(id, "host1", "both", "C:\\Recordings\\r1.mp4") &&
                 w.sessions.session(id)?.recording == "both" && w.sessions.isRecording(id))
@@ -519,7 +519,7 @@ fun main() {
             w.sessions.createSession(
                 SessionStore.Session(
                     "r-good", "co", w.hostDeviceId, "user1", "attended",
-                    transportRung = "lan", recording = "video", recordingRef = "/data/acp/r.mp4"
+                    transportRung = "lan", recording = "video", recordingRef = "/data/deskguest/r.mp4"
                 ), "host1"
             ) && w.sessions.session("r-good")?.isRecording == false)
         check("D36/F10 after host accept + start, the same session IS recording (derived from state)",
@@ -529,7 +529,7 @@ fun main() {
         check("D36 events are append-only: earlier events are byte-identical after later acts",
             w.sessions.events(id).subList(0, snapshot.size) == snapshot)
         check("setup: restore video recording, then end the session",
-            w.sessions.setRecording(id, "host1", "video", "/data/acp/r1.mp4") &&
+            w.sessions.setRecording(id, "host1", "video", "/data/deskguest/r1.mp4") &&
                 w.sessions.endSession(id, "host1"))
         check("D36 after the session ends it is no longer recording (derived from state)",
             w.sessions.session(id)?.recording == "video" && !w.sessions.isRecording(id))
@@ -651,7 +651,7 @@ fun main() {
             store.createSession(
                 SessionStore.Session(
                     "p1", "co", identity.deviceId, "user1", "attended",
-                    transportRung = "hub", recording = "video", recordingRef = "/data/acp/p1.mp4"
+                    transportRung = "hub", recording = "video", recordingRef = "/data/deskguest/p1.mp4"
                 ), "host1"
             ) && store.acceptSession("p1", "host1", SessionStore.ACCEPT_ORIGIN_LOCAL_UI) && store.startSession("p1", "user1") &&
                 store.grantFloor("p1", "host1", "user1") &&
@@ -666,7 +666,7 @@ fun main() {
                 reloaded.session("p1")?.acceptOrigin == SessionStore.ACCEPT_ORIGIN_LOCAL_UI &&
                 reloaded.session("p1")?.transportRung == "hub" &&
                 reloaded.session("p1")?.recording == "video" &&
-                reloaded.session("p1")?.recordingRef == "/data/acp/p1.mp4" &&
+                reloaded.session("p1")?.recordingRef == "/data/deskguest/p1.mp4" &&
                 reloaded.session("p1")?.isRecording == true)
         check("persistence: participants + floor holder roundtrip",
             reloaded.participants("p1").firstOrNull { it.floor == "holds" }?.userId == "user1" &&
@@ -743,7 +743,7 @@ fun main() {
         check("D38/F4 file state refuses in BLOCKED",
             !w.sessions.setFileJobState("d38-t", "jf1", "active", "user1"))
         check("D38/F4 recording refuses in BLOCKED",
-            !w.sessions.setRecording("d38-t", "host1", "video", "/data/acp/x.mp4") &&
+            !w.sessions.setRecording("d38-t", "host1", "video", "/data/deskguest/x.mp4") &&
                 w.sessions.session("d38-t")?.recording == "none")
         check("D38/F9 entering blocked CLEARS the floor (setup: floor was never held here, holder check on end below)",
             w.sessions.participants("d38-t").none { it.floor == "holds" })
@@ -759,10 +759,10 @@ fun main() {
         // F7: recording is a host act in attended sessions.
         val f7 = w.inState("d38-f7", "active")
         check("D38/F7 a controller participant cannot toggle recording in an attended session",
-            !w.sessions.setRecording(f7, "user1", "video", "/data/acp/x.mp4") &&
+            !w.sessions.setRecording(f7, "user1", "video", "/data/deskguest/x.mp4") &&
                 w.sessions.session(f7)?.recording == "none")
         check("D38/F7 the host CAN set recording",
-            w.sessions.setRecording(f7, "host1", "video", "/data/acp/x.mp4") &&
+            w.sessions.setRecording(f7, "host1", "video", "/data/deskguest/x.mp4") &&
                 w.sessions.session(f7)?.isRecording == true)
         check("D38/F10 pausing stops the derived recording signal (active-only derivation)",
             w.sessions.pauseSession(f7, "host1") && w.sessions.session(f7)?.isRecording == false)
@@ -775,7 +775,7 @@ fun main() {
                 !SessionStore.isRemoteRef("file:///storage/emulated/0/r.mp4") &&
                 !SessionStore.isRemoteRef("file://localhost/storage/r.mp4") &&
                 !SessionStore.isRemoteRef("content://media/external/video/42") &&
-                !SessionStore.isRemoteRef("/data/acp/r.mp4") &&
+                !SessionStore.isRemoteRef("/data/deskguest/r.mp4") &&
                 !SessionStore.isRemoteRef("C:\\Recordings\\r.mp4"))
         check("D38/F5 a UNC recording ref is refused at creation",
             !w.sessions.createSession(
@@ -829,7 +829,7 @@ fun main() {
         check("D38/F7 unattended: the initiator CAN add a controller who holds the use right",
             w.sessions.addParticipant("u-add", "user1", "user2", "controller"))
         check("D38/F7 unattended: the initiator (not just the host) can set recording",
-            w.sessions.setRecording("u-add", "user1", "video", "/data/acp/u.mp4"))
+            w.sessions.setRecording("u-add", "user1", "video", "/data/deskguest/u.mp4"))
     }
 
     // F8: resume re-checks grant + device.

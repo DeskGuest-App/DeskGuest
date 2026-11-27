@@ -13,7 +13,7 @@ import subprocess
 import sys
 import os
 
-KEY_PEM = os.path.expanduser("~/.config/agentic-control/key.pem")
+KEY_PEM = os.path.expanduser("~/.config/deskguest/key.pem")
 
 
 def canonical_bytes(manifest):
@@ -25,14 +25,14 @@ def main():
     outdir = sys.argv[1]
     os.makedirs(outdir, exist_ok=True)
     manifest = {
-        "product": "agentic-control-platform",
+        "product": "deskguest-platform",
         "versionName": "0.3.0",
         "versionCode": 3,
         "apk": {
             "fileName": "DeskGuest-0.3.0.apk",
             "sizeBytes": 812345,
             "sha256": "ab12cd34" * 8,
-            "url": "https://github.com/DeskGuest-App/DeskGuest/releases/download/v0.3.0/DeskGuest-0.3.0.apk",
+            "url": "https://github.com/DeskGuest-App/DeskGuest-control-releases/releases/download/v0.3.0/DeskGuest-0.3.0.apk",
         },
         "notes": "Cross-test fixture — not a real release.",
         "publishedAt": "2026-11-11T13:00:00Z",

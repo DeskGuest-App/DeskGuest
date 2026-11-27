@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 
@@ -79,7 +79,7 @@ private fun callText(core: McpCore, token: String, tool: String, id: Int): Pair<
 }
 
 fun main() {
-    val dir = File(System.getProperty("java.io.tmpdir"), "acp-test-" + System.nanoTime())
+    val dir = File(System.getProperty("java.io.tmpdir"), "deskguest-test-" + System.nanoTime())
     dir.mkdirs()
     val store = PairingStore(File(dir, "pairings.tsv"))
     val core = McpCore(store, fakeHost())

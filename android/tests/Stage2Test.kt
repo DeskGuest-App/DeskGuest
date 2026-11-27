@@ -1,9 +1,9 @@
-import io.agenticcontrol.app.access.WaitCondition
-import io.agenticcontrol.app.crypto.AesGcmLineCipher
-import io.agenticcontrol.app.server.ApprovalGate
-import io.agenticcontrol.app.server.AuditLog
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
+import io.deskguest.app.access.WaitCondition
+import io.deskguest.app.crypto.AesGcmLineCipher
+import io.deskguest.app.server.ApprovalGate
+import io.deskguest.app.server.AuditLog
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
 import org.json.JSONObject
 import java.io.File
 import java.nio.file.Files
@@ -92,7 +92,7 @@ fun main() {
         !WaitCondition().matches("com.android.settings", listOf("anything")))
 
     // ---- McpCore: audit hook fires; new tools are capability-gated ----
-    val dir = Files.createTempDirectory("acp-stage2").toFile()
+    val dir = Files.createTempDirectory("deskguest-stage2").toFile()
     val store = PairingStore(File(dir, "pairings.tsv"))
     val host = object : McpCore.ToolHost {
         override fun tools(): List<McpCore.ToolDef> = listOf(

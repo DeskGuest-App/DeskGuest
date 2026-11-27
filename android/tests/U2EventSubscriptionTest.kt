@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.server.EventSubscriptions
-import io.agenticcontrol.app.server.SessionEvents
+import io.deskguest.app.server.EventSubscriptions
+import io.deskguest.app.server.SessionEvents
 
 /**
  * U2 regression + destruction tests (Android): the event-kind

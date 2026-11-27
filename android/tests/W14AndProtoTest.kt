@@ -4,13 +4,13 @@
 //           persisted, parse-tolerant) + host binding owner check.
 //  R-10:    MainActivity beginPairing is nameless (clientInfo rule).
 // Args: [0] = android project dir (source pins, W10-style).
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.transport.HostSessionBinding
-import io.agenticcontrol.app.transport.LanProtocol
-import io.agenticcontrol.app.transport.SocketStreams
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.transport.HostSessionBinding
+import io.deskguest.app.transport.LanProtocol
+import io.deskguest.app.transport.SocketStreams
 import java.io.File
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -65,7 +65,7 @@ object W14AndProtoTest {
     @JvmStatic
     fun main(args: Array<String>) {
         val root = File(args[0])
-        val dir = Files.createTempDirectory("acp-w14-test").toFile()
+        val dir = Files.createTempDirectory("deskguest-w14-test").toFile()
 
         // ---- P3-F2: ownerUserId mint/redeem/persist/legacy ----
         run {
@@ -150,7 +150,7 @@ object W14AndProtoTest {
                 LanProtocol.readLine(p.client.input) == "STOPPED" &&
                     w.sessions.session("hs-sl")?.state == SessionStore.STATE_ENDED)
             p.thread.join(3_000)
-            val src = File(root, "app/src/main/java/io/agenticcontrol/app/transport/HostListenerBinding.kt").readText()
+            val src = File(root, "app/src/main/java/io/deskguest/app/transport/HostListenerBinding.kt").readText()
             check("W14 P3-F14b source: no wire path calls stopLocalSession from STOPLOCAL",
                 !src.contains("val ok = sessions.stopLocalSession(sessionId)\n                    LanProtocol.writeLine(channel.output, if (ok) \"STOPPED\"") &&
                     src.contains("REFUSED stoplocal_removed"))
@@ -158,7 +158,7 @@ object W14AndProtoTest {
 
         // ---- R-10: MainActivity name path ----
         run {
-            val main = File(root, "app/src/main/java/io/agenticcontrol/app/MainActivity.kt").readText()
+            val main = File(root, "app/src/main/java/io/deskguest/app/MainActivity.kt").readText()
             check("W14 R-10 MainActivity pairing begins nameless (clientInfo rule, as the wizard)",
                 // W98 amendment (recorded, W97 precedent): the mint call
                 // gained its second argument — the connection-path
@@ -170,7 +170,7 @@ object W14AndProtoTest {
             check("W14 R-10 (FR-123) MainActivity display falls back to the unnamed-pairing label, never a typed or generic one",
                 main.contains("R.string.pairing_unnamed_label") && !main.contains("?: \"Your AI\"") &&
                     !main.contains(".ifBlank { \"Your AI\" }"))
-            val wiz = File(root, "app/src/main/java/io/agenticcontrol/app/WizardActivity.kt").readText()
+            val wiz = File(root, "app/src/main/java/io/deskguest/app/WizardActivity.kt").readText()
             check("W14 R-10 the KEY_AGENT_NAME constant is preserved as W10-B left it",
                 wiz.contains("const val KEY_AGENT_NAME = \"agent_name\""))
         }

@@ -10,7 +10,7 @@
 // $VAR command word in an input-verb / self-target context).
 // Pure/model layer + source pins over the real call sites.
 // Args: [0] = android project dir.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 import java.io.File
 
 private var failures = 0
@@ -21,7 +21,7 @@ private fun check(name: String, cond: Boolean) {
 
 fun main(args: Array<String>) {
     val root = args.getOrNull(0) ?: "."
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
 
     // ================= P1-F2: node action decision =================
     check("W15 P1-F2 node decision refuses a NULL package (live null-package node)",
@@ -30,12 +30,12 @@ fun main(args: Array<String>) {
         GateModel.nodeTargetRefused("", own))
     check("W15 P1-F2 node decision refuses a blank package",
         GateModel.nodeTargetRefused("   ", own))
-    check("W15 P1-F2 node decision refuses ACP's own package",
+    check("W15 P1-F2 node decision refuses DeskGuest's own package",
         GateModel.nodeTargetRefused(own, own))
     check("W15 P1-F2 node decision allows a named other package",
         !GateModel.nodeTargetRefused("com.other.app", own))
-    check("W15 P1-F2 classification kept distinct: null is not ACP as a fact, yet the action refuses",
-        !GateModel.targetIsAcpWindow(null, own) && GateModel.nodeTargetRefused(null, own))
+    check("W15 P1-F2 classification kept distinct: null is not DeskGuest as a fact, yet the action refuses",
+        !GateModel.targetIsDeskGuestWindow(null, own) && GateModel.nodeTargetRefused(null, own))
     check("W15 P1-F2 coordinate decision still fail-closed (null/blank/own refuse, other allows)",
         GateModel.coordinateTargetRefused(null, own) &&
             GateModel.coordinateTargetRefused(" ", own) &&
@@ -46,7 +46,7 @@ fun main(args: Array<String>) {
     // a target package in the service — tap (node), type (node),
     // launch (requested package) — and the gesture paths keep the
     // fail-closed coordinate decision.
-    val a11y = File(root, "app/src/main/java/io/agenticcontrol/app/access/ControlAccessibilityService.kt").readText()
+    val a11y = File(root, "app/src/main/java/io/deskguest/app/access/ControlAccessibilityService.kt").readText()
     check("W15 P1-F2 pin: service's targetIsOwnWindow delegates to the fail-closed node decision",
         a11y.contains("GateModel.nodeTargetRefused(targetPackage, packageName)"))
     check("W15 P1-F2 pin: tapByRef consults it on the live node before performAction/tapAt",

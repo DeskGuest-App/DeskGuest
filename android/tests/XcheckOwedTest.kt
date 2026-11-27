@@ -1,11 +1,11 @@
-import io.agenticcontrol.app.notify.NotificationCache
-import io.agenticcontrol.app.safety.DrivingLockout
-import io.agenticcontrol.app.safety.DrivingStateHolder
-import io.agenticcontrol.app.safety.InvisibleAppBlocklist
-import io.agenticcontrol.app.safety.InvisibleAppRules
-import io.agenticcontrol.app.server.FileScope
-import io.agenticcontrol.app.server.ReplayLog
-import io.agenticcontrol.app.server.SessionManager
+import io.deskguest.app.notify.NotificationCache
+import io.deskguest.app.safety.DrivingLockout
+import io.deskguest.app.safety.DrivingStateHolder
+import io.deskguest.app.safety.InvisibleAppBlocklist
+import io.deskguest.app.safety.InvisibleAppRules
+import io.deskguest.app.server.FileScope
+import io.deskguest.app.server.ReplayLog
+import io.deskguest.app.server.SessionManager
 import java.io.File
 
 /**
@@ -116,7 +116,7 @@ fun main() {
     ReplayLog.clearForTest()
 
     // ---- File scope ----
-    val root = File("/tmp/acp-agent-files-test")
+    val root = File("/tmp/deskguest-agent-files-test")
     check(FileScope.resolve(root, "note.txt") != null, "plain name resolves")
     check(FileScope.resolve(root, "sub/note.txt") != null, "one subfolder resolves")
     check(FileScope.resolve(root, "../escape.txt") == null, "dotdot refused")

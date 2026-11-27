@@ -1,0 +1,38 @@
+<Window x:Class="DeskGuest.SessionAgent.TrayPopup"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="DeskGuest" Width="360" SizeToContent="Height"
+        WindowStyle="None" AllowsTransparency="True" Background="Transparent"
+        ShowInTaskbar="False" Topmost="True" ResizeMode="NoResize"
+        FontFamily="{StaticResource DgFont}" Foreground="{StaticResource DgTextBrush}">
+    <Border Background="{StaticResource DgSurfaceBrush}" BorderBrush="{StaticResource DgBorderBrush}" BorderThickness="1" CornerRadius="16" Margin="8">
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="18" ShadowDepth="2" Opacity="0.25"/>
+        </Border.Effect>
+        <StackPanel Margin="18,14">
+            <StackPanel Orientation="Horizontal">
+                <Image Width="26" Height="26" Source="deskguest-icon.png" VerticalAlignment="Center"/>
+                <StackPanel Margin="9,0,0,0">
+                    <TextBlock Text="DeskGuest" FontSize="14.5" FontWeight="SemiBold"/>
+                    <TextBlock x:Name="HeaderLine" Text="" FontSize="12" Foreground="{StaticResource DgMutedBrush}"/>
+                </StackPanel>
+            </StackPanel>
+            <TextBlock x:Name="SessionLine" Text="" FontSize="14" FontWeight="SemiBold" Margin="0,14,0,2" TextWrapping="Wrap"/>
+            <TextBlock x:Name="SessionSub" Text="" FontSize="12.5" Foreground="{StaticResource DgMutedBrush}" TextWrapping="Wrap"/>
+            <Button x:Name="StopButton" Margin="0,10,0,0" Click="Stop_Click"
+                    Background="{StaticResource DgRedBrush}" Foreground="White" FontSize="14" FontWeight="Bold"
+                    Padding="14,9" BorderThickness="0" Cursor="Hand"/>
+            <TextBlock x:Name="MeshLine" Text="" FontSize="13" Margin="0,12,0,0"/>
+            <Button Content="Open Dashboard" Margin="0,8,0,0" Click="Dashboard_Click"
+                    Background="{StaticResource DgSurfaceBrush}" FontSize="13" Padding="12,7" Cursor="Hand">
+                <Button.Template>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{StaticResource DgSurfaceBrush}" BorderBrush="{StaticResource DgBorderBrush}" BorderThickness="1" CornerRadius="12" Padding="{TemplateBinding Padding}">
+                            <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                        </Border>
+                    </ControlTemplate>
+                </Button.Template>
+            </Button>
+        </StackPanel>
+    </Border>
+</Window>

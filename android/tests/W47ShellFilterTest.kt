@@ -30,7 +30,7 @@
 //      covers a literal that is only part of a pipe
 //      command expression. Pure-literal arguments keep the
 //      exact prior treatment. Pure/model layer only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 import java.io.File
 
 private var failures = 0
@@ -40,7 +40,7 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
 
@@ -83,8 +83,8 @@ fun main(args: Array<String>) {
         refused("\$HOME/bin/awk -f prog"))
     check("W47 variable-path slot parents and denied verbs by name refused",
         refused("\$HOME/bin/cmd input tap 1 1") &&
-            refused("\$HOME/bin/am start -n io.agenticcontrol.app/.MainActivity") &&
-            refused("\$HOME/bin/pm install io.agenticcontrol.app") &&
+            refused("\$HOME/bin/am start -n io.deskguest.app/.MainActivity") &&
+            refused("\$HOME/bin/pm install io.deskguest.app") &&
             refused("\$HOME/bin/monkey -p com.other") &&
             refused("\$HOME/bin/input tap 1 1"))
     // Benign directions: every resolved name with a benign
@@ -166,7 +166,7 @@ fun main(args: Array<String>) {
     // the derived set (or without a behavioural pin above)
     // fails here.
     val srcFile = File(args.getOrNull(0) ?: ".",
-        "app/src/main/java/io/agenticcontrol/app/design/HeroDesign.kt")
+        "app/src/main/java/io/deskguest/app/design/HeroDesign.kt")
     check("W47 cross-check source readable", srcFile.isFile)
     val src = if (srcFile.isFile) srcFile.readText() else ""
     fun balanced(openIdx: Int): String {

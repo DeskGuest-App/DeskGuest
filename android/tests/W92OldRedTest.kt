@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.design.PresenceLaw
-import io.agenticcontrol.app.presence.PresencePalette
+import io.deskguest.app.design.PresenceLaw
+import io.deskguest.app.presence.PresencePalette
 import java.io.File
 
 /**
@@ -73,7 +73,7 @@ object W92OldRedTest {
             "was ${"%08X".format(PresencePalette.LEGACY_DEFAULTS.stop)}")
 
         // ---- UiKit source pins (UiKit is android.*) ----
-        val uikit = codeOf(File(src, "io/agenticcontrol/app/ui/UiKit.kt"))
+        val uikit = codeOf(File(src, "io/deskguest/app/ui/UiKit.kt"))
         check("W92: UiKit.DANGER is the token red",
             uikit.contains("val DANGER = 0xFFDC2626.toInt()"))
         check("W92: UiKit.DANGER_DEEP is the token darken step #B91C1C",
@@ -86,7 +86,7 @@ object W92OldRedTest {
             !uikit.contains("C62828"))
 
         // ---- StreamViewer source pins (android.*) ----
-        val viewer = codeOf(File(src, "io/agenticcontrol/app/StreamViewer.kt"))
+        val viewer = codeOf(File(src, "io/deskguest/app/StreamViewer.kt"))
         check("W92: Stop-stream control paints the token hue at 0xCC",
             viewer.contains("0xCCDC2626"))
         check("W92: no Material error red left in StreamViewer",
@@ -94,7 +94,7 @@ object W92OldRedTest {
 
         // ---- PresenceOverlay justified keep ----
         val overlay = codeOf(File(src,
-            "io/agenticcontrol/app/presence/PresenceOverlay.kt"))
+            "io/deskguest/app/presence/PresenceOverlay.kt"))
         check("W92: syncBadge keeps its justified status-badge red",
             overlay.contains("#E69B1B1B"))
 

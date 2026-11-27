@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.server.BootRestartPolicy
+import io.deskguest.app.server.BootRestartPolicy
 import java.io.File
 
 /**
@@ -172,7 +172,7 @@ fun main(args: Array<String>) {
     // ---- source wiring: the receiver routes through the policy
     // to the existing guarded start, and the boot path carries
     // no Keystore work (0.4.3 lesson) ----
-    val serverDir = File(root, "app/src/main/java/io/agenticcontrol/app/server")
+    val serverDir = File(root, "app/src/main/java/io/deskguest/app/server")
     val receiverSrc = File(serverDir, "BootReceiver.kt").readText()
     check("receiver consults the policy", receiverSrc.contains("BootRestartPolicy.decide"))
     check("receiver routes to ControlService.start", receiverSrc.contains("ControlService.start"))
@@ -207,7 +207,7 @@ fun main(args: Array<String>) {
         "ControlService.start reports its outcome for the boot record",
         serviceSrc.contains("fun start(context: Context): Boolean")
     )
-    val mainSrc = File(root, "app/src/main/java/io/agenticcontrol/app/MainActivity.kt").readText()
+    val mainSrc = File(root, "app/src/main/java/io/deskguest/app/MainActivity.kt").readText()
     check(
         "home screen carries the honest setting label",
         mainSrc.contains("Restart the control channel after reboot")

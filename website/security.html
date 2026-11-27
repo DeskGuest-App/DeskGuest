@@ -5,25 +5,29 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Security &amp; the Threat Model — DeskGuest</title>
 <meta name="description" content="DeskGuest's threat model: what is protected, who it is protected against, the defenses, the consent floor, and what DeskGuest does not claim.">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
-<link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
+<link rel="canonical" href="https://deskguest.app/security">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/dex-favicon-32.png">
+<link rel="apple-touch-icon" href="assets/dex-favicon-180.png">
 <link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0F2537">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DeskGuest">
 <meta property="og:title" content="Security &amp; the Threat Model — DeskGuest">
 <meta property="og:description" content="DeskGuest's threat model: what is protected, who it is protected against, the defenses, the consent floor, and what DeskGuest does not claim.">
-<meta property="og:url" content="https://deskguest.app/security.html">
-<meta property="og:image" content="https://deskguest.app/assets/a3-master-lockup.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:url" content="https://deskguest.app/security">
+<meta property="og:image" content="https://deskguest.app/assets/og-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Security &amp; the Threat Model — DeskGuest">
+<meta name="twitter:description" content="DeskGuest's threat model: what is protected, who it is protected against, the defenses, the consent floor, and what DeskGuest does not claim.">
+<meta name="twitter:image" content="https://deskguest.app/assets/og-card.jpg">
 <script>document.documentElement.className+=' js'</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
-<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="trust.html">Trust</a></nav>
+<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
 <a class="btn small" href="download.html">Download (Coming Soon)</a>
 </div></header>
 <main id="main">
@@ -32,17 +36,17 @@
 <div>
 <span class="pill teal hero-tag">SECURITY ARCHITECTURE</span>
 <h1 class="display u-m-22-0-18">Security built into the math — not a promise on a slide.</h1>
-<p class="lede">Your device generates its own cryptographic identity key. No central account server to breach, no silent background access, and an instant STOP you always own.</p>
+<p class="lede">Your device generates its own cryptographic identity key. No central account server to breach, no access without the owner&rsquo;s pre-authorisation, and an instant STOP you always own. Unattended access runs only under a standing grant the owner gave in advance — announced on screen and recorded, never silent.</p>
 </div>
-<div class="d2d" role="img" aria-label="Diagram: two devices linked directly with encryption, a 34-word local recovery sheet, and a STOP approval gate">
+<div class="d2d" role="img" aria-label="Diagram: two devices linked directly with encryption, a 34-word local recovery sheet, and a STOP button">
 <div class="d2d-row">
-<div class="d2d-unit"><img src="assets/a3-mark.webp" alt="" width="384" height="244"></div>
+<div class="d2d-unit"><img src="assets/dex-mark.webp" alt="" width="384" height="244"></div>
 <div class="d2d-mid"><div class="t">Direct Encrypted Device-to-Device Link</div><div class="d2d-link"><span class="ln"></span><span class="lock"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><rect x="5" y="10.5" width="14" height="9.5" rx="2"/><path d="M8 10.5V8a4 4 0 0 1 8 0v2.5"/></svg></span><span class="ln"></span></div><div class="b">D2D Direct Link<br>(zero cloud middleman)</div></div>
-<div class="d2d-unit"><img src="assets/a3-mark.webp" alt="" width="384" height="244"></div>
+<div class="d2d-unit"><img src="assets/dex-mark.webp" alt="" width="384" height="244"></div>
 </div>
 <div class="d2d-row u-mt16">
 <div class="d2d-unit"><div class="sheet-mini" aria-hidden="true"><i class="gold"></i><i></i><i></i><i></i><i></i></div><div class="cap">34-Word Local Recovery Sheet</div></div>
-<div class="d2d-unit"><div class="octagon" aria-hidden="true">STOP</div><div class="cap">Credential-Refusal Approval Gate</div></div>
+<div class="d2d-unit"><div class="octagon" aria-hidden="true">STOP</div><div class="cap">Approvals That Never Type Passwords</div></div>
 </div>
 </div>
 </div>
@@ -56,11 +60,11 @@
 <div class="p4 rv"><h3>10-Minute Single-Use Pairing Codes</h3>
 <div class="p4-viz"><div class="viz-code u-w100"><div class="vc-cap">Quick-refresh passcode</div><div class="vc-num">3 8 9 8</div><div class="vc-exp">Single-use · gone in <strong>10 minutes</strong></div></div></div>
 <p>On the Full Platform, pairing begins with a code the device itself shows. <a class="more" href="quick-fix.html">Quick Fix begins from an invite link instead</a></p></div>
-<div class="p4 rv"><h3>Plain-English Approval Gates &amp; Credential Refusal</h3>
+<div class="p4 rv"><h3>Plain-English Approvals &amp; Password Refusal</h3>
 <div class="p4-viz u-viz-col"><div class="viz-approve u-mt0 u-w100"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.6-3 7.7-7 9-4-1.3-7-4.4-7-9V6z"/><path d="M9 11.6l2.2 2.2L15.4 9.6"/></svg>Approve the exact action</div><div class="viz-approve u-mt0 u-w100"><span class="viz-stop-pill">STOP</span>Credentials are refused, always</div></div>
 <p>Sensitive actions show you exactly what will happen before they run — and passwords are never typed by a helper.</p></div>
-<div class="p4 rv"><h3>Open-Source Code &amp; Local Activity Ledger</h3>
-<div class="p4-viz"><div class="viz-slip u-slip230"><strong class="u-c-text">&lt;/&gt; Public code</strong><br>✓ Auditable by anyone<br>✓ Record stays on the device</div></div>
+<div class="p4 rv"><h3>Open-Source Code &amp; the Local Record</h3>
+<div class="p4-viz"><div class="viz-slip u-slip230"><strong class="u-c-text">&lt;/&gt; Public code</strong><br>✓ Anyone can read the code<br>✓ Record stays on the device</div></div>
 <p>The code is open for inspection, and the record of what happened never leaves the device unless you send it.</p></div>
 </div>
 </div></section>
@@ -72,7 +76,7 @@
 <div class="cards reveal">
 <div class="card rv"><h3>The fake helper</h3><p>A scammer who phones or messages claiming to be support and asks you to "let them in." Defense: help can only begin when you start it — on the Full Platform you open DeskGuest and hand out a one-time code; in Quick Fix, you open the invite link your helper sent. Either way the helper is named on screen the whole time, and DeskGuest never presses Yes on system prompts. <a class="more" href="scam.html">Is this a scam?</a></p></div>
 <div class="card rv"><h3>A helper who oversteps</h3><p>A paired person or AI agent doing more than you allowed. Defense: per-helper permission levels set by you; sensitive actions arrive as approval cards before they run; presence that cannot be hidden; STOP that cuts input first; and an Activity Record that can't be quietly edited.</p></div>
-<div class="card rv"><h3>Someone watching the wire</h3><p>An observer on the network, or a relay carrying your session. Defense: sessions are sealed between the devices. Relays and coordination services can carry a session but cannot read one; the swarm phone-book finds devices without any server knowing the list.</p></div>
+<div class="card rv"><h3>Someone watching the wire</h3><p>An observer on the network, or a relay carrying your session. Defense: sessions are sealed between the devices. Relays and coordination services can carry a session but cannot read one; the swarm phone-book finds devices without any server knowing the list. The encryption is the same class the enterprise tools rely on — modern end-to-end encryption sealed between the two devices&rsquo; own keys. The difference is not the math; it is that no company server sits in the middle able to read, log, or hand over the session.</p></div>
 <div class="card rv"><h3>A lost or stolen device</h3><p>Defense: your identity is a key held on the device, and any surviving device of yours can strike a lost device's key from your circle. Recovery doors (a sealed file, a trusted person, split pieces, a word sheet) restore you — never a central reset DeskGuest controls.</p></div>
 </div>
 <div class="sec-head reveal u-mt48"><h2>The consent floor</h2>
@@ -83,7 +87,7 @@
 <li><span class="tick" aria-hidden="true">✓</span>No credential is ever readable back — under any approval, by any interface.</li>
 <li><span class="tick" aria-hidden="true">✓</span>No mining your messages, call logs, photos, or clipboard history to build context.</li>
 <li><span class="tick" aria-hidden="true">✓</span>No network interception, packet capture, or traffic manipulation tooling.</li>
-<li><span class="tick" aria-hidden="true">✓</span>No silent permission grants — grants happen only through the owner's gates.</li>
+<li><span class="tick" aria-hidden="true">✓</span>No silent permission grants — access is given only when the owner approves it.</li>
 <li><span class="tick" aria-hidden="true">✓</span>No pre-bundled third-party keys or metered allowances shipped inside the product.</li>
 <li><span class="tick" aria-hidden="true">✓</span>No fake capability — a thing a device cannot do reports unavailable, with a reason.</li>
 </ul></div>
@@ -93,7 +97,7 @@
 <div class="card rv"><h3>It can't judge your trust for you</h3><p>If you hand a code to the wrong person, DeskGuest shows you who is connected and stops them the instant you say so — but the choice of who to trust is yours. The scam page exists to help with exactly that.</p></div>
 <div class="card rv"><h3>It doesn't protect a device that's already compromised</h3><p>If malicious software already runs on a device with full rights, no remote-help tool can make that device safe. DeskGuest's record will still show what happened in its own sessions.</p></div>
 <div class="card rv"><h3>Approved actions are the approver's</h3><p>When you tap Approve on an action card, DeskGuest runs it and records your approval. Read cards before approving them — that's what they're for.</p></div>
-<div class="card rv"><h3>Support is proven where it's proven</h3><p>Security claims are made at the level they have been tested: Windows 11 and the Samsung Galaxy S25 Ultra today. The <a href="it.html">IT page</a> states the support matrix exactly.</p></div>
+<div class="card rv"><h3>We only claim what we've tried</h3><p>Security claims go only as far as we've tried them: Windows 11 and the Samsung Galaxy S25 Ultra today. The <a href="it.html">IT page</a> states the support matrix exactly.</p></div>
 </div>
 <div class="notice reveal"><strong>Found a security problem?</strong> Please report it privately through <a href="https://github.com/DeskGuest-App/DeskGuest/security/advisories/new">GitHub's vulnerability reporting for the DeskGuest project</a>. Please don't post security problems publicly before they've had a chance to be fixed.</div>
 </div></section>
@@ -102,17 +106,19 @@
 <footer class="site-footer"><div class="wrap">
 <div class="cols">
 <div>
-<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
 </div>
-<div><p class="fh">Site</p><nav aria-label="Site"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a></nav></div>
+<div><p class="fh">Product</p><nav aria-label="Product"><a href="features.html">Features</a><a href="about.html">About</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="download.html">Download</a></nav></div>
+<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Help &amp; Docs</a></nav></div>
+<div><p class="fh">For Work</p><nav aria-label="For Work"><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav></div>
 <div><p class="fh">Trust</p><nav aria-label="Trust">
-<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of Service</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
 </nav></div>
 </div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
-Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>
+We've made sure DeskGuest works on Windows 11 and the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full picture.</p>
 </div></footer>
 <script src="site.js"></script>
 </body>

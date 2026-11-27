@@ -1,5 +1,5 @@
-import io.agenticcontrol.app.design.HeroThemes
-import io.agenticcontrol.app.design.PresenceLaw
+import io.deskguest.app.design.HeroThemes
+import io.deskguest.app.design.PresenceLaw
 import java.io.File
 
 /**
@@ -80,11 +80,11 @@ object W84Fr117Test {
 
         // ---- Renderer source pins (PresenceOverlay is android.*) ----
         val overlay = codeOf(File(src,
-            "io/agenticcontrol/app/presence/PresenceOverlay.kt"))
+            "io/deskguest/app/presence/PresenceOverlay.kt"))
         check("renderer: Box fill paints from HeroThemes.BOX_BACKGROUND",
-            overlay.contains("io.agenticcontrol.app.design.HeroThemes.BOX_BACKGROUND"))
+            overlay.contains("io.deskguest.app.design.HeroThemes.BOX_BACKGROUND"))
         check("renderer: STOP paints from PresenceLaw.HUE_STOP",
-            overlay.contains("io.agenticcontrol.app.design.PresenceLaw.HUE_STOP"))
+            overlay.contains("io.deskguest.app.design.PresenceLaw.HUE_STOP"))
         check("renderer: no stale pre-alignment Box hex #14141C",
             !overlay.contains("14141C"))
         check("renderer: no stale pre-alignment STOP hex #C62828",
@@ -94,7 +94,7 @@ object W84Fr117Test {
 
         // ---- Model source pins: the old values are gone ----
         val hero = codeOf(File(src,
-            "io/agenticcontrol/app/design/HeroDesign.kt"))
+            "io/deskguest/app/design/HeroDesign.kt"))
         check("model: token navy literal at BOX_BACKGROUND",
             hero.contains("BOX_BACKGROUND: Int = 0xFF0F2537.toInt()"))
         check("model: token red literal at HUE_STOP",

@@ -1,30 +1,30 @@
-import io.agenticcontrol.app.adb.AdbClient
-import io.agenticcontrol.app.adb.AdbEndpoints
-import io.agenticcontrol.app.adb.AdbKey
-import io.agenticcontrol.app.adb.AdbPairing
-import io.agenticcontrol.app.adb.AdbProtocol
-import io.agenticcontrol.app.aipack.AiPackManifest
-import io.agenticcontrol.app.aipack.AiPackService
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.quickassist.QuickAssistService
-import io.agenticcontrol.app.rmm.LicenceFindingKinds
-import io.agenticcontrol.app.rmm.LicenceStates
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.transport.AclBuilder
-import io.agenticcontrol.app.transport.HubMembership
-import io.agenticcontrol.app.transport.LanHostListener
-import io.agenticcontrol.app.transport.LanProtocol
-import io.agenticcontrol.app.transport.LanRung
-import io.agenticcontrol.app.transport.LanSecureChannel
-import io.agenticcontrol.app.transport.MeshAddress
-import io.agenticcontrol.app.transport.MeshSetupFlow
-import io.agenticcontrol.app.transport.MeshSetupState
-import io.agenticcontrol.app.transport.SocketStreams
-import io.agenticcontrol.app.transport.TorRung
-import io.agenticcontrol.app.update.ManifestVerifier
-import io.agenticcontrol.app.update.UpdateGuards
-import io.agenticcontrol.app.wake.WakeStore
+import io.deskguest.app.adb.AdbClient
+import io.deskguest.app.adb.AdbEndpoints
+import io.deskguest.app.adb.AdbKey
+import io.deskguest.app.adb.AdbPairing
+import io.deskguest.app.adb.AdbProtocol
+import io.deskguest.app.aipack.AiPackManifest
+import io.deskguest.app.aipack.AiPackService
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.quickassist.QuickAssistService
+import io.deskguest.app.rmm.LicenceFindingKinds
+import io.deskguest.app.rmm.LicenceStates
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.transport.AclBuilder
+import io.deskguest.app.transport.HubMembership
+import io.deskguest.app.transport.LanHostListener
+import io.deskguest.app.transport.LanProtocol
+import io.deskguest.app.transport.LanRung
+import io.deskguest.app.transport.LanSecureChannel
+import io.deskguest.app.transport.MeshAddress
+import io.deskguest.app.transport.MeshSetupFlow
+import io.deskguest.app.transport.MeshSetupState
+import io.deskguest.app.transport.SocketStreams
+import io.deskguest.app.transport.TorRung
+import io.deskguest.app.update.ManifestVerifier
+import io.deskguest.app.update.UpdateGuards
+import io.deskguest.app.wake.WakeStore
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.File
@@ -70,7 +70,7 @@ private fun enrolled(store: EnrollmentStore, group: String = "dg1"): DeviceIdent
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-bdfix2").toFile()
+    val dir = Files.createTempDirectory("deskguest-bdfix2").toFile()
     val b64 = Base64.getEncoder()
 
     // ============ bd-and-remote F1: transport v2 ============
@@ -169,13 +169,13 @@ fun main() {
     // ============ bd-and-remote F2/F6: mesh + hub state ============
     run {
         check("F2 MeshStore accepts tailnet / loopback / RFC1918 companion addresses",
-            io.agenticcontrol.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://100.64.0.7:8790") &&
-                io.agenticcontrol.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://localhost:8790") &&
-                io.agenticcontrol.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://192.168.1.20:8790"))
+            io.deskguest.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://100.64.0.7:8790") &&
+                io.deskguest.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://localhost:8790") &&
+                io.deskguest.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://192.168.1.20:8790"))
         check("F2 MeshStore refuses public / credentialed / path-bearing addresses",
-            !io.agenticcontrol.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://203.0.113.9:8790") &&
-                !io.agenticcontrol.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://user@100.64.0.7:8790") &&
-                !io.agenticcontrol.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("ftp://100.64.0.7"))
+            !io.deskguest.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://203.0.113.9:8790") &&
+                !io.deskguest.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("http://user@100.64.0.7:8790") &&
+                !io.deskguest.app.mesh.MeshUrlPolicy.isAcceptableBaseUrl("ftp://100.64.0.7"))
         val file = File(dir, "hub.json")
         val m1 = HubMembership(file)
         val nodeId = m1.join("dev-a", "1.104.7", 1_000L)
@@ -185,10 +185,10 @@ fun main() {
         check("F6 HubMembership.reconcile marks controller-deleted nodes",
             m2.reconcile(listOf(nodeId!!)) == 1 && m2.get("dev-a")?.deleted == true &&
                 HubMembership(file).get("dev-a")?.deleted == true)
-        val mapping = io.agenticcontrol.app.transport.TailnetMapping(
+        val mapping = io.deskguest.app.transport.TailnetMapping(
             userGroups = mapOf("techs" to listOf("alice@example.com")),
-            deviceGroups = mapOf("fleet" to "acp-fleet"),
-            grants = listOf(io.agenticcontrol.app.transport.TailnetGrant("techs", "fleet", setOf("use"))))
+            deviceGroups = mapOf("fleet" to "deskguest-fleet"),
+            grants = listOf(io.deskguest.app.transport.TailnetGrant("techs", "fleet", setOf("use"))))
         val acl = AclBuilder.build(mapping, 47621)
         val aclChanged = AclBuilder.build(mapping.copy(
             userGroups = mapOf("techs" to listOf("alice@example.com", "bob@example.com"))), 47621)
@@ -197,10 +197,10 @@ fun main() {
                 AclBuilder.diff(acl, aclChanged).contains("bob@example.com"))
         val seen = mutableListOf<MeshSetupState>()
         val flow = MeshSetupFlow(stateSink = { seen.add(it) })
-        flow.runPreSignIn(io.agenticcontrol.app.transport.MeshPlatform.ANDROID,
-            io.agenticcontrol.app.transport.MeshRole.OPERATOR,
+        flow.runPreSignIn(io.deskguest.app.transport.MeshPlatform.ANDROID,
+            io.deskguest.app.transport.MeshRole.OPERATOR,
             carveOutAcknowledged = true,
-            clientVersion = io.agenticcontrol.app.transport.ClientVersionGate.PINNED_CLIENT_VERSION)
+            clientVersion = io.deskguest.app.transport.ClientVersionGate.PINNED_CLIENT_VERSION)
         check("F6 MeshSetupFlow reports transitions to its sink",
             seen.isNotEmpty() && seen.last() == flow.state &&
                 flow.state.stage == MeshSetupFlow.STAGE_AWAITING_SIGN_IN)
@@ -244,8 +244,8 @@ fun main() {
         val v6 = TorRung.socks5RequestBytes("2001:db8::1", 80)!!
         check("F4 literal IPv6 goes as ATYP 4", v6[3] == 4.toByte() && v6.size == 22)
         check("F4 parseLiteralIp rejects names and junk",
-            io.agenticcontrol.app.transport.parseLiteralIp("example.com") == null && io.agenticcontrol.app.transport.parseLiteralIp("999.1.1.1") == null &&
-                io.agenticcontrol.app.transport.parseLiteralIp("1.2.3.4") != null)
+            io.deskguest.app.transport.parseLiteralIp("example.com") == null && io.deskguest.app.transport.parseLiteralIp("999.1.1.1") == null &&
+                io.deskguest.app.transport.parseLiteralIp("1.2.3.4") != null)
     }
 
     // ============ bd-and-remote F7: AiPack streaming + licence record ============
@@ -308,15 +308,15 @@ fun main() {
         roster.addDeviceGroup(RosterStore.DeviceGroup("dg1", "co", "Fleet", listOf("lan")), "admin1")
         roster.addGrant(RosterStore.Grant("co", "ug1", "dg1", setOf("use")), "admin1")
         val hostDev = enrolled(enrollW)
-        val sessions = io.agenticcontrol.app.session.SessionStore(
+        val sessions = io.deskguest.app.session.SessionStore(
             File(dir, "wake-sessions.tsv"), roster, enrollW) { 1_700_300_000_000L }
         var sentPackets = 0
         val wake = WakeStore(roster, enrollW,
-            io.agenticcontrol.app.wake.WakeSender { _, _, _ -> sentPackets++ }, null) { 1_700_300_000_000L }
+            io.deskguest.app.wake.WakeSender { _, _, _ -> sentPackets++ }, null) { 1_700_300_000_000L }
         check("F12 setup: admin registers the wake target",
             wake.registerTarget(hostDev.deviceId, "00:11:22:33:44:55", "192.168.1.255", "admin1"))
         sessions.createSession(
-            io.agenticcontrol.app.session.SessionStore.Session(
+            io.deskguest.app.session.SessionStore.Session(
                 id = "s-w", scopeId = "co", hostDeviceId = hostDev.deviceId,
                 initiatorUserId = "user1", kind = "unattended", transportRung = "lan"),
             hostUserId = "admin1")
@@ -336,7 +336,7 @@ fun main() {
     run {
         val keyGen = KeyPairGenerator.getInstance("RSA").apply { initialize(2048) }
         val kp = keyGen.generateKeyPair()
-        val identity = object : io.agenticcontrol.app.adb.AdbIdentity {
+        val identity = object : io.deskguest.app.adb.AdbIdentity {
             override val rsaPublicKey = kp.public as java.security.interfaces.RSAPublicKey
             override fun signToken(token: ByteArray): ByteArray = AdbKey.signToken(kp.private, token)
             override fun sslContext(): javax.net.ssl.SSLContext =
@@ -449,7 +449,7 @@ fun main() {
                 !ManifestVerifier.verifyNewer(mBig, rsa.public, bigCode))
         val mPkg = signedManifest { put("versionCode", 10); put("packageName", "com.other.app") }
         check("F10 a manifest bound to another package is refused",
-            !ManifestVerifier.verifyNewer(mPkg, rsa.public, 1, expectedPackage = "io.agenticcontrol.app") &&
+            !ManifestVerifier.verifyNewer(mPkg, rsa.public, 1, expectedPackage = "io.deskguest.app") &&
                 ManifestVerifier.verifyNewer(mPkg, rsa.public, 1))
         val mExp = signedManifest { put("versionCode", 10); put("expiresAt", 1000L) }
         check("F10 an expired manifest is refused; the same one in its window passes",

@@ -1,12 +1,12 @@
-import io.agenticcontrol.app.access.AppCards
-import io.agenticcontrol.app.access.SnapshotStore
-import io.agenticcontrol.app.access.StructuredExtraction
-import io.agenticcontrol.app.notify.NotificationCache
-import io.agenticcontrol.app.notify.NotificationTriage
-import io.agenticcontrol.app.server.CrashReport
-import io.agenticcontrol.app.server.FindMyPhonePolicy
-import io.agenticcontrol.app.server.ReplayLog
-import io.agenticcontrol.app.server.ReplayTimeline
+import io.deskguest.app.access.AppCards
+import io.deskguest.app.access.SnapshotStore
+import io.deskguest.app.access.StructuredExtraction
+import io.deskguest.app.notify.NotificationCache
+import io.deskguest.app.notify.NotificationTriage
+import io.deskguest.app.server.CrashReport
+import io.deskguest.app.server.FindMyPhonePolicy
+import io.deskguest.app.server.ReplayLog
+import io.deskguest.app.server.ReplayTimeline
 
 /**
  * Wave 11 Lane B — FEATURES gap disposition builds (2026-11-23):
@@ -50,11 +50,11 @@ fun main() {
     check(empty.fields.isEmpty() && empty.skippedUnlabelled == 1, "extract: canvas-like tree = zero fields, honestly")
 
     // ---- Crash report parsing ----
-    val raw = "Agentic Control failure report\n" +
+    val raw = "DeskGuest failure report\n" +
         "2026-11-20 09:41:07 — uncaught on main\n\n" +
         "java.lang.IllegalStateException: boom\n" +
-        "\tat io.agenticcontrol.app.Foo.bar(Foo.kt:12)\n" +
-        "\tat io.agenticcontrol.app.Foo.baz(Foo.kt:30)\n"
+        "\tat io.deskguest.app.Foo.bar(Foo.kt:12)\n" +
+        "\tat io.deskguest.app.Foo.baz(Foo.kt:30)\n"
     val parsed = CrashReport.parse(raw)
     check(parsed != null, "crash: CrashTrap format parses")
     check(parsed!!.recordedAt == "2026-11-20 09:41:07", "crash: timestamp extracted")

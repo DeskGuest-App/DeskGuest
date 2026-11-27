@@ -1,9 +1,9 @@
-import io.agenticcontrol.app.transport.AddressClass
-import io.agenticcontrol.app.transport.ConnectionDoctor
-import io.agenticcontrol.app.transport.DoctorFacts
-import io.agenticcontrol.app.transport.NatClass
-import io.agenticcontrol.app.transport.RungSnapshot
-import io.agenticcontrol.app.transport.RungState
+import io.deskguest.app.transport.AddressClass
+import io.deskguest.app.transport.ConnectionDoctor
+import io.deskguest.app.transport.DoctorFacts
+import io.deskguest.app.transport.NatClass
+import io.deskguest.app.transport.RungSnapshot
+import io.deskguest.app.transport.RungState
 
 /** U6 connection doctor (Android mirror): NAT fixtures, per-rung
  *  honest states, D18 naming, destruction cases. No sockets anywhere

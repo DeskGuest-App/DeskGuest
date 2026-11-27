@@ -5,8 +5,9 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>A helping hand for your device, always under your control — DeskGuest</title>
 <meta name="description" content="Free, private remote help from trusted people or your own AI agents — you see everything, and you can stop it instantly.">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
-<link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
+<link rel="canonical" href="https://deskguest.app/">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/dex-favicon-32.png">
+<link rel="apple-touch-icon" href="assets/dex-favicon-180.png">
 <link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0F2537">
 <meta property="og:type" content="website">
@@ -14,16 +15,52 @@
 <meta property="og:title" content="A helping hand for your device, always under your control — DeskGuest">
 <meta property="og:description" content="Free, private remote help from trusted people or your own AI agents — you see everything, and you can stop it instantly.">
 <meta property="og:url" content="https://deskguest.app/">
-<meta property="og:image" content="https://deskguest.app/assets/a3-master-lockup.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:image" content="https://deskguest.app/assets/og-card.jpg">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://deskguest.app/#org",
+      "name": "DeskGuest",
+      "url": "https://deskguest.app/",
+      "logo": "https://deskguest.app/assets/og-card.jpg",
+      "email": "support@deskguest.app",
+      "sameAs": ["https://github.com/DeskGuest-App/DeskGuest"]
+    },
+    {
+      "@type": "WebSite",
+      "@id": "https://deskguest.app/#site",
+      "name": "DeskGuest",
+      "url": "https://deskguest.app/",
+      "publisher": { "@id": "https://deskguest.app/#org" }
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "DeskGuest",
+      "url": "https://deskguest.app/",
+      "applicationCategory": "UtilitiesApplication",
+      "operatingSystem": "Windows 11, Android",
+      "description": "Free, private remote help from trusted people or your own AI agents \u2014 you see everything, and you can stop it instantly. No account, no DeskGuest cloud, no telemetry.",
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+      "publisher": { "@id": "https://deskguest.app/#org" }
+    }
+  ]
+}
+</script>
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="A helping hand for your device, always under your control — DeskGuest">
+<meta name="twitter:description" content="Free, private remote help from trusted people or your own AI agents — you see everything, and you can stop it instantly.">
+<meta name="twitter:image" content="https://deskguest.app/assets/og-card.jpg">
 <script>document.documentElement.className+=' js'</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
-<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="trust.html">Trust</a></nav>
+<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
 <a class="btn small" href="download.html">Download (Coming Soon)</a>
 </div></header>
 <main id="main">
@@ -38,7 +75,7 @@
 <a class="btn large" href="download.html">Coming Soon — Preview Downloads</a>
 <a class="btn large ghost-light" href="how-it-works.html">How It Works</a>
 </div>
-<p class="hero-note">For Windows 11 and Android. Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra — the <a href="download.html">Download page</a> says exactly what that means.</p>
+<p class="hero-note">For Windows 11 and Android. We've made sure it works on Windows 11 and on the Samsung Galaxy S25 Ultra — the <a href="download.html">Download page</a> says exactly what that means.</p>
 </div>
 <div class="stage-visual">
 <img class="hero-art" src="assets/pose-wave.webp" alt="The DeskGuest Greeter — a friendly monitor character with a shield, waving hello" width="720" height="720" fetchpriority="high">
@@ -130,7 +167,7 @@
 <div>
 <h2>Uh-oh! Something went wrong? We're on it.</h2>
 <p>If you ever experience an issue, a disconnect, or a bug, DeskGuest tells you in plain words what happened and what to do next — and every problem can be reported with a single tap, no complicated forms.</p>
-<p><a class="btn gold" href="support.html">Report an Issue</a> &nbsp; <a href="trust.html">Learn about Security</a></p>
+<p><a class="btn gold" href="report.html">Report an Issue</a> &nbsp; <a href="trust.html">Learn about Security</a></p>
 </div>
 </div>
 </div></section>
@@ -139,7 +176,9 @@
 <div class="cta-band reveal">
 <h2>Free. No account. No cloud.</h2>
 <p>DeskGuest is in development now. When downloads open, they will live on the Download page — always from the project's own releases, always with a File Check Code to verify.</p>
+<p>Everything the established remote tools can do, DeskGuest can — or will be able to — do, for free: that is the standard the Features page checks, row by row, in the open.</p>
 <a class="btn large gold" href="download.html">Coming soon — see the Download page</a>
+<p class="u-mt20"><a class="more" href="about.html">Why we built DeskGuest — and how it compares</a></p>
 </div>
 </div></section>
 
@@ -147,17 +186,19 @@
 <footer class="site-footer"><div class="wrap">
 <div class="cols">
 <div>
-<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
 </div>
-<div><p class="fh">Site</p><nav aria-label="Site"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a></nav></div>
+<div><p class="fh">Product</p><nav aria-label="Product"><a href="features.html">Features</a><a href="about.html">About</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="download.html">Download</a></nav></div>
+<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Help &amp; Docs</a></nav></div>
+<div><p class="fh">For Work</p><nav aria-label="For Work"><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav></div>
 <div><p class="fh">Trust</p><nav aria-label="Trust">
-<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of Service</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
 </nav></div>
 </div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
-Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>
+We've made sure DeskGuest works on Windows 11 and the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full picture.</p>
 </div></footer>
 <script src="site.js"></script>
 </body>

@@ -1,9 +1,9 @@
-import io.agenticcontrol.app.design.GateModel
-import io.agenticcontrol.app.design.HeroThemes
-import io.agenticcontrol.app.design.HomeModel
-import io.agenticcontrol.app.design.PresenceLaw
-import io.agenticcontrol.app.design.SessionDetailModel
-import io.agenticcontrol.app.mesh.MeshAuth
+import io.deskguest.app.design.GateModel
+import io.deskguest.app.design.HeroThemes
+import io.deskguest.app.design.HomeModel
+import io.deskguest.app.design.PresenceLaw
+import io.deskguest.app.design.SessionDetailModel
+import io.deskguest.app.mesh.MeshAuth
 import java.io.File
 
 /**
@@ -25,7 +25,7 @@ import java.io.File
  *  - Gate (OI-12 fixture): the gate payload equals the submitted
  *    payload BYTE FOR BYTE; exits exactly 3 at equal weight; no
  *    session allow; 600ms + human arming (OI-13); agent actions on
- *    ACP windows refused on all three injection paths.
+ *    DeskGuest windows refused on all three injection paths.
  *
  * Args: [0] = android project dir.
  */
@@ -54,7 +54,7 @@ object W6DesignTest {
         check("mesh CRLF injection refused", MeshAuth.headerValue("tok\r\nX-Evil: 1") == null)
         // MeshClient applies the header on every request path.
         val meshClient = File(root,
-            "app/src/main/java/io/agenticcontrol/app/mesh/MeshClient.kt").readText()
+            "app/src/main/java/io/deskguest/app/mesh/MeshClient.kt").readText()
         check("meshclient defines authorize", meshClient.contains("fun HttpURLConnection.authorize()"))
         check("meshclient authorize call sites >= 4",
             meshClient.split("authorize()").size - 1 >= 5) // def + 4 paths
@@ -62,7 +62,7 @@ object W6DesignTest {
         check("meshclient default provider sends nothing",
             meshClient.contains("bearerToken: () -> String? = { null }"))
         val winAct = File(root,
-            "app/src/main/java/io/agenticcontrol/app/WindowsDeviceActivity.kt").readText()
+            "app/src/main/java/io/deskguest/app/WindowsDeviceActivity.kt").readText()
         check("windows page supplies pairing token",
             winAct.contains("MeshStore.bearerToken") && winAct.contains("sharedPairingStore"))
 
@@ -225,18 +225,18 @@ object W6DesignTest {
             GateModel.controlsArmed(1000, 1600, humanActivated = true))
         check("gate never armed without human activation",
             !GateModel.controlsArmed(1000, 999999, humanActivated = false))
-        check("agent action on ACP window refused: gesture",
-            GateModel.agentActionOnAcpWindowRefused(GateModel.InjectionPath.GESTURE, true))
-        check("agent action on ACP window refused: node action",
-            GateModel.agentActionOnAcpWindowRefused(GateModel.InjectionPath.NODE_ACTION, true))
-        check("agent action on ACP window refused: shell input",
-            GateModel.agentActionOnAcpWindowRefused(GateModel.InjectionPath.SHELL_INPUT, true))
+        check("agent action on DeskGuest window refused: gesture",
+            GateModel.agentActionOnDeskGuestWindowRefused(GateModel.InjectionPath.GESTURE, true))
+        check("agent action on DeskGuest window refused: node action",
+            GateModel.agentActionOnDeskGuestWindowRefused(GateModel.InjectionPath.NODE_ACTION, true))
+        check("agent action on DeskGuest window refused: shell input",
+            GateModel.agentActionOnDeskGuestWindowRefused(GateModel.InjectionPath.SHELL_INPUT, true))
         check("agent action elsewhere not refused by this rule",
-            !GateModel.agentActionOnAcpWindowRefused(GateModel.InjectionPath.GESTURE, false))
+            !GateModel.agentActionOnDeskGuestWindowRefused(GateModel.InjectionPath.GESTURE, false))
         // Gate surface source pins: full-screen sheet, payload quote,
         // deny-and-end wired, Box not covered by this window.
         val overlay = File(root,
-            "app/src/main/java/io/agenticcontrol/app/server/ApprovalOverlay.kt").readText()
+            "app/src/main/java/io/deskguest/app/server/ApprovalOverlay.kt").readText()
         check("gate sheet is full-screen",
             overlay.contains("WindowManager.LayoutParams.MATCH_PARENT,\n            WindowManager.LayoutParams.MATCH_PARENT"))
         // W10 (V3-F1): the payload renders through the escaping

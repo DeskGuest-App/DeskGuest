@@ -1,15 +1,15 @@
-import io.agenticcontrol.app.chat.AgentChatStore
-import io.agenticcontrol.app.design.AccessEditorModel
-import io.agenticcontrol.app.design.AgentChatModel
-import io.agenticcontrol.app.design.BackupKeySheetModel
-import io.agenticcontrol.app.design.EffectivePolicyModel
-import io.agenticcontrol.app.design.FrameAccounting
-import io.agenticcontrol.app.design.MdmSurfaceModel
-import io.agenticcontrol.app.design.PresenceSelfTest
-import io.agenticcontrol.app.design.SetupWizardModel
-import io.agenticcontrol.app.server.ApprovalGate
-import io.agenticcontrol.app.server.DataFlows
-import io.agenticcontrol.app.server.GateDenyAndEnd
+import io.deskguest.app.chat.AgentChatStore
+import io.deskguest.app.design.AccessEditorModel
+import io.deskguest.app.design.AgentChatModel
+import io.deskguest.app.design.BackupKeySheetModel
+import io.deskguest.app.design.EffectivePolicyModel
+import io.deskguest.app.design.FrameAccounting
+import io.deskguest.app.design.MdmSurfaceModel
+import io.deskguest.app.design.PresenceSelfTest
+import io.deskguest.app.design.SetupWizardModel
+import io.deskguest.app.server.ApprovalGate
+import io.deskguest.app.server.DataFlows
+import io.deskguest.app.server.GateDenyAndEnd
 import java.io.File
 
 /**
@@ -33,7 +33,7 @@ object W7Design2Test {
     @JvmStatic
     fun main(args: Array<String>) {
         val root = File(args[0])
-        val src = File(root, "app/src/main/java/io/agenticcontrol/app")
+        val src = File(root, "app/src/main/java/io/deskguest/app")
         fun text(rel: String) = File(src, rel).readText()
 
         // ---- Item 1: presence self-test + palette removal ----
@@ -173,7 +173,7 @@ object W7Design2Test {
         check("chat: ask routes through gate with chat flag",
             AgentChatModel.askRoutesThroughGate() && AgentChatModel.askFromChatFlag())
         DataFlows.resetForTest()
-        val chatDir = File(System.getProperty("java.io.tmpdir"), "acp-w7-chat-${System.nanoTime()}")
+        val chatDir = File(System.getProperty("java.io.tmpdir"), "deskguest-w7-chat-${System.nanoTime()}")
         val ev = AgentChatStore.append(chatDir, "pair-9", AgentChatStore.DIR_OWNER, "hello agent", 1000L)
         check("chat: owner message counted Sent in ledger", DataFlows.chatSentCount("pair-9") == 1L)
         check("chat: audit event is metadata only",

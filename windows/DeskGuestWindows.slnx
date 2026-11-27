@@ -1,0 +1,7 @@
+<Solution>
+  <Project Path="DeskGuest.Core/DeskGuest.Core.csproj" />
+  <Project Path="DeskGuest.Launcher/DeskGuest.Launcher.csproj" />
+  <Project Path="DeskGuest.SessionAgent/DeskGuest.SessionAgent.csproj" />
+  <Project Path="DeskGuest.Shared/DeskGuest.Shared.csproj" />
+  <Project Path="DeskGuest.Tests/DeskGuest.Tests.csproj" />
+</Solution>

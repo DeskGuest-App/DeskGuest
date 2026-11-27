@@ -1,17 +1,17 @@
-import io.agenticcontrol.app.crypto.SecondFactorStore
-import io.agenticcontrol.app.crypto.Totp
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.enterprise.PolicyFeatures
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.session.SessionTunnelStore
-import io.agenticcontrol.app.session.StandaloneJob
-import io.agenticcontrol.app.session.StandaloneTransferStore
-import io.agenticcontrol.app.wake.MagicPacket
-import io.agenticcontrol.app.wake.WakeSender
-import io.agenticcontrol.app.wake.WakeStore
-import io.agenticcontrol.app.wiring.AesGcmSecretSealer
+import io.deskguest.app.crypto.SecondFactorStore
+import io.deskguest.app.crypto.Totp
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.enterprise.PolicyFeatures
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.session.SessionTunnelStore
+import io.deskguest.app.session.StandaloneJob
+import io.deskguest.app.session.StandaloneTransferStore
+import io.deskguest.app.wake.MagicPacket
+import io.deskguest.app.wake.WakeSender
+import io.deskguest.app.wake.WakeStore
+import io.deskguest.app.wiring.AesGcmSecretSealer
 import java.io.File
 import java.nio.file.Files
 import javax.crypto.KeyGenerator
@@ -90,7 +90,7 @@ private class BlockGWorld(dir: File, tag: String) {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-blockg").toFile()
+    val dir = Files.createTempDirectory("deskguest-blockg").toFile()
     val w = BlockGWorld(dir, "g")
 
     // ---- G-01 wake-on-LAN ----
@@ -242,7 +242,7 @@ fun main() {
         val factors = SecondFactorStore(w.roster, sealer, null) { tick() }
         val begin = factors.beginTotpEnrollment("co", "user1")
         check("G06 enroll: begin issues a secret", begin != null)
-        val decoded = io.agenticcontrol.app.crypto.Base32.decode(begin!!.first)
+        val decoded = io.deskguest.app.crypto.Base32.decode(begin!!.first)
         val now = clockNow
         check("G06 enroll: pending verifies nothing",
             !factors.verifyTotp("co", "user1", Totp.at(decoded!!, now), now))
@@ -270,7 +270,7 @@ fun main() {
         val f2 = SecondFactorStore(w.roster, sealer2, null) { tick() }
         val b1 = f2.beginTotpEnrollment("co", "user2")
         check("Fix_AF1 setup: enroll user2", b1 != null)
-        val sec1 = io.agenticcontrol.app.crypto.Base32.decode(b1!!.first)!!
+        val sec1 = io.deskguest.app.crypto.Base32.decode(b1!!.first)!!
         val t0 = clockNow
         check("Fix_AF1 setup: confirm user2", f2.confirmTotpEnrollment("co", "user2", Totp.at(sec1, t0), t0))
         check("Fix_AF1: begin over active without a code refuses",
@@ -284,7 +284,7 @@ fun main() {
         check("Fix_AF1: old factor STILL active until the new one confirms",
             f2.hasActiveTotp("co", "user2") &&
                 f2.verifyTotp("co", "user2", Totp.at(sec1, t0 + 90_000L), t0 + 90_000L))
-        val sec2 = io.agenticcontrol.app.crypto.Base32.decode(b2!!.first)!!
+        val sec2 = io.deskguest.app.crypto.Base32.decode(b2!!.first)!!
         check("Fix_AF1: confirm the new factor",
             f2.confirmTotpEnrollment("co", "user2", Totp.at(sec2, t0 + 120_000L), t0 + 120_000L))
         check("Fix_AF1: the old secret is dead after confirmation",
@@ -295,7 +295,7 @@ fun main() {
         // AF10: an imported replay counter cannot roll back.
         val f3 = SecondFactorStore(w.roster, sealer2, null) { tick() }
         val b3 = f3.beginTotpEnrollment("co", "user3")
-        val sec3 = io.agenticcontrol.app.crypto.Base32.decode(b3!!.first)!!
+        val sec3 = io.deskguest.app.crypto.Base32.decode(b3!!.first)!!
         val u0 = clockNow
         check("Fix_AF10 setup: confirm user3", f3.confirmTotpEnrollment("co", "user3", Totp.at(sec3, u0), u0))
         val usedCode = Totp.at(sec3, u0)

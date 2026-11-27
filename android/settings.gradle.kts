@@ -12,5 +12,5 @@ dependencyResolutionManagement {
         mavenCentral()
     }
 }
-rootProject.name = "AgenticControl"
+rootProject.name = "DeskGuest"
 include(":app")

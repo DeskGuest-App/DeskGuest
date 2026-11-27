@@ -4,38 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>For Workplaces — DeskGuest</title>
-<meta name="description" content="Secure, direct connections for workplaces: no DeskGuest cloud, local audit logs, groups with plain-language rules, and Effective Policy.">
-<link rel="icon" type="image/png" sizes="32x32" href="assets/a3-favicon-32.png">
-<link rel="apple-touch-icon" href="assets/a3-favicon-180.png">
+<meta name="description" content="Secure, direct connections for workplaces: no DeskGuest cloud, a local record of every session, groups with plain-language rules, and Effective Policy.">
+<link rel="canonical" href="https://deskguest.app/workplaces">
+<link rel="icon" type="image/png" sizes="32x32" href="assets/dex-favicon-32.png">
+<link rel="apple-touch-icon" href="assets/dex-favicon-180.png">
 <link rel="stylesheet" href="style.css">
 <meta name="theme-color" content="#0F2537">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DeskGuest">
 <meta property="og:title" content="For Workplaces — DeskGuest">
-<meta property="og:description" content="Secure, direct connections for workplaces: no DeskGuest cloud, local audit logs, groups with plain-language rules, and Effective Policy.">
-<meta property="og:url" content="https://deskguest.app/workplaces.html">
-<meta property="og:image" content="https://deskguest.app/assets/a3-master-lockup.png">
-<meta name="twitter:card" content="summary">
+<meta property="og:description" content="Secure, direct connections for workplaces: no DeskGuest cloud, a local record of every session, groups with plain-language rules, and Effective Policy.">
+<meta property="og:url" content="https://deskguest.app/workplaces">
+<meta property="og:image" content="https://deskguest.app/assets/og-card.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="For Workplaces — DeskGuest">
+<meta name="twitter:description" content="Secure, direct connections for workplaces: no DeskGuest cloud, a local record of every session, groups with plain-language rules, and Effective Policy.">
+<meta name="twitter:image" content="https://deskguest.app/assets/og-card.jpg">
 <script>document.documentElement.className+=' js'</script>
 </head>
 <body>
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
-<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html" aria-current="page">Workplaces</a><a href="trust.html">Trust</a></nav>
+<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html" aria-current="page">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
 <a class="btn small" href="download.html">Download (Coming Soon)</a>
 </div></header>
 <main id="main">
 <section class="page-hero"><div class="wrap">
 <h1 class="page-title">Secure, direct connections for workplaces</h1>
 <p class="page-sub">DeskGuest lets your own people — and the AI agents you choose — help across your devices, under rules you set and records you keep.</p>
-</div><img class="wm" src="assets/a3-mark.webp" alt="" aria-hidden="true"></section>
+</div><img class="wm" src="assets/dex-mark.webp" alt="" aria-hidden="true"></section>
 
 <section class="section"><div class="wrap">
 <h2 class="sr-only">Workplaces overview</h2>
 <figure class="direct-diagram reveal">
-<svg viewBox="0 0 680 150" role="img" aria-label="Diagram: your device connects directly to a helper's device; the connection is audit covered, with no DeskGuest server in the middle">
+<svg viewBox="0 0 680 150" role="img" aria-label="Diagram: your device connects directly to a helper's device; the connection is recorded, with no DeskGuest server in the middle">
 <rect x="30" y="35" width="150" height="80" rx="12" fill="#0F2537"/>
 <text x="105" y="70" fill="#F2F6F9" font-size="15" font-weight="700" text-anchor="middle">Your device</text>
 <text x="105" y="93" fill="#A8C0D4" font-size="12" text-anchor="middle">Activity Record inside</text>
@@ -44,14 +48,14 @@
 <text x="575" y="93" fill="#A8C0D4" font-size="12" text-anchor="middle">Person or AI agent</text>
 <line x1="180" y1="75" x2="500" y2="75" stroke="#2F8BC9" stroke-width="3" stroke-dasharray="7 6"/>
 <circle cx="340" cy="75" r="27" fill="#E5A93B"/>
-<text x="340" y="71" fill="#0F2537" font-size="11" font-weight="800" text-anchor="middle">Audit</text>
+<text x="340" y="71" fill="#0F2537" font-size="11" font-weight="800" text-anchor="middle">Recorded</text>
 <text x="340" y="86" fill="#0F2537" font-size="11" font-weight="800" text-anchor="middle">Covered</text>
 </svg>
 <figcaption>Devices connect directly to each other — there is no DeskGuest server or cloud in the middle. Some connection paths use a third-party coordination service (for example Tailscale) to help your devices find each other; that service never holds your sessions or your records.</figcaption>
 </figure>
 <div class="cards reveal">
 <div class="card rv"><h3>Direct connections, no DeskGuest cloud</h3><p>Devices connect to each other; there is no DeskGuest server in the middle holding your sessions. DeskGuest itself runs no cloud.</p></div>
-<div class="card rv"><h3>Local audit logs</h3><p>Every session is written into the Activity Record on the device itself: who connected, what was approved, what changed. Records export locally (including CSV) for your own review — no cloud telemetry.</p></div>
+<div class="card rv"><h3>A local record of every session</h3><p>Every session is written into the Activity Record on the device itself: who connected, what was approved, what changed. Records export locally (including CSV) for your own review — no cloud telemetry.</p></div>
 <div class="card rv"><h3>Groups with plain-language rules</h3><p>Every group has an admin. Admins control membership and the structural acts — inviting people is admin-only. Members can access and enroll devices. Removing a person shows you the full blast list first — every device and group they could reach — before anything is revoked, and the last admin can never be removed.</p></div>
 <div class="card rv"><h3>Effective Policy: see what actually applies</h3><p>Rules from your workplace + choices on the device = what actually applies — DeskGuest shows you the result, not just the rules. Every feature carries a policy control, including camera viewing, patch approvals, and automatic fixes. The things that protect the device owner — being seen while helping, STOP, the uneditable record — are always true and are never policy settings.</p></div>
 </div>
@@ -64,7 +68,7 @@
 </ul>
 <p class="fineprint">Three of the rules a group admin can set, written the way the group sees them. The full rule set — and what actually applies on each device — is on the Effective Policy card above.</p>
 </div>
-<p class="u-mt26">Deploy to your team: one person runs the hub once for the workplace; sites and devices enroll with a code. Personal and workplace scopes live in one app, with personal scope walled off completely.</p>
+<p class="u-mt26">Deploy to your team: one person runs the hub once for the workplace; sites and devices enroll with a code. Your personal and workplace worlds live in one app, with your personal world walled off completely.</p>
 <p><a class="btn teal" href="it.html">Read the IT evaluation page</a> &nbsp; <a class="btn ghost" href="download.html">Coming soon</a></p>
 </div></section>
 
@@ -72,17 +76,19 @@
 <footer class="site-footer"><div class="wrap">
 <div class="cols">
 <div>
-<a class="brand" href="index.html"><img src="assets/a3-mark.webp" alt="" width="384" height="244">DeskGuest</a>
+<a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
 <p class="blurb">Free, private remote help from trusted people or your own AI agents — always in sight, always under your control.</p>
 </div>
-<div><p class="fh">Site</p><nav aria-label="Site"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="support.html">Help &amp; Support</a><a href="help.html">Help &amp; Docs</a><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a><a href="download.html">Download</a></nav></div>
+<div><p class="fh">Product</p><nav aria-label="Product"><a href="features.html">Features</a><a href="about.html">About</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="download.html">Download</a></nav></div>
+<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Help &amp; Docs</a></nav></div>
+<div><p class="fh">For Work</p><nav aria-label="For Work"><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav></div>
 <div><p class="fh">Trust</p><nav aria-label="Trust">
-<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
+<a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of Service</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
 </nav></div>
 </div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
-Support is proven on Windows 11 and on the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full support statement.</p>
+We've made sure DeskGuest works on Windows 11 and the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full picture.</p>
 </div></footer>
 <script src="site.js"></script>
 </body>

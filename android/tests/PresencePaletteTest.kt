@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.presence.PresencePalette
+import io.deskguest.app.presence.PresencePalette
 
 /**
  * JVM tests for the presence color palette (0.3.8): defaults, hex

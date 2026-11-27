@@ -1,30 +1,30 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.transport.AclBuilder
-import io.agenticcontrol.app.transport.ApiResult
-import io.agenticcontrol.app.transport.ClientVersionGate
-import io.agenticcontrol.app.transport.EndpointAuthKeyRules
-import io.agenticcontrol.app.transport.HubMembership
-import io.agenticcontrol.app.transport.HubRung
-import io.agenticcontrol.app.transport.LanProtocol
-import io.agenticcontrol.app.transport.MeshAddress
-import io.agenticcontrol.app.transport.MeshPlatform
-import io.agenticcontrol.app.transport.MeshRole
-import io.agenticcontrol.app.transport.MeshRung
-import io.agenticcontrol.app.transport.MeshSetupFlow
-import io.agenticcontrol.app.transport.PolicyGuard
-import io.agenticcontrol.app.transport.SocketStreams
-import io.agenticcontrol.app.transport.StreamConnector
-import io.agenticcontrol.app.transport.StubRung
-import io.agenticcontrol.app.transport.TailnetGrant
-import io.agenticcontrol.app.transport.TailnetMapping
-import io.agenticcontrol.app.transport.TailscaleApi
-import io.agenticcontrol.app.transport.TailscaleCredentialGuard
-import io.agenticcontrol.app.transport.TailscaleHonesty
-import io.agenticcontrol.app.transport.TransportSessionManager
-import io.agenticcontrol.app.transport.TransportTarget
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.transport.AclBuilder
+import io.deskguest.app.transport.ApiResult
+import io.deskguest.app.transport.ClientVersionGate
+import io.deskguest.app.transport.EndpointAuthKeyRules
+import io.deskguest.app.transport.HubMembership
+import io.deskguest.app.transport.HubRung
+import io.deskguest.app.transport.LanProtocol
+import io.deskguest.app.transport.MeshAddress
+import io.deskguest.app.transport.MeshPlatform
+import io.deskguest.app.transport.MeshRole
+import io.deskguest.app.transport.MeshRung
+import io.deskguest.app.transport.MeshSetupFlow
+import io.deskguest.app.transport.PolicyGuard
+import io.deskguest.app.transport.SocketStreams
+import io.deskguest.app.transport.StreamConnector
+import io.deskguest.app.transport.StubRung
+import io.deskguest.app.transport.TailnetGrant
+import io.deskguest.app.transport.TailnetMapping
+import io.deskguest.app.transport.TailscaleApi
+import io.deskguest.app.transport.TailscaleCredentialGuard
+import io.deskguest.app.transport.TailscaleHonesty
+import io.deskguest.app.transport.TransportSessionManager
+import io.deskguest.app.transport.TransportTarget
 import java.io.File
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -33,7 +33,7 @@ import java.nio.file.Files
 /**
  * JVM tests for Block C part 3 (Android half): the `hub` rung
  * (membership gate, tailnet-address gate, enrollment handshake —
- * mesh membership never equals ACP admission), the live lan→hub
+ * mesh membership never equals DeskGuest admission), the live lan→hub
  * failover hop at engine level, and the in-app Tailscale setup
  * (D4) with its T2 conditions: client floor, the TS-03 mobile
  * carve-out, scoped-OAuth-only credentials, guarded policy writes,
@@ -84,7 +84,7 @@ private class HubWorld(dir: File, val tag: String, groupSet: List<String> = list
             EnrollmentStore.EnrollingDevice(operatorIdentity.deviceId, operatorIdentity.publicKeyBase64, "Operator Device"))
     }
 
-    fun manager(vararg rungs: io.agenticcontrol.app.transport.TransportRung, identity: DeviceIdentity? = null): TransportSessionManager {
+    fun manager(vararg rungs: io.deskguest.app.transport.TransportRung, identity: DeviceIdentity? = null): TransportSessionManager {
         var n = 0
         // W3 lane B sibling repair (disclosed): manager takes the
         // enrollment store (transport v2).
@@ -143,7 +143,7 @@ private class MockApi : TailscaleApi {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-hubmesh-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-hubmesh-test").toFile()
 
     // ---- tailnet address shape ----
     check("100.64.0.0/10 admitted (0.1, 0.127 edges)",
@@ -201,17 +201,17 @@ fun main() {
         check("decommissioned node cannot start a hub session", !afterDecom.ok)
     }
 
-    // ---- destruction: hub member, unenrolled in ACP → refused at the handshake ----
+    // ---- destruction: hub member, unenrolled in DeskGuest → refused at the handshake ----
     run {
         val w = HubWorld(dir, "hub2")
         val membership = HubMembership()
         val pipes = PipeConnector(w.enrollment, w.hostIdentity)
         val hub = HubRung(membership, pipes)
-        val stranger = DeviceIdentity.generate() // hub member, never enrolled in ACP
+        val stranger = DeviceIdentity.generate() // hub member, never enrolled in DeskGuest
         membership.join(stranger.deviceId, "1.104.7", tick())
         val attempt = hub.connectSession(TransportTarget(stranger.deviceId, "100.64.0.9"), stranger, w.enrollment)
         Thread.sleep(300)
-        check("DESTRUCTION hub member unenrolled in ACP is refused at the handshake (membership != admission)",
+        check("DESTRUCTION hub member unenrolled in DeskGuest is refused at the handshake (membership != admission)",
             !attempt.ok && pipes.refused == 1 && pipes.accepted == 0)
     }
 
@@ -272,7 +272,7 @@ fun main() {
     run {
         val mapping = TailnetMapping(
             userGroups = mapOf("techs" to listOf("alice@example.com")),
-            deviceGroups = mapOf("fleet" to "acp-fleet"),
+            deviceGroups = mapOf("fleet" to "deskguest-fleet"),
             grants = listOf(TailnetGrant("techs", "fleet", setOf("use", "enroll"))))
 
         val flowA = MeshSetupFlow()
@@ -292,19 +292,19 @@ fun main() {
         val apiC = MockApi()
         val ready = flowC.completeAfterSignIn(true, "cid", "tskey-client-x", setOf("policy_file", "auth_keys"), mapping, 47621, apiC)
         check("full mock flow reaches Ready; policy applied through the guard",
-            ready.stage == MeshSetupFlow.STAGE_READY && apiC.policy.contains("tag:acp-fleet"))
+            ready.stage == MeshSetupFlow.STAGE_READY && apiC.policy.contains("tag:deskguest-fleet"))
     }
 
     // ---- ACL builder: D12 shape + injection refusals ----
     run {
         val mapping = TailnetMapping(
             userGroups = mapOf("techs" to listOf("alice@example.com")),
-            deviceGroups = mapOf("fleet" to "acp-fleet"),
+            deviceGroups = mapOf("fleet" to "deskguest-fleet"),
             grants = listOf(TailnetGrant("techs", "fleet", setOf("use", "enroll"))))
         val json = AclBuilder.build(mapping, 47621)
         check("D12 mapping lands (groups, tags, tagOwners from enroll, accept on the session port)",
-            json.contains("\"group:techs\"") && json.contains("\"tag:acp-fleet\"") &&
-            json.contains("\"tagOwners\"") && json.contains("tag:acp-fleet:47621"))
+            json.contains("\"group:techs\"") && json.contains("\"tag:deskguest-fleet\"") &&
+            json.contains("\"tagOwners\"") && json.contains("tag:deskguest-fleet:47621"))
         check("policy never carries ssh or a wildcard grant", !json.contains("\"ssh\"") && !json.contains("\"*\""))
         val hostileName = try { AclBuilder.build(mapping.copy(userGroups = mapOf("ops\",\"ssh\":[{\"src\":[\"*\"]}" to listOf("a@b.c"))), 47621); false } catch (_: IllegalArgumentException) { true }
         check("DESTRUCTION hostile group name refused (config injection)", hostileName)
@@ -324,10 +324,10 @@ fun main() {
 
     // ---- endpoint auth key rules (D3) ----
     check("endpoint keys: single-use + tagged + ≤90d enforced",
-        EndpointAuthKeyRules.refusal(reusable = true, tags = listOf("tag:acp-fleet"), expiryDays = 7) != null &&
+        EndpointAuthKeyRules.refusal(reusable = true, tags = listOf("tag:deskguest-fleet"), expiryDays = 7) != null &&
         EndpointAuthKeyRules.refusal(reusable = false, tags = emptyList(), expiryDays = 7) != null &&
-        EndpointAuthKeyRules.refusal(reusable = false, tags = listOf("tag:acp-fleet"), expiryDays = 91) != null &&
-        EndpointAuthKeyRules.refusal(reusable = false, tags = listOf("tag:acp-fleet"), expiryDays = 7) == null)
+        EndpointAuthKeyRules.refusal(reusable = false, tags = listOf("tag:deskguest-fleet"), expiryDays = 91) != null &&
+        EndpointAuthKeyRules.refusal(reusable = false, tags = listOf("tag:deskguest-fleet"), expiryDays = 7) == null)
 
     // ---- mesh rung gating ----
     run {
@@ -341,7 +341,7 @@ fun main() {
         flow.runPreSignIn(MeshPlatform.ANDROID, MeshRole.OPERATOR, carveOutAcknowledged = true, clientVersion = "1.104.7")
         val mapping = TailnetMapping(
             userGroups = mapOf("techs" to listOf("alice@example.com")),
-            deviceGroups = mapOf("fleet" to "acp-fleet"),
+            deviceGroups = mapOf("fleet" to "deskguest-fleet"),
             grants = listOf(TailnetGrant("techs", "fleet", setOf("use", "enroll"))))
         flow.completeAfterSignIn(true, "cid", "tskey-client-x", setOf("policy_file"), mapping, 47621, MockApi())
         val connected = mesh.connectSession(target, w.operatorIdentity, w.enrollment)

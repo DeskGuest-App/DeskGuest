@@ -1,65 +1,65 @@
-import io.agenticcontrol.app.bgtools.BgToolExecutor
-import io.agenticcontrol.app.bgtools.BgToolService
-import io.agenticcontrol.app.bgtools.BgToolsPolicy
-import io.agenticcontrol.app.bgtools.SignedCommandVerifier as BgVerifier
-import io.agenticcontrol.app.bgtools.SignedEnvelope
-import io.agenticcontrol.app.camerashare.AcpfValidator
-import io.agenticcontrol.app.camerashare.AiShareGrant
-import io.agenticcontrol.app.camerashare.CameraSharePolicy
-import io.agenticcontrol.app.camerashare.CameraShareService
-import io.agenticcontrol.app.camerashare.CameraShareSink
-import io.agenticcontrol.app.camerashare.PartyDirectory
-import io.agenticcontrol.app.cameraview.CameraRecord
-import io.agenticcontrol.app.cameraview.CameraViewPolicy
-import io.agenticcontrol.app.cameraview.CameraViewService
-import io.agenticcontrol.app.cameraview.ChainedAudit
-import io.agenticcontrol.app.cameraview.ViewRights
-import io.agenticcontrol.app.crypto.AtRestCipher
-import io.agenticcontrol.app.crypto.IdentityLineCipher
-import io.agenticcontrol.app.crypto.LineCipher
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.enterprise.ChainedAuditLog
-import io.agenticcontrol.app.enterprise.ScamFriction
-import io.agenticcontrol.app.rmm.RmmToggles
-import io.agenticcontrol.app.rmmspine.CustomerCommandKeyRing
-import io.agenticcontrol.app.rmmspine.EffectivePolicyStore
-import io.agenticcontrol.app.rmmspine.InMemoryReplayGuard
-import io.agenticcontrol.app.rmmspine.JobJournal
-import io.agenticcontrol.app.rmmspine.JobKinds
-import io.agenticcontrol.app.rmmspine.JobStates
-import io.agenticcontrol.app.rmmspine.JobStepDefinition
-import io.agenticcontrol.app.rmmspine.LocateRateLimiter
-import io.agenticcontrol.app.rmmspine.ManagementPolicyDocument
-import io.agenticcontrol.app.rmmspine.ManagementPolicyEngine
-import io.agenticcontrol.app.rmmspine.ManagementPolicyReceipt
-import io.agenticcontrol.app.rmmspine.MdmLimits
-import io.agenticcontrol.app.rmmspine.PolicyGate
-import io.agenticcontrol.app.rmmspine.RecordingRemediationExecutor
-import io.agenticcontrol.app.rmmspine.RemediationActions
-import io.agenticcontrol.app.rmmspine.RunbookDefinition
-import io.agenticcontrol.app.rmmspine.RunbookService
-import io.agenticcontrol.app.rmmspine.RunbookStep
-import io.agenticcontrol.app.rmmspine.SignedCommandClasses
-import io.agenticcontrol.app.rmmspine.SignedCommandEnvelope
-import io.agenticcontrol.app.rmmspine.SignedCommandGate
-import io.agenticcontrol.app.rmmspine.SignedCommandSigner
-import io.agenticcontrol.app.rmmspine.SignedCommandVerifier
-import io.agenticcontrol.app.rmmspine.StaticDeviceFacts
-import io.agenticcontrol.app.rmmspine.StepStates
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.server.ApprovalPending
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
-import io.agenticcontrol.app.server.SessionManager
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.probes.ProbeService
-import io.agenticcontrol.app.probes.ProbesPolicy
-import io.agenticcontrol.app.probes.SnmpCodec
-import io.agenticcontrol.app.probes.TargetGuard
-import io.agenticcontrol.app.probes.UdpTransport
-import io.agenticcontrol.app.wiring.PlatformStores
-import io.agenticcontrol.app.wiring.PlatformToolHost
+import io.deskguest.app.bgtools.BgToolExecutor
+import io.deskguest.app.bgtools.BgToolService
+import io.deskguest.app.bgtools.BgToolsPolicy
+import io.deskguest.app.bgtools.SignedCommandVerifier as BgVerifier
+import io.deskguest.app.bgtools.SignedEnvelope
+import io.deskguest.app.camerashare.DeskGuestfValidator
+import io.deskguest.app.camerashare.AiShareGrant
+import io.deskguest.app.camerashare.CameraSharePolicy
+import io.deskguest.app.camerashare.CameraShareService
+import io.deskguest.app.camerashare.CameraShareSink
+import io.deskguest.app.camerashare.PartyDirectory
+import io.deskguest.app.cameraview.CameraRecord
+import io.deskguest.app.cameraview.CameraViewPolicy
+import io.deskguest.app.cameraview.CameraViewService
+import io.deskguest.app.cameraview.ChainedAudit
+import io.deskguest.app.cameraview.ViewRights
+import io.deskguest.app.crypto.AtRestCipher
+import io.deskguest.app.crypto.IdentityLineCipher
+import io.deskguest.app.crypto.LineCipher
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.enterprise.ChainedAuditLog
+import io.deskguest.app.enterprise.ScamFriction
+import io.deskguest.app.rmm.RmmToggles
+import io.deskguest.app.rmmspine.CustomerCommandKeyRing
+import io.deskguest.app.rmmspine.EffectivePolicyStore
+import io.deskguest.app.rmmspine.InMemoryReplayGuard
+import io.deskguest.app.rmmspine.JobJournal
+import io.deskguest.app.rmmspine.JobKinds
+import io.deskguest.app.rmmspine.JobStates
+import io.deskguest.app.rmmspine.JobStepDefinition
+import io.deskguest.app.rmmspine.LocateRateLimiter
+import io.deskguest.app.rmmspine.ManagementPolicyDocument
+import io.deskguest.app.rmmspine.ManagementPolicyEngine
+import io.deskguest.app.rmmspine.ManagementPolicyReceipt
+import io.deskguest.app.rmmspine.MdmLimits
+import io.deskguest.app.rmmspine.PolicyGate
+import io.deskguest.app.rmmspine.RecordingRemediationExecutor
+import io.deskguest.app.rmmspine.RemediationActions
+import io.deskguest.app.rmmspine.RunbookDefinition
+import io.deskguest.app.rmmspine.RunbookService
+import io.deskguest.app.rmmspine.RunbookStep
+import io.deskguest.app.rmmspine.SignedCommandClasses
+import io.deskguest.app.rmmspine.SignedCommandEnvelope
+import io.deskguest.app.rmmspine.SignedCommandGate
+import io.deskguest.app.rmmspine.SignedCommandSigner
+import io.deskguest.app.rmmspine.SignedCommandVerifier
+import io.deskguest.app.rmmspine.StaticDeviceFacts
+import io.deskguest.app.rmmspine.StepStates
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.server.ApprovalPending
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
+import io.deskguest.app.server.SessionManager
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.probes.ProbeService
+import io.deskguest.app.probes.ProbesPolicy
+import io.deskguest.app.probes.SnmpCodec
+import io.deskguest.app.probes.TargetGuard
+import io.deskguest.app.probes.UdpTransport
+import io.deskguest.app.wiring.PlatformStores
+import io.deskguest.app.wiring.PlatformToolHost
 import org.json.JSONObject
 import java.io.File
 import java.nio.file.Files
@@ -77,7 +77,7 @@ private fun check(name: String, cond: Boolean) {
 
 private val T0 = 1_800_000_000_000L
 private fun tmpDir(tag: String): File =
-    File(System.getProperty("java.io.tmpdir"), "acp-bdfix-$tag-" + System.nanoTime()).apply { mkdirs() }
+    File(System.getProperty("java.io.tmpdir"), "deskguest-bdfix-$tag-" + System.nanoTime()).apply { mkdirs() }
 
 private fun berTlv(tag: Int, v: ByteArray): ByteArray {
     val len = when {
@@ -368,7 +368,7 @@ fun main() {
             BgToolService.payloadHashHex(BgToolService.canonicalPayload(tool, args)), sig)
         val ranArgs = mutableListOf<Map<String, String>>()
         val svc = BgToolService(verifier, BgToolExecutor { _, a -> ranArgs += a; "ok" }, ChainedAudit(clock), clock)
-        val args = mapOf("path" to "/acp")
+        val args = mapOf("path" to "/deskguest")
         check("W2 F1 bgtool runs when the envelope binds tool+args",
             svc.invoke("storage_report", args, env("storage_report", args, "b1"), byteArrayOf()).isSuccess)
         check("W2 F1 destruction: envelope minted for other args refuses",
@@ -412,7 +412,7 @@ fun main() {
                 engine.registry.get("rmm.tor_provisioning.enabled") != null &&
                 engine.registry.get("rmm.aipack_download.enabled") != null)
         check("W2 F2 BgToolsPolicy default now matches the registry (OFF)",
-            io.agenticcontrol.app.bgtools.BgToolsPolicy.enabled == false)
+            io.deskguest.app.bgtools.BgToolsPolicy.enabled == false)
         check("W2 F2 RmmToggles keys are registry keys; unknown fails closed",
             RmmToggles.KEYS.all { engine.registry.get(it) != null } && !RmmToggles.enabled(emptyMap(), "rmm.nope"))
         // Receipt binds PolicyGate + persists the Effective Policy view.
@@ -496,7 +496,7 @@ fun main() {
             override fun close(s: String, c: String) {}
         }
         var now = T0
-        val svc = CameraShareService(parties, sink, AcpfValidator { true }, ChainedAudit { now }, { now })
+        val svc = CameraShareService(parties, sink, DeskGuestfValidator { true }, ChainedAudit { now }, { now })
         check("W2 F6 destruction: a live human who does NOT own the phone cannot start its share",
             svc.initiateShare("co", "watcher", "phone1", "owner").isFailure)
         val share = svc.initiateShare("co", "owner", "phone1", "watcher").getOrThrow()
@@ -544,7 +544,7 @@ fun main() {
         val swapped = JSONObject(exported)
         val defObj = swapped.getJSONArray("jobs").getJSONObject(0)
         defObj.put("envelopeJson", otherEnv.toJson().toString())
-        defObj.put("envelopeHash", io.agenticcontrol.app.enterprise.sha256Hex(otherEnv.toJson().toString()))
+        defObj.put("envelopeHash", io.deskguest.app.enterprise.sha256Hex(otherEnv.toJson().toString()))
         val victim2 = JobJournal()
         check("W2 F7 destruction: envelope swapped in defs (self-consistent hash) is caught against the chained envHash",
             !victim2.importJson(swapped.toString()).ok && victim2.getJob("job1") == null)
@@ -580,16 +580,16 @@ fun main() {
         val engine = ManagementPolicyEngine()
         val facts = StaticDeviceFacts("phone-1", "co")
         val backward = RunbookDefinition("rb-bad", "bad", 1, listOf(
-            RunbookStep("a", "check", "acp_running", failurePolicy = "route", routeTo = "b"),
-            RunbookStep("b", "check", "acp_running", failurePolicy = "route", routeTo = "a")))
+            RunbookStep("a", "check", "deskguest_running", failurePolicy = "route", routeTo = "b"),
+            RunbookStep("b", "check", "deskguest_running", failurePolicy = "route", routeTo = "a")))
         check("W2 F8 backward route refuses at validate (infinite-loop construction)",
             backward.validate()?.contains("not a LATER step") == true)
         val selfRoute = RunbookDefinition("rb-bad2", "bad", 1, listOf(
-            RunbookStep("a", "check", "acp_running", failurePolicy = "route", routeTo = "a")))
+            RunbookStep("a", "check", "deskguest_running", failurePolicy = "route", routeTo = "a")))
         check("W2 F8 self route refuses at validate", selfRoute.validate() != null)
         val forward = RunbookDefinition("rb-ok", "ok", 1, listOf(
-            RunbookStep("a", "check", "acp_running", failurePolicy = "route", routeTo = "b"),
-            RunbookStep("b", "check", "acp_running")))
+            RunbookStep("a", "check", "deskguest_running", failurePolicy = "route", routeTo = "b"),
+            RunbookStep("b", "check", "deskguest_running")))
         check("W2 F8 forward route validates", forward.validate() == null)
         // skipStep: only the failed check; remediation policy pre-check inside runs.
         val journal = JobJournal()
@@ -598,12 +598,12 @@ fun main() {
         val ring = CustomerCommandKeyRing(); ring.addCurrent(customer.publicKey)
         val gate = SignedCommandGate(SignedCommandVerifier(ring, InMemoryReplayGuard()), audit)
         val signer = SignedCommandSigner(customer)
-        val checks = io.agenticcontrol.app.rmmspine.RecordingRunbookCheckEvaluator(mapOf("acp_running" to false))
+        val checks = io.deskguest.app.rmmspine.RecordingRunbookCheckEvaluator(mapOf("deskguest_running" to false))
         val svc = RunbookService(engine, gate, checks,
-            io.agenticcontrol.app.rmmspine.RecordingRunbookToolExecutor(), journal, audit)
+            io.deskguest.app.rmmspine.RecordingRunbookToolExecutor(), journal, audit)
         val def = RunbookDefinition("rb-halt", "halt", 1, listOf(
-            RunbookStep("chk", "check", "acp_running", failurePolicy = "halt"),
-            RunbookStep("later", "check", "acp_running", failurePolicy = "halt")))
+            RunbookStep("chk", "check", "deskguest_running", failurePolicy = "halt"),
+            RunbookStep("later", "check", "deskguest_running", failurePolicy = "halt")))
         svc.admit(def)
         val env = signer.sign(SignedCommandClasses.BACKGROUND_ACTION,
             RunbookDefinition.canonicalPayload("rb-halt", "phone-1", "run1").toByteArray(), T0, 600_000, "rb-1")
@@ -618,13 +618,13 @@ fun main() {
         // Remediation step inside a runbook honours the per-action policy disable.
         val engine2 = ManagementPolicyEngine()
         engine2.addDocument(ManagementPolicyDocument("p1", "org", "co",
-            mapOf("rmm.remediation.${RemediationActions.CLEAR_ACP_CACHE}.enabled" to "false"), 1))
+            mapOf("rmm.remediation.${RemediationActions.CLEAR_DESKGUEST_CACHE}.enabled" to "false"), 1))
         val svc2 = RunbookService(engine2, gate, checks,
-            io.agenticcontrol.app.rmmspine.RecordingRunbookToolExecutor(), JobJournal(), audit)
+            io.deskguest.app.rmmspine.RecordingRunbookToolExecutor(), JobJournal(), audit)
         val recording = RecordingRemediationExecutor()
         svc2.setRemediationStepExecutor { a, d, r, _ -> recording.perform(a, d, r) }
         val def2 = RunbookDefinition("rb-rem", "rem", 1, listOf(
-            RunbookStep("fix", "remediation", RemediationActions.CLEAR_ACP_CACHE)))
+            RunbookStep("fix", "remediation", RemediationActions.CLEAR_DESKGUEST_CACHE)))
         svc2.admit(def2)
         val env2 = signer.sign(SignedCommandClasses.BACKGROUND_ACTION,
             RunbookDefinition.canonicalPayload("rb-rem", "phone-1", "run2").toByteArray(), T0, 600_000, "rb-2")
@@ -662,16 +662,16 @@ fun main() {
         val signer = SignedCommandSigner(customer)
         val facts = StaticDeviceFacts("phone-1", "scope-1")
         val noticeFile = File(tmpDir("mdmnotices"), "notices.tsv")
-        val svc = io.agenticcontrol.app.rmmspine.MdmService(engine, gate,
-            io.agenticcontrol.app.rmmspine.RecordingMdmActionExecutor(), ChainedAuditLog(),
+        val svc = io.deskguest.app.rmmspine.MdmService(engine, gate,
+            io.deskguest.app.rmmspine.RecordingMdmActionExecutor(), ChainedAuditLog(),
             { id -> if (id == "phone-1") facts else null }, LocateRateLimiter(),
             noticeStoreFile = noticeFile)
-        val state = io.agenticcontrol.app.rmmspine.MdmDeviceState("phone-1", "scope-1", "android",
-            io.agenticcontrol.app.rmmspine.MdmOwnership.PERSONAL, "16", true, "pin_pattern", "0.4.9", reportedMs = T0)
+        val state = io.deskguest.app.rmmspine.MdmDeviceState("phone-1", "scope-1", "android",
+            io.deskguest.app.rmmspine.MdmOwnership.PERSONAL, "16", true, "pin_pattern", "0.4.9", reportedMs = T0)
         svc.reportState(state, "endpoint", T0)
         fun locate(id: String, nonce: String, at: Long): Boolean {
-            val req = io.agenticcontrol.app.rmmspine.MdmActionRequest(id, "phone-1",
-                io.agenticcontrol.app.rmmspine.MdmActionKinds.LOCATE_ONCE,
+            val req = io.deskguest.app.rmmspine.MdmActionRequest(id, "phone-1",
+                io.deskguest.app.rmmspine.MdmActionKinds.LOCATE_ONCE,
                 noticeText = "Locate ordered by IT", issuedMs = at, expiresMs = at + 600_000)
             val env = signer.sign(SignedCommandClasses.BACKGROUND_ACTION, req.canonicalPayload().toByteArray(), at, 600_000, nonce)
             return svc.executeAction(req, env, "hub", at).first?.executed == true
@@ -679,8 +679,8 @@ fun main() {
         check("W2 F9 first locate executes", locate("L1", "m1", T0))
         check("W2 F9 destruction: policy interval=0 does NOT disarm the 15-minute minimum (clamped)",
             !locate("L2", "m2", T0 + 60_000))
-        val svcReloaded = io.agenticcontrol.app.rmmspine.MdmService(engine, gate,
-            io.agenticcontrol.app.rmmspine.RecordingMdmActionExecutor(), ChainedAuditLog(),
+        val svcReloaded = io.deskguest.app.rmmspine.MdmService(engine, gate,
+            io.deskguest.app.rmmspine.RecordingMdmActionExecutor(), ChainedAuditLog(),
             { id -> if (id == "phone-1") facts else null }, LocateRateLimiter(),
             noticeStoreFile = noticeFile)
         check("W2 F9 device notices persist across service restart (the user-visible trace survives)",
@@ -724,7 +724,7 @@ fun main() {
         check("W2 F12 scam terms match on word boundaries ('Kirsten'/'First' are not 'irs')",
             !ScamFriction.hasImpersonationTerm("Kirsten First") &&
                 ScamFriction.hasImpersonationTerm("Microsoft Support"))
-        val est = io.agenticcontrol.app.enterprise.OperatorHistory(5, 0, 0, null, false)
+        val est = io.deskguest.app.enterprise.OperatorHistory(5, 0, 0, null, false)
         check("W2 F12 an active call blocks the established fast path (SCAM-14)",
             ScamFriction.evaluate("op", "Helper", est, T0 - 30L * 24 * 3600 * 1000, T0, callActive = true).level == "high_friction" &&
                 ScamFriction.evaluate("op", "Helper", est, T0 - 30L * 24 * 3600 * 1000, T0, callActive = false).level == "established")

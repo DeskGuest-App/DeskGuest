@@ -1,9 +1,9 @@
-import io.agenticcontrol.app.adb.AdbKey
-import io.agenticcontrol.app.adb.AdbProtocol
-import io.agenticcontrol.app.adb.Ed25519
-import io.agenticcontrol.app.adb.Hkdf
-import io.agenticcontrol.app.adb.PairingCipher
-import io.agenticcontrol.app.adb.Spake25519
+import io.deskguest.app.adb.AdbKey
+import io.deskguest.app.adb.AdbProtocol
+import io.deskguest.app.adb.Ed25519
+import io.deskguest.app.adb.Hkdf
+import io.deskguest.app.adb.PairingCipher
+import io.deskguest.app.adb.Spake25519
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.math.BigInteger
@@ -247,29 +247,29 @@ fun main() {
         java.util.Base64.getDecoder().decode(AdbKey.publicKeyString(rsaPub)).contentEquals(struct))
 
     // ---- Pairing packet framing (AOSP pairing_connection) ----
-    val packetHeader = io.agenticcontrol.app.adb.AdbPairing.packetHeader(1, 8208)
+    val packetHeader = io.deskguest.app.adb.AdbPairing.packetHeader(1, 8208)
     check(
         "pairing packet header is version|type|BE size",
         packetHeader.contentEquals(byteArrayOf(1, 1, 0, 0, 0x20, 0x10))
     )
-    val parsedHeader = io.agenticcontrol.app.adb.AdbPairing.parsePacketHeader(packetHeader)
+    val parsedHeader = io.deskguest.app.adb.AdbPairing.parsePacketHeader(packetHeader)
     check(
         "pairing packet header parses back",
         parsedHeader?.first == 1.toByte() && parsedHeader.second == 8208
     )
     check(
         "bad pairing version is rejected",
-        io.agenticcontrol.app.adb.AdbPairing.parsePacketHeader(
+        io.deskguest.app.adb.AdbPairing.parsePacketHeader(
             byteArrayOf(2, 0, 0, 0, 0, 32)
         ) == null
     )
-    val fakeIdentity = object : io.agenticcontrol.app.adb.AdbIdentity {
+    val fakeIdentity = object : io.deskguest.app.adb.AdbIdentity {
         override val rsaPublicKey = rsaPub
         override fun signToken(token: ByteArray): ByteArray = AdbKey.signToken(keyPair.private, token)
         override fun sslContext(): javax.net.ssl.SSLContext =
             throw UnsupportedOperationException("not needed in tests")
     }
-    val peerInfoBlock = io.agenticcontrol.app.adb.AdbPairing.peerInfoPayload(fakeIdentity)
+    val peerInfoBlock = io.deskguest.app.adb.AdbPairing.peerInfoPayload(fakeIdentity)
     check("peer info block is 8192 bytes with type 0",
         peerInfoBlock.size == 8192 && peerInfoBlock[0] == 0.toByte())
     check(

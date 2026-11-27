@@ -2,7 +2,7 @@
 // round-6 (W27 confirmation) returned FIX-INADEQUATE
 // on the W25 filter with two findings:
 //  (1) SECOND-SHELL RE-PARSE: `sh -c 'a$(printf %s m) start -n
-//      "io.agenticcontrol.ap$(printf %s p)/.MainActivity"'` —
+//      "io.deskguest.ap$(printf %s p)/.MainActivity"'` —
 //      the outer filter saw literal `sh` and an opaque quoted
 //      payload; the inner shell assembled `am` + the own
 //      package and ran it. Closure (W28a): payload invocations
@@ -17,7 +17,7 @@
 //      assembled; parameter expansion is not a substitution.
 // Both verbatim strings were probed ALLOWED on pre-W28 code
 // (W28 lane log). Pure/model layer only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 
 private var failures = 0
 private var passes = 0
@@ -26,11 +26,11 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
-    val f1 = "sh -c 'a\$(printf %s m) start -n \"io.agenticcontrol.ap\$(printf %s p)/.MainActivity\"'"
-    val f1Payload = "a\$(printf %s m) start -n \"io.agenticcontrol.ap\$(printf %s p)/.MainActivity\""
+    val f1 = "sh -c 'a\$(printf %s m) start -n \"io.deskguest.ap\$(printf %s p)/.MainActivity\"'"
+    val f1Payload = "a\$(printf %s m) start -n \"io.deskguest.ap\$(printf %s p)/.MainActivity\""
 
     // ============ Finding 1 verbatim (permanent pin) ============
     check("W28 DS round-6 exact second-shell evasion refused", refused(f1))
@@ -42,12 +42,12 @@ fun main(args: Array<String>) {
     check("W28 path-prefixed interpreter refused", refused("/system/bin/sh -c '$f1Payload'"))
     check("W28 busybox sh -c assembled payload refused", refused("busybox sh -c '$f1Payload'"))
     check("W28 double-quoted payload with substitutions refused",
-        refused("sh -c \"a\$(printf %s m) start -n \\\"io.agenticcontrol.ap\$(printf %s p)/.MainActivity\\\"\""))
+        refused("sh -c \"a\$(printf %s m) start -n \\\"io.deskguest.ap\$(printf %s p)/.MainActivity\\\"\""))
     check("W28 eval single-quoted assembled payload refused", refused("eval '$f1Payload'"))
     check("W28 eval joined-args literal own-package payload refused",
-        refused("eval 'am start -n' 'io.agenticcontrol.app/.MainActivity'"))
+        refused("eval 'am start -n' 'io.deskguest.app/.MainActivity'"))
     check("W28 backtick command word inside payload refused",
-        refused("sh -c '`printf %s am` start -n io.agenticcontrol.app/.MainActivity'"))
+        refused("sh -c '`printf %s am` start -n io.deskguest.app/.MainActivity'"))
     check("W28 payload inside a command substitution refused",
         refused("echo \$(sh -c '$f1Payload')"))
     check("W28 payload inside a case arm refused",
@@ -61,7 +61,7 @@ fun main(args: Array<String>) {
     check("W28 env sh -c refused", refused("env sh -c '$f1Payload'"))
     check("W28 env assignment + sh -c refused", refused("env FOO=1 sh -c '$f1Payload'"))
     check("W28 su -c direct assembled payload refused", refused("su -c '$f1Payload'"))
-    check("W28 su root -c literal payload refused", refused("su root -c 'am start -n io.agenticcontrol.app/.MainActivity'"))
+    check("W28 su root -c literal payload refused", refused("su root -c 'am start -n io.deskguest.app/.MainActivity'"))
     check("W28 doas sh -c refused", refused("doas sh -c '$f1Payload'"))
     check("W28 setsid sh -c refused", refused("setsid sh -c '$f1Payload'"))
     check("W28 nohup sh -c refused", refused("nohup sh -c '$f1Payload'"))
@@ -94,7 +94,7 @@ fun main(args: Array<String>) {
         return p
     }
     check("W28 nested sh -c depth 2 assembled inner refused",
-        refused(nest("am start -n io.agenticcontrol.app/.MainActivity", 2)))
+        refused(nest("am start -n io.deskguest.app/.MainActivity", 2)))
     check("W28 nested sh -c depth 2 benign allowed", allowed(nest("echo hi", 2)))
     check("W28 nested sh -c depth 3 benign allowed", allowed(nest("echo hi", 3)))
     check("W28 depth-cap overflow (depth 4 and 5 benign) refused",
@@ -152,9 +152,9 @@ fun main(args: Array<String>) {
     check("W28 regression prior refusals still refuse",
         refused("input tap 1 1") &&
             refused("sh -c 'input tap 1 1'") &&
-            refused("case x in x) \"\$(printf %s a)m\" start -n \"io.agenticcontrol.ap\$(printf %s p)/.MainActivity\";; esac") &&
-            refused("am start -n \"io.agenticcontrol.ap\$(printf %s p)/.MainActivity\"") &&
-            refused("\$(printf %s am) start -n io.agenticcontrol.app/.MainActivity"))
+            refused("case x in x) \"\$(printf %s a)m\" start -n \"io.deskguest.ap\$(printf %s p)/.MainActivity\";; esac") &&
+            refused("am start -n \"io.deskguest.ap\$(printf %s p)/.MainActivity\"") &&
+            refused("\$(printf %s am) start -n io.deskguest.app/.MainActivity"))
     check("W28 regression command-position substitution, benign tail, stays allowed",
         allowed("\$(echo ls) -la"))
 

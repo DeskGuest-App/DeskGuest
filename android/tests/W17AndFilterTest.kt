@@ -11,7 +11,7 @@
 //  - the ordinary-shell floor: every W12/W15 allowed pin still
 //    allowed (no pin flips were needed; see lane log).
 // Pure/model layer only.
-import io.agenticcontrol.app.design.GateModel
+import io.deskguest.app.design.GateModel
 
 private var failures = 0
 private var passes = 0
@@ -20,7 +20,7 @@ private fun check(name: String, cond: Boolean) {
 }
 
 fun main(args: Array<String>) {
-    val own = "io.agenticcontrol.app"
+    val own = "io.deskguest.app"
     fun refused(cmd: String) = GateModel.shellInputRefused(cmd, own)
     fun allowed(cmd: String) = !GateModel.shellInputRefused(cmd, own)
 
@@ -38,8 +38,8 @@ fun main(args: Array<String>) {
         refused("cm\${X}d activity force-stop $own"))
     check("W17 B-14 corpus cmd act\${X}ivity force-stop own refused",
         refused("cmd act\${X}ivity force-stop $own"))
-    check("W17 B-14 corpus io.agenticcontrol\${X}.app via am refused",
-        refused("am force-stop io.agenticcontrol\${X}.app"))
+    check("W17 B-14 corpus io.deskguest\${X}.app via am refused",
+        refused("am force-stop io.deskguest\${X}.app"))
     check("W17 B-14 corpus p\${X}m clear own refused", refused("p\${X}m clear $own"))
     check("W17 B-14 corpus mon\${X}key own refused", refused("mon\${X}key -p $own 10"))
     check("W17 B-14 corpus in`true`put tap refused", refused("in`true`put tap 1 2"))

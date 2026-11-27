@@ -1,16 +1,16 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enterprise.ChainedAuditLog
-import io.agenticcontrol.app.enterprise.OperatorHistory
-import io.agenticcontrol.app.enterprise.PolicyBundle
-import io.agenticcontrol.app.enterprise.PolicyEnforcer
-import io.agenticcontrol.app.enterprise.ScamFriction
-import io.agenticcontrol.app.enterprise.SessionReceipt
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enterprise.ChainedAuditLog
+import io.deskguest.app.enterprise.OperatorHistory
+import io.deskguest.app.enterprise.PolicyBundle
+import io.deskguest.app.enterprise.PolicyEnforcer
+import io.deskguest.app.enterprise.ScamFriction
+import io.deskguest.app.enterprise.SessionReceipt
 import java.util.Base64
 
 /**
  * Block E — enterprise pack, Android mirror (model layer).
  * Every check cites the directive it proves, mirroring the Windows
- * Acp.Tests EnterpriseTests semantics.
+ * DeskGuest.Tests EnterpriseTests semantics.
  */
 private var failures = 0
 private fun check(name: String, condition: Boolean) {

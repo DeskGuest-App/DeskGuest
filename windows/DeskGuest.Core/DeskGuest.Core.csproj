@@ -1,0 +1,59 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <AssemblyName>DeskGuestCore</AssemblyName>
+    <RootNamespace>DeskGuest.Core</RootNamespace>
+    <!-- Single-file self-contained publish for win-x64 is driven from the
+         command line / publish profile; the project stays framework-dependent
+         for Linux dev + tests. -->
+    <EnableWindowsTargeting>true</EnableWindowsTargeting>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\DeskGuest.Shared\DeskGuest.Shared.csproj" />
+  </ItemGroup>
+  <!-- W24 / R-05 / D-DEC-1: the production Ed25519 update-signing
+       PUBLIC key, pinned beside the executable where CoreRuntime's
+       production composition reads it (AppContext.BaseDirectory /
+       update-key.pub). Public material only — the seed is custody-
+       held off-tree at ~/.config/deskguest/ (0600) and never
+       enters this repo. Fingerprint (SHA-256 of the raw 32-byte
+       public key) is recorded in BUILD-PROGRAMME D-DEC-1's landing
+       note / the W24 lane log. -->
+  <ItemGroup>
+    <Content Include="update-key.pub" CopyToOutputDirectory="PreserveNewest" />
+  </ItemGroup>
+  <!-- C18: the quick-assist front door (agent-control-app/quick-assist-web/)
+       is embedded straight from the repo files so the copy LaneHostManager
+       serves can never drift from the repo copy. Only the two page assets
+       are embedded — README.md and anything else in that folder is NOT
+       served. If these files are absent the build fails loudly rather
+       than shipping a door that silently 404s. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\agent-control-app\quick-assist-web\index.html" LogicalName="DeskGuest.Core.QuickAssist.index.html" />
+    <EmbeddedResource Include="..\..\..\agent-control-app\quick-assist-web\app.js" LogicalName="DeskGuest.Core.QuickAssist.app.js" />
+  </ItemGroup>
+  <!-- FR-134 / item (16): the Terms of Service, embedded straight
+       from the legal source (agent-control-app/legal/terms-of-service.md)
+       so the text the pairing bundle carries, the MCP resource
+       serves, and the acknowledgment hash covers can never drift
+       from the legal document. Same C18 discipline as the door
+       above: if the file is absent the build fails loudly rather
+       than shipping a Core that pairs agents without its Terms. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\..\agent-control-app\legal\terms-of-service.md" LogicalName="DeskGuest.Core.Terms.terms-of-service.md" />
+  </ItemGroup>
+  <!-- D38 RMM-23 F5: VendorPassService.Store is internal (the
+       service is the only public door past the policy gates); the
+       test assembly reaches the store for mechanism-level tests. -->
+  <ItemGroup>
+    <InternalsVisibleTo Include="DeskGuest.Tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Hosting.WindowsServices" Version="10.0.0" />
+    <PackageReference Include="Microsoft.Win32.Registry" Version="5.0.0" />
+    <PackageReference Include="System.Diagnostics.EventLog" Version="10.0.0" />
+    <PackageReference Include="System.IO.Ports" Version="10.0.0" />
+    <PackageReference Include="System.ServiceProcess.ServiceController" Version="10.0.0" />
+  </ItemGroup>
+</Project>

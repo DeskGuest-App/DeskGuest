@@ -1,0 +1,164 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- U8: consent / presence / STOP surface strings (default = en-US).
+       Wording is law: these values are the exact English strings the
+       surfaces shipped with, externalised verbatim so the consent
+       surface can be localised. Strings.Get falls back to the
+       built-in defaults in Strings.cs when a value is missing or
+       blank, so the STOP / presence surface can never be blanked
+       by a resource failure. -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType><xsd:choice maxOccurs="unbounded">
+        <xsd:element name="data"><xsd:complexType>
+          <xsd:sequence><xsd:element name="value" type="xsd:string" minOccurs="0" /></xsd:sequence>
+          <xsd:attribute name="name" type="xsd:string" use="required" />
+          <xsd:attribute ref="xml:space" />
+        </xsd:complexType></xsd:element>
+      </xsd:choice></xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Stop" xml:space="preserve"><value>STOP</value></data>
+  <data name="StopEsc" xml:space="preserve"><value>STOP (ESC)</value></data>
+  <data name="StopSession" xml:space="preserve"><value>STOP Session</value></data>
+  <data name="StopIsInForce" xml:space="preserve"><value>STOP is in force</value></data>
+  <data name="StopInForceBanner" xml:space="preserve"><value>STOP IS IN FORCE</value></data>
+  <data name="StopInForceBody" xml:space="preserve"><value>Every agent is blocked until you clear STOP. The session that was running has ended.</value></data>
+  <data name="ClearStop" xml:space="preserve"><value>CLEAR STOP</value></data>
+  <data name="ClearStopAllowAgents" xml:space="preserve"><value>CLEAR STOP — allow agents again</value></data>
+  <data name="Dismiss" xml:space="preserve"><value>DISMISS</value></data>
+  <data name="ClearingStop" xml:space="preserve"><value>Clearing STOP…</value></data>
+  <data name="ActiveSessionBanner" xml:space="preserve"><value>ACTIVE AI SESSION</value></data>
+  <data name="SessionBanner" xml:space="preserve"><value>SESSION</value></data>
+  <data name="NoActiveSession" xml:space="preserve"><value>No active session</value></data>
+  <data name="NoSessionBody" xml:space="preserve"><value>Your AI can only control this PC during a visible session — the glow, the presence box, and the ghost cursor are always on while it works, and STOP is always within reach.</value></data>
+  <data name="ControllingYourPcFormat" xml:space="preserve"><value>{0} is controlling your PC</value></data>
+  <data name="ControllingThisPcFormat" xml:space="preserve"><value>{0} is controlling this PC</value></data>
+  <data name="BlockedNameFormat" xml:space="preserve"><value>{0} is blocked</value></data>
+  <data name="PresenceBlockedFormat" xml:space="preserve"><value>{0} is blocked — STOP is in force</value></data>
+  <data name="PresenceBlockedHint" xml:space="preserve"><value>Press CLEAR STOP to let the agent work again.</value></data>
+  <data name="PresenceIntentFallback" xml:space="preserve"><value>The presence box on your desktop shows what the agent is doing.</value></data>
+  <data name="CurrentIntentFormat" xml:space="preserve"><value>Current intent: {0}</value></data>
+  <data name="StopHotkeyHint" xml:space="preserve"><value>Keyboard STOP is not assigned yet — the box, this window, and the tray always work.</value></data>
+  <data name="StopHotkeyHintFormat" xml:space="preserve"><value>Keyboard STOP: {0} — always on. The box, this window, and the tray always work too.</value></data>
+  <data name="StopTrayHint" xml:space="preserve"><value>or use the tray STOP</value></data>
+  <data name="ActionSingular" xml:space="preserve"><value>1 action</value></data>
+  <data name="ActionsFormat" xml:space="preserve"><value>{0} actions</value></data>
+  <data name="MeshBlockedStop" xml:space="preserve"><value>Blocked — STOP in force</value></data>
+  <data name="MeshActiveSessionFormat" xml:space="preserve"><value>Active AI session ({0})</value></data>
+  <data name="PairingCodeHintFormat" xml:space="preserve"><value>Give this code to your AI to pair. It expires at {0} and works once.</value></data>
+  <data name="PairingTrustLine" xml:space="preserve"><value>Give this code only to someone you trust. It works once, for this pairing.</value></data>
+  <data name="AccessPageTitleFormat" xml:space="preserve"><value>What {0} may do</value></data>
+  <data name="AccessCustomChip" xml:space="preserve"><value>Custom</value></data>
+  <data name="AccessFineTune" xml:space="preserve"><value>Fine-tune</value></data>
+  <data name="AccessThisChanges" xml:space="preserve"><value>This changes:</value></data>
+  <data name="AccessApply" xml:space="preserve"><value>Apply changes</value></data>
+  <data name="AccessCancel" xml:space="preserve"><value>Cancel</value></data>
+  <data name="AccessNoChanges" xml:space="preserve"><value>No changes waiting.</value></data>
+  <data name="AccessAuditNote" xml:space="preserve"><value>Every change is written to the Activity Record.</value></data>
+  <data name="AccessElevationConfirm" xml:space="preserve"><value>Turn on admin jobs for this helper</value></data>
+  <data name="AccessRevokedLine" xml:space="preserve"><value>This pairing is revoked — it has no access, and access can't be changed.</value></data>
+  <data name="AccessNoPairings" xml:space="preserve"><value>No AI helpers are paired yet. Pair one on the Add a Device page and its access controls will appear here.</value></data>
+  <data name="AccessGrantAddedFormat" xml:space="preserve"><value>+ {0}</value></data>
+  <data name="AccessGrantRemovedFormat" xml:space="preserve"><value>− {0}</value></data>
+  <data name="PairingNoCodeYet" xml:space="preserve"><value>No code yet — name your AI above, then create a pairing code.</value></data>
+  <data name="PairingExpiresInFormat" xml:space="preserve"><value>Expires in {0} — after that, make a new one.</value></data>
+  <data name="PairingExpiredLine" xml:space="preserve"><value>That code has expired — create a new one.</value></data>
+  <data name="PairingReachFormat" xml:space="preserve"><value>This PC is reachable over {0}.</value></data>
+  <data name="PairingEnterHint" xml:space="preserve"><value>Redeem an enrollment code here and this PC joins that roster. The code works once and expires.</value></data>
+  <data name="PortableWindowTitle" xml:space="preserve"><value>DeskGuest Quick Fix — portable helper</value></data>
+  <data name="PortableTitle" xml:space="preserve"><value>DeskGuest Quick Fix</value></data>
+  <data name="PortableIntro" xml:space="preserve"><value>This portable helper installed nothing on your PC. When you close this window, the session code dies with it and the helper is gone.</value></data>
+  <data name="PortableCodeHint" xml:space="preserve"><value>Read this code to the person helping you. It works once, for viewing only, and expires in 10 minutes.</value></data>
+  <data name="PortableShowCode" xml:space="preserve"><value>Show my session code</value></data>
+  <data name="PortableAskingCode" xml:space="preserve"><value>Asking the Core for a code…</value></data>
+  <data name="PortableCodeNotMinted" xml:space="preserve"><value>Not connected to the Core — the code was NOT minted.</value></data>
+  <data name="PortableStop" xml:space="preserve"><value>STOP — end any help session now</value></data>
+  <data name="PortableStopSent" xml:space="preserve"><value>STOP sent. Any session is ending and agents are blocked.</value></data>
+  <data name="PortableStopFailed" xml:space="preserve"><value>STOP could not be sent — the Core is not connected. Close this window to end the helper.</value></data>
+  <data name="PortableTerms" xml:space="preserve"><value>Before you start — the short version: no account, nothing installed, nothing left behind. This session is attended only, its code works once and dies when the session ends, and you can STOP it at any time. You are responsible for what the person you let in does with the access you give them; DeskGuest is provided as-is. Showing your code records your acceptance of these claims and of the full Terms.</value></data>
+  <data name="PortableAntiScam" xml:space="preserve"><value>DeskGuest will never call you, and will never ask for this code by phone. Only share it with a helper you contacted and expect.</value></data>
+  <data name="PortableTermsLink" xml:space="preserve"><value>Read the full Terms</value></data>
+  <data name="PortableCodeMinted" xml:space="preserve"><value>Code minted. It expires in 10 minutes and works once, for viewing only.</value></data>
+  <data name="PresenceTakeoverHint" xml:space="preserve"><value>Press Ctrl + Alt + Shift + Backspace to take over</value></data>
+  <data name="PresenceYoureDriving" xml:space="preserve"><value>Paused — you're driving</value></data>
+  <data name="TakeoverGroupTitle" xml:space="preserve"><value>Taking back control</value></data>
+  <data name="TakeoverGroupIntro" xml:space="preserve"><value>While your AI is working, you can use the mouse and keyboard whenever you like — your AI carries on alongside you, and moving the mouse or typing never takes over. Taking over is deliberate: press Ctrl + Alt + Shift + Backspace, and hand control back from the session pill when you are done. STOP always ends the session right away, whatever you choose here.</value></data>
+  <data name="TakeoverMouseLabel" xml:space="preserve"><value>Mouse</value></data>
+  <data name="TakeoverKeyboardLabel" xml:space="preserve"><value>Keyboard</value></data>
+  <data name="TakeoverModeTakeOver" xml:space="preserve"><value>Take over</value></data>
+  <data name="TakeoverModeTakeOverSentence" xml:space="preserve"><value>Moving the mouse or clicking never interrupts your AI — it keeps working while you point. Press Ctrl + Alt + Shift + Backspace to take over; your AI pauses until you hand control back.</value></data>
+  <data name="TakeoverModeShare" xml:space="preserve"><value>Share</value></data>
+  <data name="TakeoverModeShareSentence" xml:space="preserve"><value>You can move and point freely while your AI keeps working. Nothing is interrupted. Press Ctrl + Alt + Shift + Backspace to take over.</value></data>
+  <data name="TakeoverModeHotkeyOnly" xml:space="preserve"><value>Hotkey only</value></data>
+  <data name="TakeoverModeHotkeyOnlySentence" xml:space="preserve"><value>Touching it changes nothing. Press Ctrl + Alt + Shift + Backspace when you want to take over.</value></data>
+  <data name="HandBackControl" xml:space="preserve"><value>HAND BACK</value></data>
+  <data name="PresenceIdle" xml:space="preserve"><value>Session open — idle</value></data>
+  <data name="PresenceWatchdogLine" xml:space="preserve"><value>This app can't reach the host. It can't confirm whether anything is controlling this PC.</value></data>
+  <data name="PresenceStopHost" xml:space="preserve"><value>Stop the host</value></data>
+  <data name="GateApprove" xml:space="preserve"><value>Approve</value></data>
+  <data name="GateDeny" xml:space="preserve"><value>Deny</value></data>
+  <data name="GateDenyAndEnd" xml:space="preserve"><value>Deny and end session</value></data>
+  <data name="GateDraftNotSent" xml:space="preserve"><value>DRAFT · NOT SENT</value></data>
+  <data name="GateAskedFromChat" xml:space="preserve"><value>Asked from Agent chat</value></data>
+  <data name="GateNoSessionAllow" xml:space="preserve"><value>There is no allow-for-this-session. Every gated action asks on its own.</value></data>
+  <data name="SessionProviderLineFormat" xml:space="preserve"><value>What {0}'s provider does with what it sees is outside this app.</value></data>
+  <data name="SessionVendorLine" xml:space="preserve"><value>Nowhere else — DeskGuest sends nothing to anyone.</value></data>
+  <data name="SessionNotSeenFormat" xml:space="preserve"><value>Not seen: {0}</value></data>
+  <data name="SessionPresenceOnFrames" xml:space="preserve"><value>The presence layer is part of the screens the agent receives — it is never hidden from the agent.</value></data>
+  <data name="SessionSoFar" xml:space="preserve"><value>so far</value></data>
+  <data name="ChatCapabilityLine" xml:space="preserve"><value>Messaging does not use this access. It applies only while a session runs.</value></data>
+  <data name="ChatSentCountFormat" xml:space="preserve"><value>{0} messages sent from chat</value></data>
+  <data name="HostThisPcOnly" xml:space="preserve"><value>You're looking at this PC only.</value></data>
+  <data name="FloorBoxTitle" xml:space="preserve"><value>Always on — no one can change this</value></data>
+  <data name="WizardWaitingForAi" xml:space="preserve"><value>Waiting for your AI</value></data>
+  <data name="WizardSasCheckFormat" xml:space="preserve"><value>Is this {0}? Check the words — they must match what your AI shows.</value></data>
+  <data name="KeyboardStopUnassigned" xml:space="preserve"><value>No keyboard STOP is assigned yet. The presence box STOP, this window, and the tray always work.</value></data>
+  <data name="PresenceDriverNameMissing" xml:space="preserve"><value>A session tried to run without naming its driver</value></data>
+  <data name="PresenceDriverNameMissingHint" xml:space="preserve"><value>It was refused. Presence always names the specific agent — a session that cannot name its driver does not run.</value></data>
+  <data name="PosturePointerSigningFormat" xml:space="preserve"><value>Pointer signing posture: {0}</value></data>
+  <data name="PostureUpdateSigningFormat" xml:space="preserve"><value>Update signing posture: {0}</value></data>
+  <data name="PostureAnchorMarkerFormat" xml:space="preserve"><value>Anchor marker: {0}</value></data>
+  <data name="PresenceSelfTestPassed" xml:space="preserve"><value>Presence self-test passed — the box, ghost, and glow all drew, with STOP on the box.</value></data>
+  <data name="PresenceSelfTestFailedFormat" xml:space="preserve"><value>Presence self-test FAILED: {0}. A session will not be accepted until presence draws.</value></data>
+  <data name="EventWatchesTitle" xml:space="preserve"><value>Event watches (live)</value></data>
+  <data name="LedgerTitle" xml:space="preserve"><value>Data-flow ledger</value></data>
+  <data name="ComfortGlowIntensity" xml:space="preserve"><value>Glow intensity</value></data>
+  <data name="ComfortGlowBreath" xml:space="preserve"><value>Let the glow breathe (6.4 s, gentle)</value></data>
+  <data name="PresenceTitle" xml:space="preserve"><value>Presence</value></data>
+  <data name="PresenceSub" xml:space="preserve"><value>What your screen shows while your AI is in control: the box naming the agent with STOP, the ghost ring, and the edge glow — exactly three elements, on every display.</value></data>
+  <data name="PresenceFloorSentence" xml:space="preserve"><value>You can change how it looks in every way — it just can't disappear while someone is here, and STOP is always STOP.</value></data>
+  <data name="PresenceModeNormal" xml:space="preserve"><value>Helping on screen</value></data>
+  <data name="PresenceModeBackground" xml:space="preserve"><value>Background Work Only</value></data>
+  <data name="PresencePreviewTitle" xml:space="preserve"><value>Preview — every state, as it will really look</value></data>
+  <data name="PresenceStateAi" xml:space="preserve"><value>AI driving</value></data>
+  <data name="PresenceStatePerson" xml:space="preserve"><value>Person driving</value></data>
+  <data name="PresenceStateWaiting" xml:space="preserve"><value>Waiting</value></data>
+  <data name="PresenceSizeLabel" xml:space="preserve"><value>Size</value></data>
+  <data name="PresenceBrightnessLabel" xml:space="preserve"><value>Brightness</value></data>
+  <data name="PresenceDetailLabel" xml:space="preserve"><value>Detail level</value></data>
+  <data name="PresenceDetailFull" xml:space="preserve"><value>Full pill</value></data>
+  <data name="PresenceDetailCompact" xml:space="preserve"><value>Compact pill</value></data>
+  <data name="PresenceColorsTitle" xml:space="preserve"><value>State colors</value></data>
+  <data name="PresenceColorAi" xml:space="preserve"><value>AI driving</value></data>
+  <data name="PresenceColorPerson" xml:space="preserve"><value>Person driving</value></data>
+  <data name="PresenceColorWaiting" xml:space="preserve"><value>Waiting</value></data>
+  <data name="PresenceColorStop" xml:space="preserve"><value>STOP</value></data>
+  <data name="PresencePointerTitle" xml:space="preserve"><value>Pointer style</value></data>
+  <data name="PresencePointerNote" xml:space="preserve"><value>Every style carries a ring in the current state's color, so it never looks like your own pointer.</value></data>
+  <data name="PresenceSave" xml:space="preserve"><value>Save appearance</value></data>
+  <data name="PresenceReset" xml:space="preserve"><value>Back to defaults</value></data>
+  <data name="PresenceSaved" xml:space="preserve"><value>Saved — this is how presence looks on this PC now.</value></data>
+  <data name="PresenceBgNote" xml:space="preserve"><value>Background Work Only mode itself is not in this version yet. Here you choose how its indicator will look when it arrives — it follows the same rule: it can never disappear while an AI is connected.</value></data>
+  <data name="PresenceBgColor" xml:space="preserve"><value>Indicator color</value></data>
+  <data name="PresenceBgPreviewFormat" xml:space="preserve"><value>{0} is working in the background</value></data>
+  <data name="PresenceStateWordControlling" xml:space="preserve"><value>Controlling</value></data>
+  <data name="PresenceStateWordWaiting" xml:space="preserve"><value>Waiting</value></data>
+  <data name="PresencePreviewNameFallback" xml:space="preserve"><value>Your helper</value></data>
+  <data name="HostNoFleet" xml:space="preserve"><value>This PC is an endpoint: it holds no fleet, no roster, and no operator keys.</value></data>
+</root>

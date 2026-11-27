@@ -20,8 +20,8 @@ export PATH=$JAVA_HOME/bin:$PATH
 KOTLINC=$HOME/workspace/tools/kotlinc/bin/kotlinc
 JSON_JAR=$HOME/workspace/tools/downloads/json.jar
 STDLIB=$HOME/workspace/tools/kotlinc/lib/kotlin-stdlib.jar
-OUT=/tmp/acp-tests
-WORK=/tmp/acp-http
+OUT=/tmp/deskguest-tests
+WORK=/tmp/deskguest-http
 rm -rf "$OUT" "$WORK"; mkdir -p "$OUT" "$WORK"
 
 mapfile -t SRCS < <(grep -rL "^import android" app/src/main/java --include=*.kt | sort)
@@ -37,7 +37,7 @@ fi
 
 CP="$OUT:$JSON_JAR:$STDLIB"
 ROOT=$PWD
-XCHECK=/tmp/acp-xcheck
+XCHECK=/tmp/deskguest-xcheck
 rm -rf "$XCHECK"
 python3 tests/make_manifest_fixture.py "$XCHECK" >/dev/null
 
@@ -72,7 +72,7 @@ done
 # ManifestVerifierTest needs its fixture dirs as arguments (it also
 # ran in the loop above with the tree root; the arg form is the
 # authoritative one — both must pass).
-run_suite ManifestVerifierTestKt "$XCHECK" "$HOME/.config/agentic-control"
+run_suite ManifestVerifierTestKt "$XCHECK" "$HOME/.config/deskguest"
 
 java -classpath "$CP" HttpServerMainKt "$WORK" &
 SERVER_PID=$!

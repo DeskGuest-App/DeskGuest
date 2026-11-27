@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="io.agenticcontrol.app"
+    package="io.deskguest.app"
     android:versionCode="24"
     android:versionName="1.0.0">
 
@@ -86,7 +86,7 @@
 
         <!-- Quick Settings tile: status glance + one-tap session STOP. -->
         <service
-            android:name=".tile.AgenticTileService"
+            android:name=".tile.DeskGuestTileService"
             android:exported="true"
             android:icon="@drawable/ic_tile"
             android:label="DeskGuest"
@@ -128,7 +128,7 @@
              while the user has granted notification access in system
              Settings. Never exported beyond the system's binding. -->
         <service
-            android:name=".notify.AcpNotificationListener"
+            android:name=".notify.DeskGuestNotificationListener"
             android:exported="false"
             android:label="DeskGuest"
             android:permission="android.permission.BIND_NOTIFICATION_LISTENER_SERVICE">
@@ -159,7 +159,7 @@
              tiers the MDM model permits). Admin activation is the
              user's grant in Settings — never requested silently. -->
         <receiver
-            android:name=".rmmspine.AcpDeviceAdminReceiver"
+            android:name=".rmmspine.DeskGuestDeviceAdminReceiver"
             android:exported="true"
             android:label="DeskGuest"
             android:permission="android.permission.BIND_DEVICE_ADMIN">
@@ -174,7 +174,7 @@
         <!-- Hands verified update APKs to the system installer (updater). -->
         <provider
             android:name="androidx.core.content.FileProvider"
-            android:authorities="io.agenticcontrol.app.files"
+            android:authorities="io.deskguest.app.files"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data

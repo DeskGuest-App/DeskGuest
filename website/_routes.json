@@ -1,0 +1,1 @@
+{"description":"Only the report-form relay and attachment serving run the worker; everything else is the static site.","exclude":[],"include":["/api/*","/files/*"],"version":1}

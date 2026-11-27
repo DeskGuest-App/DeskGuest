@@ -1,33 +1,33 @@
-import io.agenticcontrol.app.backup.BackupPolicy
-import io.agenticcontrol.app.backup.BackupService
-import io.agenticcontrol.app.backup.SafTree
-import io.agenticcontrol.app.backup.StoreSource
-import io.agenticcontrol.app.cameraview.ChainedAudit
-import io.agenticcontrol.app.cameraview.SharedAuditBridge
-import io.agenticcontrol.app.deploy.ContentPack
-import io.agenticcontrol.app.deploy.DeployPolicy
-import io.agenticcontrol.app.deploy.DeployService
-import io.agenticcontrol.app.deploy.DeployUnit
-import io.agenticcontrol.app.deploy.InstallerHandoff
-import io.agenticcontrol.app.deploy.PayloadInstallerHandoff
-import io.agenticcontrol.app.deploy.SignatureVerifier
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollPayload
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.mobileop.AlertLookup
-import io.agenticcontrol.app.mobileop.ClientKeySigner
-import io.agenticcontrol.app.mobileop.HubKeyVerifier
-import io.agenticcontrol.app.mobileop.MobileOperatorClient
-import io.agenticcontrol.app.mobileop.MobileOperatorPolicy
-import io.agenticcontrol.app.mobileop.RosterRights
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.transport.HostListenerService
-import io.agenticcontrol.app.transport.HostSessionBinding
-import io.agenticcontrol.app.transport.LanProtocol
-import io.agenticcontrol.app.transport.SocketStreams
-import io.agenticcontrol.app.vendorpass.VendorPassPolicy
-import io.agenticcontrol.app.wiring.PlatformStores
+import io.deskguest.app.backup.BackupPolicy
+import io.deskguest.app.backup.BackupService
+import io.deskguest.app.backup.SafTree
+import io.deskguest.app.backup.StoreSource
+import io.deskguest.app.cameraview.ChainedAudit
+import io.deskguest.app.cameraview.SharedAuditBridge
+import io.deskguest.app.deploy.ContentPack
+import io.deskguest.app.deploy.DeployPolicy
+import io.deskguest.app.deploy.DeployService
+import io.deskguest.app.deploy.DeployUnit
+import io.deskguest.app.deploy.InstallerHandoff
+import io.deskguest.app.deploy.PayloadInstallerHandoff
+import io.deskguest.app.deploy.SignatureVerifier
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollPayload
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.mobileop.AlertLookup
+import io.deskguest.app.mobileop.ClientKeySigner
+import io.deskguest.app.mobileop.HubKeyVerifier
+import io.deskguest.app.mobileop.MobileOperatorClient
+import io.deskguest.app.mobileop.MobileOperatorPolicy
+import io.deskguest.app.mobileop.RosterRights
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.transport.HostListenerService
+import io.deskguest.app.transport.HostSessionBinding
+import io.deskguest.app.transport.LanProtocol
+import io.deskguest.app.transport.SocketStreams
+import io.deskguest.app.vendorpass.VendorPassPolicy
+import io.deskguest.app.wiring.PlatformStores
 import java.io.File
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -93,7 +93,7 @@ private class BoundChannel(val world: W4World, val binding: HostSessionBinding) 
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-w4-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-w4-test").toFile()
 
     // ---- F2: local STOP can never be refused over a typed actor ----
     run {
@@ -131,9 +131,9 @@ fun main() {
         }
         check("F4 restore writes back exactly what verify approved",
             svc.restore(dest, m1.id, target).isSuccess &&
-                target.files["acp/roster.tsv"]?.toString(Charsets.UTF_8) == "data-v1")
+                target.files["deskguest/roster.tsv"]?.toString(Charsets.UTF_8) == "data-v1")
         // Tamper: rewrite the file AND its manifest hash together.
-        val entryName = "acp/roster.tsv"
+        val entryName = "deskguest/roster.tsv"
         dest.files["${m1.id}/$entryName"] = "evil".toByteArray()
         val manifestKey = dest.files.keys.first { it.endsWith("manifest.txt") && it.startsWith(m1.id) }
         val lines = String(dest.files[manifestKey]!!, Charsets.UTF_8).lines().toMutableList()
@@ -143,14 +143,14 @@ fun main() {
         check("F4 DESTRUCTION file+hash rewritten together still refuses (manifest HMAC)",
             svc.verify(dest, m1.id).isFailure && svc.restore(dest, m1.id, target).isFailure)
         // Allow-list: a MAC-valid manifest naming a traversal entry.
-        val evilLines = "acp/../evil\t${sha("x".toByteArray())}"
+        val evilLines = "deskguest/../evil\t${sha("x".toByteArray())}"
         val mac = javax.crypto.Mac.getInstance("HmacSHA256")
         mac.init(javax.crypto.spec.SecretKeySpec(key, "HmacSHA256"))
         val evilMac = mac.doFinal(evilLines.toByteArray()).joinToString("") { "%02x".format(it) }
         val evilSrc = object : SafTree {
             val files = mutableMapOf(
                 "bk/manifest.txt" to "$evilLines\n#hmac\t$evilMac".toByteArray(),
-                "bk/acp/../evil" to "x".toByteArray())
+                "bk/deskguest/../evil" to "x".toByteArray())
             override fun granted() = true
             override fun write(n: String, b: ByteArray) = true
             override fun read(n: String) = files[n]
@@ -361,7 +361,7 @@ fun main() {
         check("T2 listener is down after stop", !service.isRunning)
         var wildcardRefused = false
         try {
-            io.agenticcontrol.app.transport.LanHostListener(w.enrollment, w.hostIdentity)
+            io.deskguest.app.transport.LanHostListener(w.enrollment, w.hostIdentity)
                 .start(java.net.InetAddress.getByName("0.0.0.0"), 0)
         } catch (_: IllegalArgumentException) { wildcardRefused = true }
         check("T2 DESTRUCTION wildcard bind is refused by name", wildcardRefused)
@@ -381,13 +381,13 @@ fun main() {
                 !PlatformStores(storesDir).hubMembership.isLiveMember(first.ownDeviceId()))
         val flowFirst = PlatformStores(storesDir)
         flowFirst.meshSetupFlow.runPreSignIn(
-            io.agenticcontrol.app.transport.MeshPlatform.ANDROID,
-            io.agenticcontrol.app.transport.MeshRole.OPERATOR,
+            io.deskguest.app.transport.MeshPlatform.ANDROID,
+            io.deskguest.app.transport.MeshRole.OPERATOR,
             carveOutAcknowledged = true, clientVersion = "1.104.7")
         val stageBefore = flowFirst.meshSetupFlow.state.stage
         val flowSecond = PlatformStores(storesDir)
         check("T3 mesh setup state PERSISTS across instances (sink + restore wired)",
-            stageBefore == io.agenticcontrol.app.transport.MeshSetupFlow.STAGE_AWAITING_SIGN_IN &&
+            stageBefore == io.deskguest.app.transport.MeshSetupFlow.STAGE_AWAITING_SIGN_IN &&
                 flowSecond.meshSetupFlow.state.stage == stageBefore)
         check("T3 host listener is composed by PlatformStores (not yet running)",
             !flowSecond.hostListenerRunning && flowSecond.hostListener() != null)

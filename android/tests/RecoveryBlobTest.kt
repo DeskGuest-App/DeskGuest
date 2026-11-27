@@ -1,16 +1,16 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.PairingSas
-import io.agenticcontrol.app.recovery.RecoveryBlob
-import io.agenticcontrol.app.recovery.RecoveryBlobException
-import io.agenticcontrol.app.recovery.RecoveryContact
-import io.agenticcontrol.app.recovery.X25519Recovery
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.PairingSas
+import io.deskguest.app.recovery.RecoveryBlob
+import io.deskguest.app.recovery.RecoveryBlobException
+import io.deskguest.app.recovery.RecoveryContact
+import io.deskguest.app.recovery.X25519Recovery
 import java.io.File
 import java.security.SecureRandom
 import java.util.Base64
 
 /**
  * C20 — Recovery blob (Android mirror). Mirrors the C# suite
- * (Acp.Tests/RecoveryBlobTests.cs): round-trip, wrong credential
+ * (DeskGuest.Tests/RecoveryBlobTests.cs): round-trip, wrong credential
  * refuses, restore-over-live-identity refuses, contact-sealed copy
  * cannot be opened by a non-named contact or by the contact alone,
  * tampering refuses. Plus the cross-platform fixture exchange with
@@ -58,8 +58,8 @@ private fun unhex(text: String): ByteArray = ByteArray(text.length / 2) {
 private class FakeStores {
     var liveIdentity = false
     var empty = true
-    var applied: io.agenticcontrol.app.recovery.RecoveryPayloadData? = null
-    fun apply(payload: io.agenticcontrol.app.recovery.RecoveryPayloadData) {
+    var applied: io.deskguest.app.recovery.RecoveryPayloadData? = null
+    fun apply(payload: io.deskguest.app.recovery.RecoveryPayloadData) {
         applied = payload
     }
 }
@@ -294,8 +294,8 @@ private fun xwrite(dir: File) {
     val contactSeed = fixtureSeed(0xA0)
     val contact = RecoveryContact("Xcheck Contact", DeviceIdentity.derivePublicKey(contactSeed))
     val export = RecoveryBlob.export(seed, deviceId, pairings, roster, PASSPHRASE, listOf(contact), CREATED)
-    File(dir, "primary.acpb").writeBytes(export.primaryBlob)
-    File(dir, "contact.acpb").writeBytes(export.contactBlobs[0].second)
+    File(dir, "primary.deskguestb").writeBytes(export.primaryBlob)
+    File(dir, "contact.deskguestb").writeBytes(export.contactBlobs[0].second)
     File(dir, "sheet.txt").writeText(export.keySheet)
     File(dir, "expected.txt").writeText(deviceId)
     File(dir, "contact-seed.b64").writeText(Base64.getEncoder().encodeToString(contactSeed))
@@ -308,7 +308,7 @@ private fun xread(dir: File) {
     val contactSeed = Base64.getDecoder().decode(File(dir, "contact-seed.b64").readText().trim())
     run {
         val stores = FakeStores()
-        val restored = RecoveryBlob.restorePrimary(File(dir, "primary.acpb").readBytes(), PASSPHRASE, null,
+        val restored = RecoveryBlob.restorePrimary(File(dir, "primary.deskguestb").readBytes(), PASSPHRASE, null,
             { false }, { true }, stores::apply)
         check("xcheck primary-by-passphrase device", restored.deviceId == expected)
         check("xcheck primary pairings carried", restored.pairingsExport.contains("xcheck-agent"))
@@ -317,11 +317,11 @@ private fun xread(dir: File) {
             DeviceIdentity.deviceIdFor(DeviceIdentity.derivePublicKey(restored.identitySeed)) == expected)
     }
     run {
-        val restored = RecoveryBlob.openPrimary(File(dir, "primary.acpb").readBytes(), null, sheet)
+        val restored = RecoveryBlob.openPrimary(File(dir, "primary.deskguestb").readBytes(), null, sheet)
         check("xcheck primary-by-sheet device", restored.deviceId == expected)
     }
     run {
-        val restored = RecoveryBlob.openContactCopy(File(dir, "contact.acpb").readBytes(), contactSeed, sheet)
+        val restored = RecoveryBlob.openContactCopy(File(dir, "contact.deskguestb").readBytes(), contactSeed, sheet)
         check("xcheck contact-copy device", restored.deviceId == expected)
     }
     println(if (failures == 0) "XREAD OK" else "XREAD $failures FAILURES")

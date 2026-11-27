@@ -1,13 +1,13 @@
-import io.agenticcontrol.app.crypto.AesGcmLineCipher
-import io.agenticcontrol.app.crypto.IdentityLineCipher
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.wiring.PlatformStores
-import io.agenticcontrol.app.wiring.PlatformToolHost
+import io.deskguest.app.crypto.AesGcmLineCipher
+import io.deskguest.app.crypto.IdentityLineCipher
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.wiring.PlatformStores
+import io.deskguest.app.wiring.PlatformToolHost
 import java.io.File
 import java.nio.file.Files
 import java.util.Base64
@@ -40,8 +40,8 @@ private fun check(name: String, condition: Boolean) {
 private fun b64(bytes: ByteArray): String = Base64.getEncoder().encodeToString(bytes)
 
 private fun sourceFile(rel: String): String {
-    val a = File("app/src/main/java/io/agenticcontrol/app/$rel")
-    val b = File("android/app/src/main/java/io/agenticcontrol/app/$rel")
+    val a = File("app/src/main/java/io/deskguest/app/$rel")
+    val b = File("android/app/src/main/java/io/deskguest/app/$rel")
     val f = if (a.exists()) a else b
     return if (f.exists()) f.readText() else ""
 }
@@ -87,7 +87,7 @@ fun main() {
     val cipher = AesGcmLineCipher(AesGcmLineCipher.generateKey())
 
     // ================= identity: lazy, wrapped, stable =================
-    val dir1 = Files.createTempDirectory("acp-wiring-id").toFile()
+    val dir1 = Files.createTempDirectory("deskguest-wiring-id").toFile()
     val s1 = PlatformStores(dir1, cipher)
     check("identity is NOT loaded by opening the stores (lazy, off the startup path)", !s1.identityLoaded())
     check("identity file does NOT exist before first use", !File(dir1, PlatformStores.IDENTITY_FILE).exists())
@@ -101,7 +101,7 @@ fun main() {
     check("identity is stable across reopening the stores", s1Again.ownDeviceId() == id1.deviceId)
 
     // ================= mint → redeem own → endpoint snapshot =================
-    val dir2 = Files.createTempDirectory("acp-wiring-own").toFile()
+    val dir2 = Files.createTempDirectory("deskguest-wiring-own").toFile()
     val own = PlatformStores(dir2, cipher)
     own.addScope("home", "personal", "Home")
     own.addUser("home", "owner", "Owner", "human")
@@ -135,7 +135,7 @@ fun main() {
     check("redeemOwn refuses a replayed (single-use) code", own.redeemOwn(mintCode, "My Phone", "Operator Olivia", "operator-device-1") == null)
 
     // Unenrolled endpoint: the view is empty, never widened.
-    val dir2b = Files.createTempDirectory("acp-wiring-unenrolled").toFile()
+    val dir2b = Files.createTempDirectory("deskguest-wiring-unenrolled").toFile()
     val fresh = PlatformStores(dir2b, cipher)
     val freshSnap = fresh.endpointSnapshot()
     check("D2: unenrolled endpoint snapshot has no record", freshSnap.ownRecord == null)
@@ -144,7 +144,7 @@ fun main() {
     check("D2: unenrolled snapshot still shows the device's own id", freshSnap.deviceId == fresh.ownDeviceId())
 
     // ================= sessions through the facade =================
-    val dir3 = Files.createTempDirectory("acp-wiring-sessions").toFile()
+    val dir3 = Files.createTempDirectory("deskguest-wiring-sessions").toFile()
     val world = personalWorld(dir3, cipher)
     val st = world.stores
     check(
@@ -262,7 +262,7 @@ fun main() {
         JSONObject(host.tools().first { it.name == "platform_session_status" }.run(JSONObject().put("session_id", "nope"))).has("error")
     )
     // Through the real McpCore protocol path, with a real pairing.
-    val pairDir = Files.createTempDirectory("acp-wiring-mcp").toFile()
+    val pairDir = Files.createTempDirectory("deskguest-wiring-mcp").toFile()
     val pairingStore = PairingStore(File(pairDir, "pairings.tsv"), IdentityLineCipher)
     val core = McpCore(pairingStore, PlatformToolHost { st }, "wiring-test")
     val code = pairingStore.beginPairing("Wire Agent")
@@ -287,7 +287,7 @@ fun main() {
     )
 
     // ================= cross-scope through the facade (D8 wall) =================
-    val dir4 = Files.createTempDirectory("acp-wiring-scopes").toFile()
+    val dir4 = Files.createTempDirectory("deskguest-wiring-scopes").toFile()
     val multi = personalWorld(dir4, cipher).stores
     check("company scope created beside personal (D8)", multi.addScope("acme", "company", "Acme"))
     check("company user added", multi.addUser("acme", "carol", "Carol", "human"))
@@ -336,7 +336,7 @@ fun main() {
     check("carol's authority returns on unsuspension", multi.deleteDeviceGroup("acme", "servers", "carol"))
 
     // ================= offboarding: blast BEFORE fire (D14) =================
-    val dir5 = Files.createTempDirectory("acp-wiring-offboard").toFile()
+    val dir5 = Files.createTempDirectory("deskguest-wiring-offboard").toFile()
     val off = PlatformStores(dir5, cipher)
     off.addScope("acme", "company", "Acme")
     off.addUser("acme", "carol", "Carol", "human")
@@ -389,7 +389,7 @@ fun main() {
     )
 
     // ================= corrupt-store boot (destruction) =================
-    val dir6 = Files.createTempDirectory("acp-wiring-corrupt").toFile()
+    val dir6 = Files.createTempDirectory("deskguest-wiring-corrupt").toFile()
     File(dir6, PlatformStores.ENROLLMENT_FILE).writeText("garbage\tline\n\u0000\u0001 binary junk\npartial")
     File(dir6, PlatformStores.ROSTER_FILE).writeText("not\ta\troster\nscope\tbroken")
     File(dir6, PlatformStores.SESSIONS_FILE).writeText("session\tbroken\tline\n%%%")
@@ -399,7 +399,7 @@ fun main() {
     val corruptSnap = corrupt.endpointSnapshot()
     check("DESTRUCTION corrupt boot: endpoint snapshot still answers (own identity only)", corruptSnap.ownRecord == null && corruptSnap.deviceId.isNotBlank())
     // Corrupt identity file: preserved, never overwritten in place.
-    val dir7 = Files.createTempDirectory("acp-wiring-corrupt-id").toFile()
+    val dir7 = Files.createTempDirectory("deskguest-wiring-corrupt-id").toFile()
     File(dir7, PlatformStores.IDENTITY_FILE).writeText("planted-not-a-seed")
     val corruptId = PlatformStores(dir7, cipher)
     val minted = corruptId.ownIdentity()

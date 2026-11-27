@@ -1,7 +1,7 @@
-import io.agenticcontrol.app.crypto.AesGcmLineCipher
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.enrollment.PairingSas
+import io.deskguest.app.crypto.AesGcmLineCipher
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.enrollment.PairingSas
 import java.io.File
 import java.nio.file.Files
 
@@ -9,7 +9,7 @@ import java.nio.file.Files
  * U9 follow-up — enroller public key transmitted in the enrollment
  * RESPONSE, verified enrollee-side against the committed fingerprint
  * (the enroller DeviceId held from the code/QR transcript) before
- * use. Mirrors the C# suite (Acp.Tests/EnrollerKeySasTests.cs):
+ * use. Mirrors the C# suite (DeskGuest.Tests/EnrollerKeySasTests.cs):
  * identical outcomes, identical SAS strings.
  */
 private var failures = 0
@@ -23,7 +23,7 @@ private fun check(name: String, condition: Boolean) {
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-enroller-key-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-enroller-key-test").toFile()
     val cipher = AesGcmLineCipher(AesGcmLineCipher.generateKey())
     val enroller = DeviceIdentity.generate()
     val enrollee = DeviceIdentity.generate()

@@ -1,15 +1,15 @@
-import io.agenticcontrol.app.rmmspine.ManagementPolicyDocument
-import io.agenticcontrol.app.rmmspine.ManagementPolicyEngine
-import io.agenticcontrol.app.rmmspine.PolicyGate
-import io.agenticcontrol.app.rmmspine.PolicyLevels
-import io.agenticcontrol.app.rmmspine.StaticDeviceFacts
-import io.agenticcontrol.app.transport.TorArtefact
-import io.agenticcontrol.app.transport.TorComponentFile
-import io.agenticcontrol.app.transport.TorComponentManifest
-import io.agenticcontrol.app.transport.TorPins
-import io.agenticcontrol.app.transport.TorProcessRunner
-import io.agenticcontrol.app.transport.TorProvisioner
-import io.agenticcontrol.app.transport.TorSetupService
+import io.deskguest.app.rmmspine.ManagementPolicyDocument
+import io.deskguest.app.rmmspine.ManagementPolicyEngine
+import io.deskguest.app.rmmspine.PolicyGate
+import io.deskguest.app.rmmspine.PolicyLevels
+import io.deskguest.app.rmmspine.StaticDeviceFacts
+import io.deskguest.app.transport.TorArtefact
+import io.deskguest.app.transport.TorComponentFile
+import io.deskguest.app.transport.TorComponentManifest
+import io.deskguest.app.transport.TorPins
+import io.deskguest.app.transport.TorProcessRunner
+import io.deskguest.app.transport.TorProvisioner
+import io.deskguest.app.transport.TorSetupService
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.nio.file.Files
@@ -77,7 +77,7 @@ private class TorFixture(
 )
 
 private fun buildTorFixture(binaryOverride: ByteArray? = null, includeTraversal: Boolean = false): TorFixture {
-    val binary = binaryOverride ?: "ACP FIXTURE TOR BINARY — inert stand-in, never executed".toByteArray(Charsets.UTF_8)
+    val binary = binaryOverride ?: "DeskGuest FIXTURE TOR BINARY — inert stand-in, never executed".toByteArray(Charsets.UTF_8)
     val geoip = "fixture geoip".toByteArray(Charsets.UTF_8)
     val entries = mutableListOf(
         "tor/libTor.so" to binary,
@@ -93,7 +93,7 @@ private fun buildTorFixture(binaryOverride: ByteArray? = null, includeTraversal:
     val artefact = TorArtefact("fixture-platform", "fixture-bundle.tar.gz",
         sha256Hex(bundleBytes), bundleBytes.size.toLong(), "tor/libTor.so", files)
     val manifest = TorComponentManifest.forFixture("fixture://local", artefact)
-    val baseDir = Files.createTempDirectory("acp-tor-test").toFile()
+    val baseDir = Files.createTempDirectory("deskguest-tor-test").toFile()
     return TorFixture(manifest, artefact, bundleBytes, baseDir)
 }
 
@@ -245,12 +245,12 @@ fun main() {
     }
 
     run {
-        val home = File(Files.createTempDirectory("acp-tor-torrc").toFile(), "tor")
+        val home = File(Files.createTempDirectory("deskguest-tor-torrc").toFile(), "tor")
         val torrc = TorSetupService.buildTorrc(home, TorPins.SOCKS_PORT)
         check("torsetup: torrc is local-only socks", torrc.contains("SocksPort 127.0.0.1:${TorPins.SOCKS_PORT}"))
         check("torsetup: torrc has no control/or port", !torrc.contains("ControlPort") && !torrc.contains("ORPort"))
         // readTorConfig round-trip on the exact shape the act writes
-        val dataDir = Files.createTempDirectory("acp-tor-cfg").toFile()
+        val dataDir = Files.createTempDirectory("deskguest-tor-cfg").toFile()
         File(dataDir, "tor.json").writeText("{\"socksHost\":\"127.0.0.1\",\"socksPort\":${TorPins.SOCKS_PORT}}")
         val cfg = TorSetupService.readTorConfig(dataDir)
         check("torsetup: tor.json readable as rung config", cfg != null && cfg.socksHost == "127.0.0.1" && cfg.socksPort == TorPins.SOCKS_PORT)

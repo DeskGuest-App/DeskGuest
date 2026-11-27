@@ -1,4 +1,4 @@
-import io.agenticcontrol.app.strings.ConsentStrings
+import io.deskguest.app.strings.ConsentStrings
 import java.io.File
 
 /**
@@ -46,7 +46,7 @@ object W81Fr123Test {
     @JvmStatic
     fun main(args: Array<String>) {
         val root = File(args[0])
-        val src = File(root, "app/src/main/java/io/agenticcontrol/app")
+        val src = File(root, "app/src/main/java/io/deskguest/app")
         fun code(rel: String) = codeOf(File(src, rel))
 
         // ---- The U8 wording itself: truthful, non-generic, non-blank ----

@@ -1,15 +1,15 @@
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.transport.DiscoveryAnnouncement
-import io.agenticcontrol.app.transport.DiscoveryService
-import io.agenticcontrol.app.transport.LanProtocol
-import io.agenticcontrol.app.transport.SocketStreams
-import io.agenticcontrol.app.transport.StubRung
-import io.agenticcontrol.app.transport.TransportConnectResult
-import io.agenticcontrol.app.transport.TransportSessionManager
-import io.agenticcontrol.app.transport.TransportTarget
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.transport.DiscoveryAnnouncement
+import io.deskguest.app.transport.DiscoveryService
+import io.deskguest.app.transport.LanProtocol
+import io.deskguest.app.transport.SocketStreams
+import io.deskguest.app.transport.StubRung
+import io.deskguest.app.transport.TransportConnectResult
+import io.deskguest.app.transport.TransportSessionManager
+import io.deskguest.app.transport.TransportTarget
 import java.io.File
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
@@ -69,7 +69,7 @@ private class TransportWorld(dir: File, tag: String, groupSet: List<String> = li
             EnrollmentStore.EnrollingDevice(operatorIdentity.deviceId, operatorIdentity.publicKeyBase64, "Operator Device"))
     }
 
-    fun manager(vararg rungs: io.agenticcontrol.app.transport.TransportRung, identity: DeviceIdentity? = null): TransportSessionManager {
+    fun manager(vararg rungs: io.deskguest.app.transport.TransportRung, identity: DeviceIdentity? = null): TransportSessionManager {
         var n = 0
         // W3 lane B sibling repair (disclosed): the manager now takes
         // the enrollment store (transport v2 mutual authentication).
@@ -96,7 +96,7 @@ private class PipeHandshake(val enrollments: EnrollmentStore, val hostIdentity: 
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-transport-test").toFile()
+    val dir = Files.createTempDirectory("deskguest-transport-test").toFile()
 
     // ---- failover engine: order + dormancy (D29/D32) ----
     run {
@@ -252,9 +252,9 @@ fun main() {
         check("D19/D20 announcement carries only hash+name+state (the device id never broadcasts)",
             !wire.contains("device-abc") && DiscoveryAnnouncement.decode(wire) == a)
         check("D20 hostile datagrams refuse wholesale",
-            DiscoveryAnnouncement.decode("ACP1|zzzz|enrolled|U2l0ZSBQQw==") == null &&
+            DiscoveryAnnouncement.decode("DESKGUEST1|zzzz|enrolled|U2l0ZSBQQw==") == null &&
                 DiscoveryAnnouncement.decode("XXXX|${"a".repeat(64)}|enrolled|U2l0ZSBQQw==") == null &&
-                DiscoveryAnnouncement.decode("ACP1|${"a".repeat(64)}|controllable|U2l0ZSBQQw==") == null &&
+                DiscoveryAnnouncement.decode("DESKGUEST1|${"a".repeat(64)}|controllable|U2l0ZSBQQw==") == null &&
                 DiscoveryAnnouncement.decode("") == null && DiscoveryAnnouncement.decode(null) == null)
         val w = TransportWorld(dir, "disc")
         val svc = DiscoveryService(listOf(w.hostDeviceId))
@@ -267,7 +267,7 @@ fun main() {
 
     // ---- wiring facade (PlatformStores) ----
     run {
-        val stores = io.agenticcontrol.app.wiring.PlatformStores(File(dir, "facade"))
+        val stores = io.deskguest.app.wiring.PlatformStores(File(dir, "facade"))
         val refused = stores.startTransportSession("nope", "no-device", "nobody", "nohost", "unattended")
         check("Wiring facade: a transport start against an empty store refuses honestly and records the engine event",
             refused == null && stores.transportEvents().any { it.kind == "start_refused" })
@@ -275,7 +275,7 @@ fun main() {
             stores.reestablishTransportSession("no-such-session") == null)
     }
     run {
-        val stores = io.agenticcontrol.app.wiring.PlatformStores(File(dir, "facade-disc"))
+        val stores = io.deskguest.app.wiring.PlatformStores(File(dir, "facade-disc"))
         val own = stores.ownAnnouncement("Facade Phone")
         check("Wiring facade: own announcement carries this device's hash + name + available state (not yet enrolled)",
             own != null && own.deviceIdHash == DiscoveryAnnouncement.hashDeviceId(stores.ownDeviceId()) &&

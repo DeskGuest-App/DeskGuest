@@ -1,33 +1,33 @@
-import io.agenticcontrol.app.access.LiveTreeNode
-import io.agenticcontrol.app.access.LiveTreeSearch
-import io.agenticcontrol.app.access.SnapshotStore
-import io.agenticcontrol.app.adb.AdbPairing
-import io.agenticcontrol.app.aipack.AiPackManifest
-import io.agenticcontrol.app.aipack.AiPackService
-import io.agenticcontrol.app.aipack.PackFile
-import io.agenticcontrol.app.crypto.Base32
-import io.agenticcontrol.app.crypto.SecondFactorStore
-import io.agenticcontrol.app.crypto.Totp
-import io.agenticcontrol.app.enrollment.DeviceIdentity
-import io.agenticcontrol.app.enrollment.EnrollmentStore
-import io.agenticcontrol.app.enterprise.PolicyBundle
-import io.agenticcontrol.app.enterprise.PolicyEnforcer
-import io.agenticcontrol.app.enterprise.PolicyFeatures
-import io.agenticcontrol.app.mesh.MeshProtocol
-import io.agenticcontrol.app.quickassist.QuickAssistService
-import io.agenticcontrol.app.roster.RosterStore
-import io.agenticcontrol.app.crypto.AesGcmLineCipher
-import io.agenticcontrol.app.server.McpCore
-import io.agenticcontrol.app.server.PairingStore
-import io.agenticcontrol.app.server.SessionManager
-import io.agenticcontrol.app.session.SessionStore
-import io.agenticcontrol.app.session.SessionTunnelStore
-import io.agenticcontrol.app.session.StandaloneJob
-import io.agenticcontrol.app.session.StandaloneTransferStore
-import io.agenticcontrol.app.update.ManifestVerifier
-import io.agenticcontrol.app.wiring.AesGcmSecretSealer
-import io.agenticcontrol.app.wiring.PlatformStores
-import io.agenticcontrol.app.wiring.PlatformToolHost
+import io.deskguest.app.access.LiveTreeNode
+import io.deskguest.app.access.LiveTreeSearch
+import io.deskguest.app.access.SnapshotStore
+import io.deskguest.app.adb.AdbPairing
+import io.deskguest.app.aipack.AiPackManifest
+import io.deskguest.app.aipack.AiPackService
+import io.deskguest.app.aipack.PackFile
+import io.deskguest.app.crypto.Base32
+import io.deskguest.app.crypto.SecondFactorStore
+import io.deskguest.app.crypto.Totp
+import io.deskguest.app.enrollment.DeviceIdentity
+import io.deskguest.app.enrollment.EnrollmentStore
+import io.deskguest.app.enterprise.PolicyBundle
+import io.deskguest.app.enterprise.PolicyEnforcer
+import io.deskguest.app.enterprise.PolicyFeatures
+import io.deskguest.app.mesh.MeshProtocol
+import io.deskguest.app.quickassist.QuickAssistService
+import io.deskguest.app.roster.RosterStore
+import io.deskguest.app.crypto.AesGcmLineCipher
+import io.deskguest.app.server.McpCore
+import io.deskguest.app.server.PairingStore
+import io.deskguest.app.server.SessionManager
+import io.deskguest.app.session.SessionStore
+import io.deskguest.app.session.SessionTunnelStore
+import io.deskguest.app.session.StandaloneJob
+import io.deskguest.app.session.StandaloneTransferStore
+import io.deskguest.app.update.ManifestVerifier
+import io.deskguest.app.wiring.AesGcmSecretSealer
+import io.deskguest.app.wiring.PlatformStores
+import io.deskguest.app.wiring.PlatformToolHost
 import java.io.File
 import java.math.BigInteger
 import java.nio.file.Files
@@ -158,7 +158,7 @@ private fun registerKey(factors: SecondFactorStore, kp: java.security.KeyPair, u
 }
 
 fun main() {
-    val dir = Files.createTempDirectory("acp-blockh").toFile()
+    val dir = Files.createTempDirectory("deskguest-blockh").toFile()
     val w = BlockHWorld(dir, "h")
     val keyGen = KeyGenerator.getInstance("AES").apply { init(256) }
     val sealer = AesGcmSecretSealer(keyGen.generateKey())
@@ -693,7 +693,7 @@ fun main() {
 
     // ---- DG-H-A11/A12: mesh protocol hostile payloads ----
     run {
-        fun frame(header: JSONObject, au: ByteArray, version: Int = 1, magic: String = "ACPF"): ByteArray {
+        fun frame(header: JSONObject, au: ByteArray, version: Int = 1, magic: String = "DGSF"): ByteArray {
             val h = header.toString().toByteArray(Charsets.UTF_8)
             return magic.toByteArray(Charsets.US_ASCII) +
                 byteArrayOf(version.toByte(), 0, (h.size and 0xFF).toByte(), (h.size shr 8).toByte()) + h + au

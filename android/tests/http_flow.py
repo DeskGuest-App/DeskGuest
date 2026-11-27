@@ -44,7 +44,7 @@ def rpc(payload, token=None):
 
 
 def main():
-    with open(sys.argv[1] if len(sys.argv) > 1 else "/tmp/acp-http/code.txt") as f:
+    with open(sys.argv[1] if len(sys.argv) > 1 else "/tmp/deskguest-http/code.txt") as f:
         code = f.read().strip()
 
     status, body, _ = call("GET", "/health")
