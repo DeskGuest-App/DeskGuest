@@ -15,6 +15,10 @@
 </p>
 
 <p align="center">
+  <strong>Follow the build:</strong> <a href="https://x.com/DeskGuestApp">X — @DeskGuestApp</a> · <a href="https://www.facebook.com/profile.php?id=61596904264393">Facebook</a>
+</p>
+
+<p align="center">
   <strong>Status: in development — downloads aren't open yet.</strong> When they open, they'll live on <a href="https://deskguest.app/download">the download page</a> and in this repo's releases, always with a File Check Code (SHA-256) to verify — and nowhere else. DeskGuest is not in any app store.
 </p>
 
