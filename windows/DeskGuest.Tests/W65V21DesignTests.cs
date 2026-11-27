@@ -15,10 +15,10 @@ public class W65V21DesignTests
     [Fact]
     public void FileRootsLabel_is_generated_from_the_configured_roots()
     {
-        var (chip, detail) = FileRootsLabel.Generate(new[] { @"C:\Users\DeskGuest\Desktop", @"C:\Users\DeskGuest\Documents" });
+        var (chip, detail) = FileRootsLabel.Generate(new[] { @"C:\Users\Jacob\Desktop", @"C:\Users\Jacob\Documents" });
         Assert.Contains("2 folders", chip);
-        Assert.Contains(@"C:\Users\DeskGuest\Desktop", detail);
-        Assert.Contains(@"C:\Users\DeskGuest\Documents", detail);
+        Assert.Contains(@"C:\Users\Jacob\Desktop", detail);
+        Assert.Contains(@"C:\Users\Jacob\Documents", detail);
         Assert.DoesNotContain("unscoped", chip + detail);
     }
 
@@ -61,10 +61,10 @@ public class W65V21DesignTests
             pairings: Array.Empty<DeskGuest.Shared.Security.Pairing>(),
             gatedClasses: Array.Empty<string>(), approvedGates: new HashSet<string>(),
             auditTail: Array.Empty<DeskGuest.Shared.Audit.AuditEntry>(),
-            fileRoots: new[] { @"C:\Users\DeskGuest\Desktop" });
+            fileRoots: new[] { @"C:\Users\Jacob\Desktop" });
         using var doc = JsonDocument.Parse(json);
         var roots = doc.RootElement.GetProperty("fileRoots").EnumerateArray().Select(e => e.GetString()).ToArray();
-        Assert.Equal(new[] { @"C:\Users\DeskGuest\Desktop" }, roots);
+        Assert.Equal(new[] { @"C:\Users\Jacob\Desktop" }, roots);
     }
 
     [Fact]

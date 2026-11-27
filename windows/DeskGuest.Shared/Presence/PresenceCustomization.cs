@@ -3,7 +3,7 @@ using DeskGuest.Shared.Design;
 namespace DeskGuest.Shared.Presence;
 
 /// <summary>
-/// FR-105 (W85) — the presence CUSTOMIZATION model. DeskGuest's
+/// FR-105 (W85) — the presence CUSTOMIZATION model. Jacob's
 /// 2026-11-23 directive supersedes the fixed-palette posture:
 /// appearance is the owner's — size, brightness, detail, per-state
 /// colors, pointer style, and the Background Work Only indicator's

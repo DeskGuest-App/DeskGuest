@@ -1,7 +1,7 @@
 namespace DeskGuest.Shared.Presence;
 
 /// <summary>
-/// FR-120 (DeskGuest, 2026-11-23) — TUNABLE TAKEOVER vocabulary,
+/// FR-120 (Jacob, 2026-11-23) — TUNABLE TAKEOVER vocabulary,
 /// as amended by FR-145 (owner ruling, 2026-11-25 23:31–23:33
 /// CT). The mode VALUES (independent mouse / keyboard choices)
 /// remain the device's recorded preference and session-record
@@ -12,7 +12,7 @@ namespace DeskGuest.Shared.Presence;
 /// remoted into the device in a live, presence-visible session
 /// using that UI like any other action. There is NO
 /// API/back-channel write path and none may be added: no
-/// out-of-band edits, no silent flips (DeskGuest's corrected
+/// out-of-band edits, no silent flips (Jacob's corrected
 /// ownership rule, 2026-11-23 22:49 CT).
 ///
 /// FR-145 LAW: no mode makes ordinary local input yield. Input

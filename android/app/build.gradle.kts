@@ -14,7 +14,7 @@ android {
         minSdk = 30 // Android 11 floor: wireless-debugging pairing protocol (SPEC §11.4)
         targetSdk = 36
         versionCode = 24
-        versionName = "1.0.0"
+        versionName = "0.0.1"
     }
 
     buildTypes {

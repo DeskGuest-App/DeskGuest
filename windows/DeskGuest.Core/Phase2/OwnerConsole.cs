@@ -232,7 +232,7 @@ public sealed class OwnerTakeoverModule : IToolModule
 
 /// <summary>FR-120 (W73): the agent's ASK for control back. The
 /// F1 rule stands untouched — handback itself is never
-/// agent-callable (see OwnerTakeoverModule). What DeskGuest's FR-120
+/// agent-callable (see OwnerTakeoverModule). What Jacob's FR-120
 /// adds is the REQUEST path: this tool's only effect is to raise
 /// the per-action gate at the endpoint (its declared gate class
 /// is deliberately NOT in PolicyEngine.GatedClasses, so it can

@@ -36,7 +36,7 @@ public class W122InboxTests
 
     private static ChatOrder PendingOrder(string id = "ord1", long atMs = 5000) =>
         new(id, "pair1", "file_delete", "deletions",
-            "{\"path\":\"C:\\\\Users\\\\DeskGuest\\\\Desktop\\\\scratch.txt\"}",
+            "{\"path\":\"C:\\\\Users\\\\Jacob\\\\Desktop\\\\scratch.txt\"}",
             "", "", ChatOrderStatus.Pending, null, atMs, null);
 
     private static (AgentChatStore Chat, ChatOrderStore Orders, ChatSeenStore Seen, string Dir) Stores()

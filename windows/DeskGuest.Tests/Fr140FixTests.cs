@@ -73,8 +73,8 @@ public class Fr140FixTests
     {
         // The Save As filename field: the existing name is fully
         // selected and the typed path replaces it wholesale.
-        Assert.Equal(@"C:\Users\DeskGuest\dg-battery-chatgpt.txt",
-            TypingVerification.ExpectedAfter("Untitled.txt", 0, 12, @"C:\Users\DeskGuest\dg-battery-chatgpt.txt"));
+        Assert.Equal(@"C:\Users\Jacob\dg-battery-chatgpt.txt",
+            TypingVerification.ExpectedAfter("Untitled.txt", 0, 12, @"C:\Users\Jacob\dg-battery-chatgpt.txt"));
     }
 
     [Fact]

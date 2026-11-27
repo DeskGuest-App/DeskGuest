@@ -32,7 +32,7 @@ def main():
             "fileName": "DeskGuest-0.3.0.apk",
             "sizeBytes": 812345,
             "sha256": "ab12cd34" * 8,
-            "url": "https://github.com/DeskGuest-App/DeskGuest-control-releases/releases/download/v0.3.0/DeskGuest-0.3.0.apk",
+            "url": "https://github.com/JacobHamrac/deskguest-control-releases/releases/download/v0.3.0/DeskGuest-0.3.0.apk",
         },
         "notes": "Cross-test fixture — not a real release.",
         "publishedAt": "2026-11-11T13:00:00Z",

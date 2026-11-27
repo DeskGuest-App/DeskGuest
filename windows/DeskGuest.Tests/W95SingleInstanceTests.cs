@@ -415,19 +415,33 @@ public class W95SingleInstanceTests
     [Fact]
     public async Task Runtime_NoPid_FreshHeartbeat_StaleMarker_Refuses_StaleHeartbeat_Starts()
     {
+        // FR-135 staging (recovery-coordinator fix, 2026-11-27): this
+        // test judges the pid-less marker's OWN freshness discipline,
+        // which the product applies only when enumeration has NOT
+        // proven the machine Core-free (RunMarker.MarkerBlocksStart:
+        // proven absence outranks a pid-less file). The host's real
+        // probe verdict is environment-dependent — a clean Linux
+        // enumeration returns NoOtherCore and the marker arm never
+        // fires — so both arms stage Indeterminate + the operator
+        // override (the gate's designed pass-through), leaving the
+        // marker check as the deciding evidence on every host.
         // OwnerPid=0 (pre-W95) + fresh heartbeat + stale marker → refuse.
         var dir = TestUtil.TempDir();
         WriteMarker(dir, null, DateTimeOffset.UtcNow.AddMinutes(-10));
         WriteHeartbeat(dir, DateTimeOffset.UtcNow);
+        File.WriteAllText(Path.Combine(dir, CoreProcessLiveness.OverrideFileName), "operator\n");
         var ex = Assert.Throws<CoreInstanceLock.AlreadyRunningException>(
-            () => new CoreRuntime(Options(dir)));
+            () => new CoreRuntime(OptionsWithProbe(dir,
+                () => Liveness(CoreProcessLiveness.Verdict.Indeterminate))));
         Assert.Contains("pre-single-instance build", ex.Message);
 
         // OwnerPid=0 + stale heartbeat + stale marker → start.
         var dir2 = TestUtil.TempDir();
         WriteMarker(dir2, null, DateTimeOffset.UtcNow.AddMinutes(-10));
         WriteHeartbeat(dir2, DateTimeOffset.UtcNow.AddMinutes(-10));
-        var runtime = new CoreRuntime(Options(dir2));
+        File.WriteAllText(Path.Combine(dir2, CoreProcessLiveness.OverrideFileName), "operator\n");
+        var runtime = new CoreRuntime(OptionsWithProbe(dir2,
+            () => Liveness(CoreProcessLiveness.Verdict.Indeterminate)));
         Assert.NotNull(runtime.InstanceLock);
         await runtime.StopAsync(default);
         await runtime.DisposeAsync();
@@ -477,17 +491,24 @@ public class W95SingleInstanceTests
         // The in-place-upgrade case (C4b): a pre-W95 Core holds no
         // lock and its marker has OwnerPid=0 — freshness is the
         // only liveness evidence, and a fresh marker refuses.
+        // FR-135 staging as in the sibling test above: Indeterminate
+        // + operator override, so the marker check decides on every
+        // host instead of the host's real enumeration verdict.
         var dir = TestUtil.TempDir();
         WriteMarker(dir, null, DateTimeOffset.UtcNow);
+        File.WriteAllText(Path.Combine(dir, CoreProcessLiveness.OverrideFileName), "operator\n");
         var ex = Assert.Throws<CoreInstanceLock.AlreadyRunningException>(
-            () => new CoreRuntime(Options(dir)));
+            () => new CoreRuntime(OptionsWithProbe(dir,
+                () => Liveness(CoreProcessLiveness.Verdict.Indeterminate))));
         Assert.Contains("pre-single-instance build", ex.Message);
 
         // The same marker gone stale: its owner is not beating —
         // the start proceeds (the legitimate post-crash restart).
         var dir2 = TestUtil.TempDir();
         WriteMarker(dir2, null, DateTimeOffset.UtcNow.AddMinutes(-10));
-        var runtime = new CoreRuntime(Options(dir2));
+        File.WriteAllText(Path.Combine(dir2, CoreProcessLiveness.OverrideFileName), "operator\n");
+        var runtime = new CoreRuntime(OptionsWithProbe(dir2,
+            () => Liveness(CoreProcessLiveness.Verdict.Indeterminate)));
         Assert.NotNull(runtime.InstanceLock);
         await runtime.StopAsync(default);
         await runtime.DisposeAsync();

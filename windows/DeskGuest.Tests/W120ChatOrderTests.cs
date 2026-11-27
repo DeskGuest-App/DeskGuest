@@ -37,7 +37,7 @@ public class W120ChatOrderTests
     }
 
     private static ChatOrder Order(string tool = "file_delete", string? gateClass = "deletions",
-        string args = "{\"path\":\"C:\\\\Users\\\\DeskGuest\\\\Desktop\\\\scratch.txt\"}",
+        string args = "{\"path\":\"C:\\\\Users\\\\Jacob\\\\Desktop\\\\scratch.txt\"}",
         string target = "", string status = ChatOrderStatus.Pending) =>
         new("ord1", "pair1", tool, gateClass, args, "", target, status, null, 1000, null);
 
@@ -50,7 +50,7 @@ public class W120ChatOrderTests
         // conversion does not exist. Only the structured
         // chat_order call can create a card.
         Assert.Null(ChatOrderModel.FromProse("pair1",
-            "Please delete C:\\Users\\DeskGuest\\Desktop\\scratch.txt using file_delete", "JACOBS-LAPTOP"));
+            "Please delete C:\\Users\\Jacob\\Desktop\\scratch.txt using file_delete", "JACOBS-LAPTOP"));
         Assert.Null(ChatOrderModel.FromProse("pair1", "run file_delete now", "JACOBS-LAPTOP"));
         Assert.Null(ChatOrderModel.FromProse("pair1", "", "JACOBS-LAPTOP"));
     }
@@ -225,7 +225,7 @@ public class W120ChatOrderTests
     {
         var view = ChatOrderModel.CardView(Order(), "W120 Proof");
         Assert.Contains(view.PlainLines, l => l.Contains("scratch.txt"));
-        Assert.Contains(view.TechnicalLines, l => l.Contains("path: C:\\Users\\DeskGuest\\Desktop\\scratch.txt"));
+        Assert.Contains(view.TechnicalLines, l => l.Contains("path: C:\\Users\\Jacob\\Desktop\\scratch.txt"));
         Assert.Contains("W120 Proof", view.Title);
     }
 

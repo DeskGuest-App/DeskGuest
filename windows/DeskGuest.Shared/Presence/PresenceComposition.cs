@@ -3,7 +3,7 @@ namespace DeskGuest.Shared.Presence;
 /// <summary>
 /// FR-111 / FR-114 (W60-A) — the ONE presence compositor model,
 /// as amended by the W72 pill build (2026-11-23, micro-decision
-/// under delegation, W71 BUILD-SPEC §1). DeskGuest's live photos
+/// under delegation, W71 BUILD-SPEC §1). Jacob's live photos
 /// (2026-11-23 19:25 / 19:30 CT) showed THREE presence renderings
 /// from different build layers colliding on one desktop: the
 /// session Box, a gate panel carrying its own generic presence
@@ -109,7 +109,7 @@ public static class PresenceComposition
         ($"{agentName} (AI Agent)", " is controlling your computer — You see everything");
 
     /// <summary>FR-105 (W85): the COMPACT PILL detail form's line —
-    /// the detail-level option DeskGuest's photo evidence added (the
+    /// the detail-level option Jacob's photo evidence added (the
     /// ChatGPT/Codex compact pill, beaten: ours still names the
     /// driver, states the state as a WORD, and carries STOP beside
     /// it in the renderer). Exactly three parts — name, state word,

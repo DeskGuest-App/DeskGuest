@@ -1,7 +1,7 @@
 namespace DeskGuest.Shared.Security;
 
 /// <summary>
-/// W97 / S09(b) — the AI connection-path policy (DeskGuest,
+/// W97 / S09(b) — the AI connection-path policy (Jacob,
 /// 2026-11-23): per pairing, the owner chooses HOW the paired AI
 /// may connect. Three modes:
 ///   AUTO            — the full transports menu; best working

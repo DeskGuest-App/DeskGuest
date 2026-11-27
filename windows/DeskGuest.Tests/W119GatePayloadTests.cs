@@ -77,10 +77,10 @@ public class W119GatePayloadTests
     [Fact]
     public void FolderOpen_FullPathInPlainAndTechnicalLines()
     {
-        var view = Render("folder_open", "open_folder", "{\"path\":\"C:\\\\Users\\\\DeskGuest\\\\Documents\"}");
-        Assert.Contains(view.PlainLines, l => l.Contains("C:\\Users\\DeskGuest\\Documents"));
-        Assert.Contains(view.TechnicalLines, l => l.Contains("path: C:\\Users\\DeskGuest\\Documents"));
-        Assert.Contains("C:\\Users\\DeskGuest\\Documents", view.Title);
+        var view = Render("folder_open", "open_folder", "{\"path\":\"C:\\\\Users\\\\Jacob\\\\Documents\"}");
+        Assert.Contains(view.PlainLines, l => l.Contains("C:\\Users\\Jacob\\Documents"));
+        Assert.Contains(view.TechnicalLines, l => l.Contains("path: C:\\Users\\Jacob\\Documents"));
+        Assert.Contains("C:\\Users\\Jacob\\Documents", view.Title);
     }
 
     [Fact]

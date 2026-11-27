@@ -329,6 +329,6 @@ class UpdateChecker(private val context: Context) {
         private val issuedInfos: MutableSet<UpdateInfo> =
             java.util.Collections.synchronizedSet(mutableSetOf())
         const val MANIFEST_URL =
-            "https://github.com/DeskGuest-App/DeskGuest-control-releases/releases/latest/download/update-manifest.json"
+            "https://github.com/JacobHamrac/deskguest-control-releases/releases/latest/download/update-manifest.json"
     }
 }

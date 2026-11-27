@@ -9,7 +9,14 @@
          after the product had moved on, so every surface that read
          an assembly version — host snapshot, MCP serverInfo, the
          About page — reported 0.1.0.0). ONE source: bump here. -->
-    <Version>1.0.0</Version>
+    <!-- v0.0.1 release assembly (2026-11-27): BUILD-PROGRAMME's V1
+         section (owner decision 2026-11-25) sets the app, assembly and
+         Android version values to 0.0.1 at the release build and
+         reserves 1.0.0 until the product earns a stable public
+         release. The R1 installer lane shipped this tree stamped
+         1.0.0 — a versioning-discipline discrepancy reconciled in
+         BUILD-LOG (v0.0.1 release assembly entry, 2026-11-27). -->
+    <Version>0.0.1</Version>
     <Company>DeskGuest</Company>
     <Product>DeskGuest</Product>
   </PropertyGroup>

@@ -4,7 +4,7 @@ namespace DeskGuest.Shared.Presence;
 /// FR-120 (W73) — the tunable-takeover BEHAVIOUR model: one pure
 /// state machine both input classes feed, the session-record
 /// entry vocabulary, and the actor vocabulary the record uses to
-/// distinguish HOW a change arrived (DeskGuest's ownership rule,
+/// distinguish HOW a change arrived (Jacob's ownership rule,
 /// 2026-11-23 22:49 CT: a change made at the machine outside a
 /// session is the owner's local act; a change made through the
 /// device UI while a session is live rode that session and is

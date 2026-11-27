@@ -498,7 +498,7 @@ public class BdWinCore2FixTests
         var r = await live.LatestFrameAsync("p1", "agent-x", default);
         Assert.True(r.Ok);
         Assert.Contains("Alex Owner has taken over", r.Text);
-        Assert.DoesNotContain("DeskGuest", r.Text);
+        Assert.DoesNotContain("Jacob", r.Text);
         Assert.Contains(audit.ReadTail(5), e => e.Outcome == "live_view_suspended:takeover");
     }
 }

@@ -9,7 +9,7 @@ namespace DeskGuest.SessionAgent;
 /// Presence settings home (W8, extended by W85 / FR-105). W8
 /// replaced the old palette editor with comfort-only settings on
 /// the reasoning that presence hues are meanings fixed by
-/// PresenceLaw. DeskGuest's 2026-11-23 PRESENCE CUSTOMIZATION
+/// PresenceLaw. Jacob's 2026-11-23 PRESENCE CUSTOMIZATION
 /// DIRECTIVE supersedes that posture: appearance is the owner's
 /// — size, brightness, detail level, per-state colors, pointer
 /// style, and the Background Work Only indicator's appearance —

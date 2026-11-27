@@ -102,13 +102,13 @@ public class BlockHTests
         var core = typeof(CoreState).Assembly.GetName().Version;
         var shared = typeof(SessionService).Assembly.GetName().Version;
         Assert.NotNull(core);
-        Assert.Equal(new Version(1, 0, 0, 0), core);
+        Assert.Equal(new Version(0, 0, 1, 0), core);
         // One source (Directory.Build.props) stamps every project.
         Assert.Equal(core, shared);
         // The Core's reported version IS the assembly's — MCP
         // serverInfo, system info and the self-check read this.
         var state = new CoreState();
-        Assert.StartsWith("1.0.0", state.CoreVersion);
+        Assert.StartsWith("0.0.1", state.CoreVersion);
         Assert.NotEqual("0.1.0", state.CoreVersion);
     }
 

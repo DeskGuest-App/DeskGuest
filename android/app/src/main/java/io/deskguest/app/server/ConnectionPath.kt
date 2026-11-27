@@ -27,7 +27,7 @@ package io.deskguest.app.server
  * offer the owner paths no pairing connection can ever arrive on,
  * so the pairing catalogue is exactly {mesh, loopback}.
  *
- * NEVER-WIDEN RULE (the policy's core, DeskGuest 2026-11-23): a
+ * NEVER-WIDEN RULE (the policy's core, Jacob 2026-11-23): a
  * restricted subset or pin with no working path leaves the pairing
  * unreachable and says so — enforcement refuses, it never falls
  * back to a path the owner excluded.
