@@ -186,13 +186,13 @@ if (document.getElementById('dropZone') && document.getElementById('fileInput') 
       pub=document.getElementById('publishedCode'), btn=document.getElementById('compareBtn'),
       status=document.getElementById('fileStatus'), slot=document.getElementById('resultSlot'),
       fileHash=null, fileName='';
-  function clean(s){ return (s||'').replace(/[^0-9a-fA-F]/g,'').toLowerCase(); }
+  function clean(s){ return (s||'').replace(/^\s*sha-?256\s*:?/i,'').replace(/[^0-9a-fA-F]/g,'').toLowerCase(); }
   function showResult(match){
     var div=document.createElement('div');
     div.className='result-card '+(match?'match':'mismatch');
     div.innerHTML = match
-      ? '<h3><span class="mark">✓</span>Match</h3><p class="ok-line">The file matches the published File Check Code.</p><p>This matches the official release — the file you have is byte-for-byte the file that was published.</p><span class="hash">SHA-256: '+fileHash+'</span>'
-      : '<h3><span class="mark">✗</span>Mismatch</h3><p class="ok-line">This does not match — do not install.</p><p>Delete the file and download again from this site or the project\u2019s releases page — nowhere else.</p><span class="hash">SHA-256: '+fileHash+'</span>';
+      ? '<h3><span class="mark">✓</span>Match</h3><p class="ok-line">The file matches the published File Check Code.</p><p>This file is byte-for-byte the file that code was published for.</p><span class="hash">SHA-256: '+fileHash+'</span>'
+      : '<h3><span class="mark">✗</span>Mismatch</h3><p class="ok-line">This does not match — do not install.</p><p>Delete it and download again from the <a href="download.html">Download page</a> or <a href="https://github.com/DeskGuest-App/DeskGuest/releases">DeskGuest releases on GitHub</a>, nowhere else.</p><span class="hash">SHA-256: '+fileHash+'</span>';
     slot.innerHTML=''; slot.appendChild(div);
   }
   function hashFile(file){
@@ -202,7 +202,12 @@ if (document.getElementById('dropZone') && document.getElementById('fileInput') 
       return crypto.subtle.digest('SHA-256', buf);
     }).then(function(d){
       fileHash=Array.prototype.map.call(new Uint8Array(d),function(b){return ('0'+b.toString(16)).slice(-2);}).join('');
-      status.innerHTML='<strong>'+fileName+'</strong> — its File Check Code:<span class="hash">SHA-256: '+fileHash+'</span>';
+      status.textContent='';
+      var nameEl=document.createElement('strong'); nameEl.textContent=fileName;
+      var hashEl=document.createElement('span'); hashEl.className='hash'; hashEl.textContent='SHA-256: '+fileHash;
+      status.appendChild(nameEl);
+      status.appendChild(document.createTextNode(' — its File Check Code:'));
+      status.appendChild(hashEl);
     }).catch(function(){
       fileHash=null; status.textContent='That file could not be read. Try choosing it again.';
     });
@@ -214,7 +219,8 @@ if (document.getElementById('dropZone') && document.getElementById('fileInput') 
   btn.addEventListener('click',function(){
     var want=clean(pub.value);
     if(!fileHash){ status.textContent='Choose or drop the downloaded file first — its code is computed here, on your device.'; return; }
-    if(want.length!==64){ slot.innerHTML=''; status.textContent='Paste the full published File Check Code (64 characters) beside the download, then Compare.'; return; }
+    if(want.length!==64){ slot.innerHTML=''; status.textContent='Paste the full published File Check Code (64 characters) beside the download, then Compare.'; pub.setAttribute('aria-invalid','true'); pub.focus(); return; }
+    pub.removeAttribute('aria-invalid');
     showResult(want===fileHash);
   });
 })();
@@ -298,7 +304,7 @@ if (document.getElementById('report-form')) {
       if (ref && ref.origin === location.origin) detected.from = ref.pathname;
     } catch (e) { /* no referrer is fine */ }
     var finish = function () {
-      var parts = [detected.os, detected.browser, detected.screen && ('Screen ' + detected.screen)].filter(Boolean);
+      var parts = [detected.os, detected.browser, detected.screen && ('Screen ' + detected.screen), detected.from && ('Came from ' + detected.from)].filter(Boolean);
       document.getElementById('detected-text').textContent = parts.join(' · ') || 'We couldn’t read any details — that’s fine.';
     };
     if (navigator.userAgentData && navigator.userAgentData.getHighEntropyValues) {
@@ -388,8 +394,6 @@ if (document.getElementById('report-form')) {
   document.getElementById('pick-files').addEventListener('click', function (e) { e.stopPropagation(); fileInput.click(); });
   document.getElementById('pick-folder').addEventListener('click', function (e) { e.stopPropagation(); folderInput.click(); });
   var dz = document.getElementById('dropzone');
-  dz.addEventListener('click', function () { fileInput.click(); });
-  dz.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); fileInput.click(); } });
   ['dragenter', 'dragover'].forEach(function (ev) {
     dz.addEventListener(ev, function (e) { e.preventDefault(); dz.classList.add('drag'); });
   });
@@ -502,7 +506,7 @@ if (document.getElementById('report-form')) {
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     var kind = fieldVal('kind') || 'bug';
-    var checks = [['summary', 'f-summary'], ['area', 'area-chips'], ['contact', 'f-contact']];
+    var checks = [['summary', 'f-summary'], ['area', 'f-area-first'], ['contact', 'f-contact']];
     if (kind === 'bug') checks.push(['happened', 'f-happened']); else checks.push(['details', 'f-details']);
     var bad = checks.filter(function (c) { return !validateField(c[0]); });
     if (bad.length) {

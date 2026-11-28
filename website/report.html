@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Report a Bug or Share Feedback — DeskGuest</title>
-<meta name="description" content="Tell us what went wrong, or what you'd love to see — right here, no account and no leaving the site. We read every report.">
+<meta name="description" content="Report a DeskGuest bug or suggest a change. No account needed. Reports are posted on the public issue tracker.">
 <link rel="canonical" href="https://deskguest.app/report">
 <link rel="icon" type="image/png" sizes="32x32" href="assets/dex-favicon-32.png">
 <link rel="apple-touch-icon" href="assets/dex-favicon-180.png">
@@ -13,12 +13,12 @@
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="DeskGuest">
 <meta property="og:title" content="Report a Bug or Share Feedback — DeskGuest">
-<meta property="og:description" content="Tell us what went wrong, or what you'd love to see — right here, no account and no leaving the site.">
+<meta property="og:description" content="Report a DeskGuest bug or suggest a change. No account needed. Reports are posted on the public issue tracker.">
 <meta property="og:url" content="https://deskguest.app/report">
 <meta property="og:image" content="https://deskguest.app/assets/og-card.jpg">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Report a Bug or Share Feedback — DeskGuest">
-<meta name="twitter:description" content="Tell us what went wrong, or what you'd love to see — right here, no account and no leaving the site.">
+<meta name="twitter:description" content="Report a DeskGuest bug or suggest a change. No account needed. Reports are posted on the public issue tracker.">
 <meta name="twitter:image" content="https://deskguest.app/assets/og-card.jpg">
 <script>document.documentElement.className+=' js'</script>
 <script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
@@ -27,14 +27,14 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
 <a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
-<button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
+<button class="nav-toggle" aria-expanded="false" aria-label="Menu" aria-controls="main-nav">Menu</button>
+<nav class="main-nav" id="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
 <a class="btn small" href="download.html">Download (Coming Q1 2027)</a>
 </div></header>
 <main id="main">
 <section class="page-hero"><div class="wrap">
 <h1 class="page-title">Report a bug, or share an idea</h1>
-<p class="page-sub">Right here — no account, no leaving the site, nothing to install. Your report goes straight to the people who build DeskGuest, and we read every one. Prefer email? <a href="mailto:support@deskguest.app">support@deskguest.app</a> reaches the same people.</p>
+<p class="page-sub">No account needed. Reports sent from this form are posted on DeskGuest's public issue tracker so anyone can follow the fix, so leave out anything private. For a private report, email <a href="mailto:support@deskguest.app">support@deskguest.app</a>.</p>
 </div><img class="wm" src="assets/dex-mark.webp" alt="" aria-hidden="true"></section>
 
 <section class="section"><div class="wrap">
@@ -46,7 +46,7 @@
 </div>
 
 <fieldset class="field">
-<legend>What is this about?</legend>
+<legend>Is this a problem or an idea?</legend>
 <div class="choice-cards">
 <label class="choice-card">
 <input type="radio" name="kind" value="bug" checked>
@@ -68,14 +68,16 @@
 <p class="field-error" id="err-summary" hidden></p>
 </div>
 
-<fieldset class="field">
-<legend>What is it about?</legend>
+<fieldset class="field" aria-describedby="err-area">
+<legend>Which part of DeskGuest?</legend>
 <div class="chips" id="area-chips">
-<label class="chip"><input type="radio" name="area" value="Windows app"><span>The Windows app</span></label>
-<label class="chip"><input type="radio" name="area" value="Android app"><span>The Android app</span></label>
+<label class="chip"><input type="radio" name="area" id="f-area-first" value="Windows app"><span>The Windows app</span></label>
+<label class="chip"><input type="radio" name="area" value="Android companion app"><span>The Android companion app</span></label>
 <label class="chip"><input type="radio" name="area" value="This website"><span>This website</span></label>
+<label class="chip"><input type="radio" name="area" value="Quick Fix"><span>Quick Fix</span></label>
+<label class="chip"><input type="radio" name="area" value="Rooms"><span>Rooms</span></label>
 <label class="chip"><input type="radio" name="area" value="Pairing &amp; connecting"><span>Pairing &amp; connecting</span></label>
-<label class="chip"><input type="radio" name="area" value="An AI session"><span>An AI session</span></label>
+<label class="chip"><input type="radio" name="area" value="An AI agent session"><span>An AI agent session</span></label>
 <label class="chip"><input type="radio" name="area" value="Something else"><span>Something else</span></label>
 </div>
 <p class="field-error" id="err-area" hidden></p>
@@ -90,7 +92,7 @@
 <div class="field">
 <label for="f-happened">What happened instead?</label>
 <textarea id="f-happened" name="happened" rows="4" maxlength="5000" aria-describedby="happened-hint err-happened"></textarea>
-<p class="hint" id="happened-hint">If the app showed an uh-oh message, its exact words help most — quote it if you can.</p>
+<p class="hint" id="happened-hint">If DeskGuest showed an error message, paste its exact wording.</p>
 <p class="field-error" id="err-happened" hidden></p>
 </div>
 <div class="field">
@@ -111,11 +113,11 @@
 <fieldset class="field">
 <legend>How were the devices connected? <span class="optional">(optional)</span></legend>
 <div class="chips">
-<label class="chip"><input type="radio" name="connection" value="Same network (both devices at home)"><span>Same network, at home</span></label>
-<label class="chip"><input type="radio" name="connection" value="DeskGuest hub"><span>DeskGuest hub</span></label>
+<label class="chip"><input type="radio" name="connection" value="Same local network"><span>Same local network</span></label>
+<label class="chip"><input type="radio" name="connection" value="Self-hosted hub"><span>My own DeskGuest hub (self-hosted)</span></label>
 <label class="chip"><input type="radio" name="connection" value="Tailscale"><span>Tailscale</span></label>
 <label class="chip"><input type="radio" name="connection" value="NetBird"><span>NetBird</span></label>
-<label class="chip"><input type="radio" name="connection" value="Direct or relay"><span>Direct or relay</span></label>
+<label class="chip"><input type="radio" name="connection" value="Direct over the internet"><span>Direct over the internet</span></label>
 <label class="chip"><input type="radio" name="connection" value="I don't know"><span>I don't know</span></label>
 <label class="chip"><input type="radio" name="connection" value="Not about a connection"><span>Not about a connection</span></label>
 </div>
@@ -146,7 +148,7 @@
 
 <div class="field">
 <span class="field-label" id="attach-label">Add screenshots or files <span class="optional">(optional)</span></span>
-<div class="dropzone" id="dropzone" role="button" tabindex="0" aria-describedby="attach-hint err-files">
+<div class="dropzone" id="dropzone" aria-describedby="attach-hint err-files">
 <p class="dz-text">Drag files or a whole folder here, or paste a screenshot (Ctrl+V)</p>
 <div class="drop-row">
 <button class="btn ghost" type="button" id="pick-files">Choose files</button>
@@ -164,13 +166,13 @@
 <span class="field-label">Details from this device</span>
 <p class="detected-text" id="detected-text">Reading this device's details…</p>
 <label class="checkline"><input type="checkbox" id="f-include-details" name="include_details" value="yes" checked>
-<span>Include these details with my report — they help us reproduce what happened. Nothing else is collected.</span></label>
+<span>Include these details with my report. They help us reproduce what happened.</span></label>
 </div>
 
 <div class="field">
 <label for="f-contact">Email <span class="optional">(optional)</span></label>
 <input type="email" id="f-contact" name="contact" maxlength="200" autocomplete="email" aria-describedby="contact-hint err-contact">
-<p class="hint" id="contact-hint">Only if you'd like a reply — we never use it for anything else.</p>
+<p class="hint" id="contact-hint">Only if you'd like a reply.</p>
 <p class="field-error" id="err-contact" hidden></p>
 </div>
 
@@ -179,17 +181,18 @@
 
 <div class="field">
 <div class="cf-turnstile" data-sitekey="0x4AAAAAAGTC32Hg_9FxhNwN" data-theme="auto"></div>
+<p class="hint">Spam check by Cloudflare Turnstile. Cloudflare sees this check, not your report. See <a href="privacy.html">Privacy</a>.</p>
 </div>
 
-<p class="fineprint">Reports filed from here appear on the project's public tracker, so anyone can follow the fix. Please don't include passwords, recovery keys, pairing codes, or anything private — in your words or your files.</p>
+<p class="notice">Reports filed from here appear on the project's public tracker, so anyone can follow the fix. Please don't include passwords, recovery keys, pairing codes, or anything private — in your words or your files.</p>
 <div class="submit-row">
-<button class="btn large" type="submit" id="submit-btn">Send report</button>
+<button class="btn large" type="submit" id="submit-btn">Post report publicly</button>
 <p class="submit-status" id="submit-status" aria-live="polite"></p>
 </div>
 </form>
 <div class="report-success" id="report-success" hidden>
-<h2>Thanks — it's filed.</h2>
-<p>Your report is with the people who build DeskGuest. We read every one; if you left an email and we need a little more detail, we'll write to you.</p>
+<h2>Thanks — it's posted.</h2>
+<p>Your report is now on DeskGuest's public tracker. If you left an email and we need more detail, we'll write to you.</p>
 <p><button class="btn ghost" type="button" id="another-btn">File another report</button></p>
 </div>
 </div>
@@ -204,7 +207,7 @@
 <p class="socials"><a href="https://x.com/DeskGuestApp">DeskGuest on X</a> · <a href="https://www.facebook.com/profile.php?id=61596904264393">DeskGuest on Facebook</a></p>
 </div>
 <div><p class="fh">Product</p><nav aria-label="Product"><a href="features.html">Features</a><a href="about.html">About</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="download.html">Download</a></nav></div>
-<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Help &amp; Docs</a></nav></div>
+<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Documentation</a></nav></div>
 <div><p class="fh">For Work</p><nav aria-label="For Work"><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav></div>
 <div><p class="fh">Trust</p><nav aria-label="Trust">
 <a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of Service</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
@@ -212,7 +215,7 @@
 </div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
-We've made sure DeskGuest works on Windows 11 and the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full picture.</p>
+DeskGuest is pre-release (v0.0.1 release candidate), tested on Windows 11 and a Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a>.</p>
 </div></footer>
 <script src="site.js"></script>
 </body>

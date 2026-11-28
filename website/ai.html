@@ -26,8 +26,8 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
 <a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
-<button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html" aria-current="page">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
+<button class="nav-toggle" aria-expanded="false" aria-label="Menu" aria-controls="main-nav">Menu</button>
+<nav class="main-nav" id="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html" aria-current="page">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html">Trust</a></nav>
 <a class="btn small" href="download.html">Download (Coming Q1 2027)</a>
 </div></header>
 <main id="main">
@@ -35,20 +35,21 @@
 <div class="ai-hero">
 <div>
 <span class="pill teal hero-tag">Core Pillar • Your Own AI, Under Your Control</span>
-<h1>Let your AI agent<br>help on your device<br>— never in secret.</h1>
+<h1>Let your AI agent<br>help on your device<br>in plain sight.</h1>
 <p class="sub">Every AI agent is named on screen with its own face, distinct ghost pointer, permissions you set, plain-English approval prompts, and a red STOP that always works.</p>
+<p class="note">DeskGuest is pre-release: v0.0.1 is a release candidate and not yet publicly available.</p>
 <p class="hero-ctas u-m-26-0-0"><a class="btn" href="#worked-example">See one request become a record</a><a class="btn ghost-light" href="#supported-ais">Which AIs are supported?</a></p>
 </div>
-<div class="ai-stack" role="img" aria-label="How an AI agent's help looks on your device: a presence card naming Claude as the helper with a red STOP button; a control slider set between Watch Only and Full Help; and an approval card asking whether Claude may install a printer driver, with Allow Once and Deny and STOP buttons.">
-<div class="presence-mini"><img class="pm-greeter" src="assets/dex-mark.webp" alt="" width="384" height="244" aria-hidden="true"><span class="pm-face"><img src="assets/dex-mark.webp" alt="" width="384" height="244"></span><div><div class="pm-who">Claude is helping on this computer</div><div class="pm-state"><span class="pm-dot"></span>Active</div></div><span class="pm-stop">STOP</span></div>
-<div class="leash-card"><div class="lc-labels"><span>Watch Only</span><span>Ask Before Clicking</span><span>Full Help with <span class="lc-stop">STOP</span></span></div><div class="lc-track"><span class="lc-fill"></span><span class="lc-knob"></span></div></div>
-<div class="gate-card"><div class="gc-row"><svg class="gc-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5L23 21H1z" opacity=".95"/><path d="M11 9.5h2v5h-2zM11 16.6h2v2h-2z" fill="#fff"/></svg><p class="gc-q">Claude wants to install Brother Printer Driver. Allow this?</p></div><div class="gc-btns"><span class="gc-allow">Allow Once</span><span class="gc-deny">Deny &amp; STOP</span></div></div>
+<div class="ai-stack" role="img" aria-label="How an AI agent's help looks on your device: a presence card naming Office Agent as the helper with a red STOP button; a control slider set between Look only and Full control; and an approval card asking whether Office Agent may install a printer driver, with Allow Once and Deny buttons.">
+<div class="presence-mini"><img class="pm-greeter" src="assets/dex-mark.webp" alt="" width="384" height="244" aria-hidden="true"><span class="pm-face"><span class="pm-initials" aria-hidden="true">OA</span></span><div><div class="pm-who">Office Agent is helping on this computer</div><div class="pm-state"><span class="pm-dot"></span>Active</div></div><span class="pm-stop">STOP</span></div>
+<div class="leash-card"><div class="lc-labels"><span>Look only</span><span>Custom</span><span>Full control</span></div><div class="lc-track"><span class="lc-fill"></span><span class="lc-knob"></span></div></div>
+<div class="gate-card"><div class="gc-row"><svg class="gc-ic" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5L23 21H1z" opacity=".95"/><path d="M11 9.5h2v5h-2zM11 16.6h2v2h-2z" fill="#fff"/></svg><p class="gc-q">Office Agent wants to install Brother Printer Driver. Allow this?</p></div><div class="gc-btns"><span class="gc-allow">Allow Once</span><span class="gc-deny">Deny</span></div></div>
 </div>
 </div>
 <div class="ai-trio">
 <div class="fact"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="13" height="10" rx="2"/><path d="M7 21h7M10.5 14v3.5"/><path d="M13.5 15.5L19 21M19 15.5L13.5 21" stroke-width="1.6"/></svg></span><h3>Named Presence &amp; Ghost Pointer</h3></div>
 <div class="fact"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 8h13M4 16h9"/><rect x="15" y="5.5" width="6" height="5" rx="1.5"/><rect x="11" y="13.5" width="6" height="5" rx="1.5"/></svg></span><h3>Background Work Only &amp; Held-Work Queue</h3></div>
-<div class="fact"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5v11.2c0 .8 1 1.3 1.7.8l2-1.4 1.7 3.9c.3.7 1.3.8 1.8.2l1.2-1.2c.4-.4.4-1 .1-1.5l-1.8-3.4 2.6-.3c.9-.1 1.2-1.2.5-1.8L8.7 3.9c-.6-.6-1.7-.2-1.7.6z" transform="translate(1.5 1)"/></svg></span><h3>Instant Physical Mouse Take-Over</h3></div>
+<div class="fact"><span class="ic" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 3.5v11.2c0 .8 1 1.3 1.7.8l2-1.4 1.7 3.9c.3.7 1.3.8 1.8.2l1.2-1.2c.4-.4.4-1 .1-1.5l-1.8-3.4 2.6-.3c.9-.1 1.2-1.2.5-1.8L8.7 3.9c-.6-.6-1.7-.2-1.7.6z" transform="translate(1.5 1)"/></svg></span><h3>Take Control Back in One Click — STOP Anytime (Ctrl+Alt+Shift+F9)</h3></div>
 </div>
 </div></section>
 
@@ -64,7 +65,7 @@
 
 <section class="section section--tint u-scroll84" id="supported-ais"><div class="wrap">
 <div class="sec-head reveal"><h2>Supported AIs</h2>
-<p>DeskGuest works with any AI agent that uses MCP, the open connection standard — the same door, the same rules, for all of them. An agent marked <strong>Fully supported</strong> has been paired with DeskGuest and put through its paces end to end: pairing and agreeing to the terms, staying inside the access it was given, watching, being refused and then allowed at an approval prompt, doing real work, stopping the instant STOP is pressed, ending its own session, and leaving a clean record under its own name. An agent marked <strong>Not yet tried</strong> hasn't been tried with DeskGuest yet — its maker documents the connection, and we take their word for it until we've seen it ourselves. New agents move up as we get to try them.</p></div>
+<p>DeskGuest is built to work with any AI agent that uses MCP, the open connection standard — the same door, the same rules, for all of them. An agent marked <strong>Fully supported</strong> has been paired with DeskGuest and put through its paces end to end: pairing and acknowledging the terms (recorded, not yet binding — see Terms of Service v1.0), staying inside the access it was given, watching, being refused and then allowed at an approval prompt, doing real work, stopping the instant STOP is pressed, ending its own session, and leaving a clean record under its own name. An agent marked <strong>Not yet tried</strong> hasn't been tried with DeskGuest yet — its maker documents the connection, and we take their word for it until we've seen it ourselves. New agents move up as we get to try them.</p></div>
 <div class="matrix-scroll reveal">
 <table class="matrix ai-matrix" aria-label="Supported AIs — status, capabilities, and minimum plan">
 <thead><tr>
@@ -89,7 +90,7 @@
 <td><span class="mx-status">Not yet tried</span><span class="mx-note">If it uses MCP, it can pair</span></td>
 </tr>
 <tr>
-<th scope="row">Minimum plan</th>
+<th scope="row">Maker's plan (check with the maker)</th>
 <td><strong>Pro</strong><span class="mx-note">Claude plan; not in Free</span></td>
 <td><strong>Free</strong><span class="mx-note">ChatGPT plan; Codex included</span></td>
 <td><strong>Free</strong><span class="mx-note">Personal Google account</span></td>
@@ -101,7 +102,7 @@
 <tr>
 <th scope="row">Connects directly — nothing in between</th>
 <td><span class="mx-yes">✓</span></td>
-<td><span class="mx-yes">✓</span><span class="mx-note">Via the Codex app or CLI</span></td>
+<td><span class="mx-yes">✓</span><span class="mx-note">Via the Codex app (tried); CLI not yet tried</span></td>
 <td><span class="mx-yes">✓</span><span class="mx-note">Via the Antigravity app or CLI</span></td>
 <td><span class="mx-no">—</span><span class="mx-note">Via dsh</span></td>
 <td><span class="mx-yes">✓</span></td>
@@ -149,7 +150,7 @@
 <td><span class="mx-note">Depends on the agent</span></td>
 </tr>
 <tr>
-<th scope="row">Needs no machine of its own</th>
+<th scope="row">Where the agent runs</th>
 <td><span class="mx-note">Runs on your computer</span></td>
 <td><span class="mx-note">Runs on your computer</span></td>
 <td><span class="mx-note">Runs on your computer</span></td>
@@ -165,89 +166,90 @@
 <article class="ai-card">
 <header class="ai-card-head"><div><h3>Claude Code</h3><p class="ai-card-route">via the Claude Code CLI</p></div><span class="ai-pill">Not yet tried</span></header>
 <dl class="ai-rows">
-<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Pro</strong><span class="ai-note">Claude plan; not in Free</span></dd></div>
+<div class="ai-row"><dt>Maker's plan (check with the maker)</dt><dd><strong class="ai-lead">Pro</strong><span class="ai-note">Claude plan; not in Free</span></dd></div>
 <div class="ai-row"><dt>Connects directly — nothing in between</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, commands</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Respects your approvals &amp; STOP</dt><dd>DeskGuest enforces this for every agent</dd></div>
 <div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">App on your computer, model in the cloud</span></dd></div>
-<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+<div class="ai-row"><dt>Where the agent runs</dt><dd>Runs on your computer</dd></div>
 </dl>
 </article>
 <article class="ai-card">
 <header class="ai-card-head"><div><h3>ChatGPT</h3><p class="ai-card-route">via Codex</p></div><span class="ai-pill">Fully supported</span></header>
 <dl class="ai-rows">
-<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">ChatGPT plan; Codex included</span></dd></div>
-<div class="ai-row"><dt>Connects directly — nothing in between</dt><dd><span class="mx-yes">✓</span><span class="ai-note">Via the Codex app or CLI</span></dd></div>
+<div class="ai-row"><dt>Maker's plan (check with the maker)</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">ChatGPT plan; Codex included</span></dd></div>
+<div class="ai-row"><dt>Connects directly — nothing in between</dt><dd><span class="mx-yes">✓</span><span class="ai-note">Via the Codex app (tried); CLI not yet tried</span></dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, commands</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Respects your approvals &amp; STOP</dt><dd>DeskGuest enforces this for every agent</dd></div>
 <div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">App on your computer, model in the cloud</span></dd></div>
-<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+<div class="ai-row"><dt>Where the agent runs</dt><dd>Runs on your computer</dd></div>
 </dl>
 </article>
 <article class="ai-card">
 <header class="ai-card-head"><div><h3>Gemini</h3><p class="ai-card-route">via Antigravity</p></div><span class="ai-pill">Not yet tried</span></header>
 <dl class="ai-rows">
-<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Personal Google account</span></dd></div>
+<div class="ai-row"><dt>Maker's plan (check with the maker)</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Personal Google account</span></dd></div>
 <div class="ai-row"><dt>Connects directly — nothing in between</dt><dd><span class="mx-yes">✓</span><span class="ai-note">Via the Antigravity app or CLI</span></dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, commands</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Respects your approvals &amp; STOP</dt><dd>DeskGuest enforces this for every agent</dd></div>
 <div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">App on your computer, model in the cloud</span></dd></div>
-<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+<div class="ai-row"><dt>Where the agent runs</dt><dd>Runs on your computer</dd></div>
 </dl>
 </article>
 <article class="ai-card">
 <header class="ai-card-head"><div><h3>DeepSeek</h3><p class="ai-card-route">via dsh</p></div><span class="ai-pill">Fully supported</span></header>
 <dl class="ai-rows">
-<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">No subscription</strong><span class="ai-note">Prepaid API balance instead</span></dd></div>
+<div class="ai-row"><dt>Maker's plan (check with the maker)</dt><dd><strong class="ai-lead">No subscription</strong><span class="ai-note">Prepaid API balance instead</span></dd></div>
 <div class="ai-row"><dt>Connects directly — nothing in between</dt><dd><span class="mx-no">—</span><span class="ai-note">Via dsh</span></dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, commands</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Respects your approvals &amp; STOP</dt><dd>DeskGuest enforces this for every agent</dd></div>
-<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">Cloud API</span></dd></div>
-<div class="ai-row"><dt>Needs no machine of its own</dt><dd>dsh runs on a computer you control</dd></div>
+<div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">Runs in DeepSeek's cloud</span></dd></div>
+<div class="ai-row"><dt>Where the agent runs</dt><dd>dsh runs on a computer you control</dd></div>
 </dl>
 </article>
 <article class="ai-card">
 <header class="ai-card-head"><div><h3>Goose</h3><p class="ai-card-route">via the Goose app + a local model</p></div><span class="ai-pill">Not yet tried</span></header>
 <dl class="ai-rows">
-<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Open source; the model is yours</span></dd></div>
+<div class="ai-row"><dt>Maker's plan (check with the maker)</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Open source; the model is yours</span></dd></div>
 <div class="ai-row"><dt>Connects directly — nothing in between</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, commands</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Respects your approvals &amp; STOP</dt><dd>DeskGuest enforces this for every agent</dd></div>
 <div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-yes">✓</span><span class="ai-note">Agent and model both on your machine</span></dd></div>
-<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs on your computer</dd></div>
+<div class="ai-row"><dt>Where the agent runs</dt><dd>Runs on your computer</dd></div>
 </dl>
 </article>
 <article class="ai-card">
 <header class="ai-card-head"><div><h3>Muse by Meta</h3><p class="ai-card-route">Runs in Meta's cloud</p></div><span class="ai-pill">Not yet tried</span></header>
 <dl class="ai-rows">
-<div class="ai-row"><dt>Minimum plan</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Free plan, with a usage limit</span></dd></div>
+<div class="ai-row"><dt>Maker's plan (check with the maker)</dt><dd><strong class="ai-lead">Free</strong><span class="ai-note">Free plan, with a usage limit</span></dd></div>
 <div class="ai-row"><dt>Connects directly — nothing in between</dt><dd><span class="ai-note">Internet only — connects over the internet; can't reach a computer that's only on your home network</span></dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, commands</dt><dd><span class="mx-yes">✓</span></dd></div>
 <div class="ai-row"><dt>Respects your approvals &amp; STOP</dt><dd>DeskGuest enforces this for every agent</dd></div>
 <div class="ai-row"><dt>Runs fully local — no cloud</dt><dd><span class="mx-no">—</span><span class="ai-note">The agent runs in Meta&rsquo;s cloud</span></dd></div>
-<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Runs in Meta&rsquo;s cloud, not on yours</dd></div>
+<div class="ai-row"><dt>Where the agent runs</dt><dd>Runs in Meta&rsquo;s cloud, not on yours</dd></div>
 </dl>
 </article>
 <article class="ai-card">
 <header class="ai-card-head"><div><h3>Any other MCP agent</h3><p class="ai-card-route">Any agent that uses MCP</p></div><span class="ai-pill">Not yet tried</span></header>
 <dl class="ai-rows">
-<div class="ai-row"><dt>Minimum plan</dt><dd><span class="mx-no">—</span><span class="ai-note">Set by the agent&rsquo;s maker</span></dd></div>
+<div class="ai-row"><dt>Maker's plan (check with the maker)</dt><dd><span class="mx-no">—</span><span class="ai-note">Set by the agent&rsquo;s maker</span></dd></div>
 <div class="ai-row"><dt>Connects directly — nothing in between</dt><dd>If it uses MCP</dd></div>
 <div class="ai-row"><dt>Observes — sees the screen</dt><dd>Only as far as the access you give it</dd></div>
 <div class="ai-row"><dt>Drives — mouse, keyboard, commands</dt><dd>Only as far as the access you give it</dd></div>
 <div class="ai-row"><dt>Respects your approvals &amp; STOP</dt><dd>DeskGuest enforces this for every agent</dd></div>
 <div class="ai-row"><dt>Runs fully local — no cloud</dt><dd>Depends on the agent</dd></div>
-<div class="ai-row"><dt>Needs no machine of its own</dt><dd>Depends on the agent</dd></div>
+<div class="ai-row"><dt>Where the agent runs</dt><dd>Depends on the agent</dd></div>
 </dl>
 </article>
 </div>
 <ul class="matrix-notes reveal">
+<li><strong>Plans and prices</strong> are set by each agent&rsquo;s maker and can change; check theirs before you pair. DeskGuest itself is free.</li>
 <li><strong>How to read the ticks:</strong> in a &ldquo;Not yet tried&rdquo; column, a ✓ is the maker&rsquo;s word for it &mdash; trying it ourselves is what earns &ldquo;Fully supported&rdquo;.</li>
 <li><strong>Support follows the way in:</strong> &ldquo;Fully supported&rdquo; covers the way named at the top of the column &mdash; a different way in isn&rsquo;t covered until we&rsquo;ve tried that too.</li>
 </ul>
@@ -256,12 +258,13 @@
 
 <section class="section"><div class="wrap">
 <div class="sec-head reveal"><h2>The whole arrangement, chapter by chapter</h2>
-<p>Everything above, in full detail. Open the chapters you care about — each link on this page lands with its chapter already open.</p></div>
+<p>Everything above, in full detail. Open the chapters you care about — each link on this page lands with its chapter already open.</p>
+<p><a href="#bring-your-own-agent">Pairing</a> · <a href="#permissions">Permissions</a> · <a href="#how-it-sees">Seeing</a> · <a href="#how-it-acts">Acting</a> · <a href="#talk-to-your-agent">Chat</a> · <a href="#while-it-works">Presence</a> · <a href="#the-record">Record</a></p></div>
 
 <details class="chapter" id="bring-your-own-agent">
 <summary><span class="ch-title">Bring your own agent</span><span class="ch-sub">Pairing, identity, and revocation</span></summary>
 <div class="chapter-body">
-<p>DeskGuest doesn't come with an AI inside it, and it never phones one on your behalf. You bring the agent you already use — DeskGuest is the door it walks through, and the door is yours.</p>
+<p>DeskGuest doesn't come with an AI inside it, and it never phones one on your behalf. You bring the agent you already use and pair it with your device.</p>
 <div class="trio">
 <div class="fact"><h3>Any standards-based agent</h3><p>DeskGuest connects through MCP, the open standard AI agents use to work with other software. Any agent that uses it can pair. No agent gets special treatment because of who made it.</p></div>
 <div class="fact"><h3>It connects as itself</h3><p>At pairing, the agent gives its name, and that name is kept on the pairing and shown everywhere the connection appears. With a face you choose for it, name and face ride the pairing as a presentation card — the device being helped always knows exactly who is here.</p></div>
@@ -287,7 +290,7 @@
 </div>
 <div class="cards u-mt20">
 <div class="card"><h3>How approvals work</h3><p>Per pairing, you choose the rhythm: approve every action, approve a plan and let the steps run, or trust the agent inside its grant. Whichever you choose, the sensitive things always stop and ask — an approval mode can relax the small things, never the things that matter.</p></div>
-<div class="card"><h3>Time-boxed grants</h3><p>Access can be bounded by the clock: this agent, these hours, until Friday. Outside the window the grant doesn't merely sleep — it doesn't exist. Expiry is automatic, written into the record, and never silently extended.</p></div>
+<div class="card"><h3>Time-boxed grants</h3><p>Access can be bounded by the clock: this agent, these hours, until Friday. Outside the window the grant is inactive. Expiry is automatic, written into the record, and never silently extended.</p></div>
 <div class="card"><h3>Sessions end themselves</h3><p>You can time-box a session, and a session with no agent action for a set interval closes itself and says so. When a task is finished, the agent ends the session as its final action — the presence clearing from your screen is your "done" signal.</p></div>
 <div class="card"><h3>Working style, inside the grant</h3><p>You can tune how an agent works without touching what it may do: how much it narrates, whether it asks first or acts first inside its grant, how detailed its session notes are. Style is yours to set; the grant itself only ever changes by your hand.</p></div>
 </div>
@@ -316,14 +319,15 @@
 <p>Inside its grant, a paired agent can do real work — the same work a careful person at the keyboard could do, done in the open, one visible flow at a time.</p>
 <div class="cards">
 <div class="card"><h3>Driving</h3><ul>
-<li>Tap, long-press, and swipe — by element or by coordinate</li>
+<li><strong>On Windows:</strong> mouse, keyboard, and commands</li>
+<li><strong>On the Android companion:</strong> tap, long-press, and swipe — by element or by coordinate</li>
 <li>Multi-touch gestures, with two virtual fingers rendered on screen</li>
-<li>Hardware keys: back, home, recents, volume</li>
+<li><strong>On the Android companion:</strong> hardware keys: back, home, recents, volume</li>
 <li>Text typed into the focused field; apps launched; deep links opened</li>
 <li>Every contact lands with a ripple from the agent's ghost pointer — you see each action as it happens</li>
 </ul></div>
 <div class="card"><h3>Work in batches, waiting honestly</h3><p>A sequence of actions can run as one batch — one visible flow, one record entry per step. Waits are first-class: the agent can wait for an element, a text, an app state, or a duration, and a timeout reports as a timeout. Nothing pretends to have happened that didn't.</p></div>
-<div class="card"><h3>System work, behind the glass</h3><p>With the run-commands access, the agent works through a channel the device opened for itself — nothing comes in from outside, and it never gets administrator control of the machine.</p><ul>
+<div class="card"><h3>System work, behind the glass</h3><p>With the run-commands access, the agent works through a channel the device opened for itself — nothing comes in from outside, and administrator-level tasks are only available if you grant the admin access — and even then, each one asks first.</p><ul>
 <li>Commands are grouped by how powerful they are, and the powerful ones ask first; what comes back is capped; everything is written down</li>
 <li>When it changes a setting, DeskGuest reads the setting back to be sure the change really happened — if it didn't, that's reported as a failure, not a success</li>
 <li>Installing an app always asks first; removing or disabling one asks in the same way</li>
@@ -338,11 +342,11 @@
 <details class="chapter" id="talk-to-your-agent">
 <summary><span class="ch-title">Talk to your agent — and give it orders</span><span class="ch-sub">Chat, action cards, command from your phone</span></summary>
 <div class="chapter-body">
-<p>Every pairing has a chat thread inside DeskGuest, living with the agent's card. Messaging grants no capability and raises no presence — it's a conversation. What makes it powerful is what happens when you ask for action.</p>
+<p>Every pairing has a chat thread inside DeskGuest, living with the agent's card. Messaging grants no capability and raises no presence — it's a conversation. To have the agent do something, ask in the thread; it replies with an action card for you to approve.</p>
 <div class="cards">
 <div class="card"><h3>Orders become action cards</h3><p>Tell your agent what you want in plain words. When it's time to act, the agent's request arrives as a structured action card in the conversation — start a session, send this file, change this setting — and your one tap is the approval that creates the record. Free text never executes anything. During a live session, chat orders steer the agent inside its grant; anything beyond the grant raises the same approval card in the chat.</p></div>
 <div class="card"><h3>Command from your phone</h3><p>The conversation isn't tied to the device in your hand. Open DeskGuest on your phone and direct a paired agent that acts on your computer — or any device it's paired to. The rules travel with the order: the agent acts under that computer's own pairing and leash, the full presence shows on that computer, the action card names it, approvals come to your phone, and you hold a remote STOP there alongside the computer's own STOP.</p></div>
-<div class="card"><h3>Honest about reachability</h3><p>An agent answers instantly only when its own side is awake and connected. DeskGuest shows each agent's true state — reachable now, last seen, or will deliver when it wakes — and queues messages rather than pretending they landed. The same agent is equally reachable in its own app; the DeskGuest thread is an extra front door, never a trap.</p></div>
+<div class="card"><h3>Honest about reachability</h3><p>An agent answers instantly only when its own side is awake and connected. DeskGuest shows each agent's true state — reachable now, last seen, or will deliver when it wakes — and queues messages rather than pretending they landed. The DeskGuest thread is an extra way to reach the agent; its own app still works.</p></div>
 <div class="card"><h3>Small things, done politely</h3><p>An agent can place text on your clipboard for one-tap pasting (reading your clipboard always asks first). It can post you a notification — a question, a completion, a warning — instead of acting silently. With an opt-in grant it can read incoming notifications and flag anything urgent by a small set of built-in rules, always saying which rule flagged it. It can read a web page as text, consult per-app guidance notes before driving an unfamiliar app, and — as an opt-in module, indicated when used — trigger a full-resolution photo into a folder you chose, for the nameplate or serial tag you can't quite reach.</p></div>
 </div>
 </div>
@@ -355,11 +359,11 @@
 <div class="trio">
 <div class="fact"><h3>Background Work Only</h3><p>Need your screen back mid-task? One toggle — yours, never the agent's — holds all screen work: held items queue in order, visibly counted, and are never auto-replayed later. Work that doesn't need the screen continues. The banner stays up the whole time.</p></div>
 <div class="fact"><h3>A running commentary</h3><p>A persistent activity line states in plain words what the agent is doing as it acts, and session sounds announce the start and the end. A session never begins or ends silently.</p></div>
-<div class="fact"><h3>While you're driving, it doesn't</h3><p>In a vehicle, screen driving is refused outright. Voice-grade interactions — notifying you, reading aloud — remain available. The device reports where it is; an agent gets no tools to make it lie about that, or about anything else.</p></div>
+<div class="fact"><h3>While you're driving, it doesn't (Android companion)</h3><p>In a vehicle, screen driving is refused outright. Voice-grade interactions — notifying you, reading aloud — remain available. The device reports where it is; an agent gets no tools to make it lie about that, or about anything else.</p></div>
 </div>
 <div class="cards u-mt20">
 <div class="card"><h3>A voice for your agent</h3><p>Paired agents can speak and listen in a session. By default the voice is built in and local: it runs on the device, works offline, and nothing about it phones home — DeskGuest holds no AI provider keys, ever. You can swap in a different voice pack per agent, and when an agent brings a voice from its own platform, its card says so — you always know whose voice is speaking. The honest expectation: the built-in voice is good and natural, a notch below the best cloud voices; nothing leaves your device to close that gap.</p></div>
-<div class="card"><h3>Saved routines</h3><p>A sequence an agent performs often can be saved as a named routine and replayed on demand — on Windows today. A routine is exactly what its author supplied, step for step; DeskGuest doesn't record your screen sessions into routines, and doesn't claim to.</p></div>
+<div class="card"><h3>Saved routines</h3><p>A sequence an agent performs often can be saved as a named routine and replayed on demand — on Windows (V1 platform). A routine is exactly what its author supplied, step for step; DeskGuest doesn't record your screen sessions into routines, and doesn't claim to.</p></div>
 </div>
 </div>
 </details>
@@ -388,7 +392,7 @@
 <p class="socials"><a href="https://x.com/DeskGuestApp">DeskGuest on X</a> · <a href="https://www.facebook.com/profile.php?id=61596904264393">DeskGuest on Facebook</a></p>
 </div>
 <div><p class="fh">Product</p><nav aria-label="Product"><a href="features.html">Features</a><a href="about.html">About</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="download.html">Download</a></nav></div>
-<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Help &amp; Docs</a></nav></div>
+<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Documentation</a></nav></div>
 <div><p class="fh">For Work</p><nav aria-label="For Work"><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav></div>
 <div><p class="fh">Trust</p><nav aria-label="Trust">
 <a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of Service</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
@@ -396,7 +400,7 @@
 </div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
-We've made sure DeskGuest works on Windows 11 and the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full picture.</p>
+DeskGuest is pre-release (v0.0.1 release candidate), tested on Windows 11 and a Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a>.</p>
 </div></footer>
 <script src="site.js"></script>
 </body>

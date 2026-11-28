@@ -26,8 +26,8 @@
 <a class="skip-link" href="#main">Skip to content</a>
 <header class="site-header"><div class="wrap">
 <a class="brand" href="index.html"><img src="assets/dex-mark.webp" alt="" width="384" height="244">DeskGuest</a>
-<button class="nav-toggle" aria-expanded="false" aria-label="Menu">Menu</button>
-<nav class="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html" aria-current="page">Trust</a></nav>
+<button class="nav-toggle" aria-expanded="false" aria-label="Menu" aria-controls="main-nav">Menu</button>
+<nav class="main-nav" id="main-nav" aria-label="Main"><a href="features.html">Features</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="rooms.html">Rooms</a><a href="workplaces.html">Workplaces</a><a href="about.html">About</a><a href="support.html">Support</a><a href="trust.html" aria-current="page">Trust</a></nav>
 <a class="btn small" href="download.html">Download (Coming Q1 2027)</a>
 </div></header>
 <main id="main">
@@ -36,29 +36,30 @@
 <div>
 <span class="pill gold hero-tag">Open Source • Verifiable • Zero Hidden Access</span>
 <h1 class="display u-m-22-0-18">Built so you never have to take our word for it.</h1>
-<p class="lede">DeskGuest has no accounts, no company cloud, and no access without the owner&rsquo;s pre-authorisation. Every connection — attended, or unattended under a standing grant the owner gave in advance — is visible on screen, written into the record, and stoppable in under a second.</p>
+<p class="lede">DeskGuest has no accounts, no company cloud, and no access the owner hasn't approved. Every connection is visible on screen, written into the Activity Record, and can be stopped instantly.</p>
 </div>
 <div class="stage-visual u-minh430">
-<img class="hero-art u-hero-art-w" src="assets/pose-wave.webp" alt="The DeskGuest Greeter, waving" width="720" height="720">
-<div class="pv-card"><div class="pv-label">presence preview</div><div class="pv-state"><span class="pv-dot" aria-hidden="true"></span>Active connection</div><span class="pv-stop">STOP</span></div>
+<img class="hero-art u-hero-art-w" src="assets/pose-wave.webp" alt="Dex, the DeskGuest monitor mascot, waving" width="720" height="720">
+<div class="pv-card" aria-hidden="true"><div class="pv-label">presence preview</div><div class="pv-state"><span class="pv-dot" aria-hidden="true"></span>Active connection</div><span class="pv-stop">STOP</span></div><span class="sr-only">Illustration: the on-screen presence bar with a STOP button.</span>
 </div>
 </div>
 </div></section>
 
 <section class="section u-p-34-64"><div class="wrap">
+<h2 class="sr-only">The four promises</h2>
 <div class="quad reveal">
 <div class="p4 rv"><h3>Always-Visible Presence &amp; Instant STOP</h3>
-<div class="p4-viz"><div class="viz-presence u-w100"><span class="vp-face" aria-hidden="true">S</span><span class="vp-who">Helper: Sarah</span><span class="vp-stop">STOP</span></div></div>
-<p>The helper is named on your screen for the whole session — and STOP ends it in under a second.</p></div>
+<div class="p4-viz"><div class="viz-presence u-w100" aria-hidden="true"><span class="vp-face" aria-hidden="true">S</span><span class="vp-who">Helper: Sarah</span><span class="vp-stop">STOP</span></div></div>
+<p>The helper is named on your screen for the whole session, and STOP ends it instantly.</p></div>
 <div class="p4 rv"><h3>Zero Accounts &amp; Zero DeskGuest Cloud</h3>
 <div class="p4-viz"><svg class="u-w118" viewBox="0 0 120 74" fill="none" stroke="var(--teal-dark)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="44" y="8" width="32" height="58" rx="6"/><circle cx="60" cy="22" r="6"/><path d="M50 52c2.5-6 6-8.5 10-8.5S67.5 46 70 52"/><path d="M14 44c-5 0-8-3.4-8-7 0-3.4 2.6-6.2 6-6.7C13.4 26 17 23 21.5 23c3.2 0 6 1.6 7.8 4.2" stroke-dasharray="3 4"/><path d="M84 58h26M97 45v26" stroke="var(--gold-dark)"/></svg></div>
 <p>No logins, no company server holding your sessions — connections run device to device.</p></div>
-<div class="p4 rv"><h3>Open-Source Code &amp; SHA-256 Release Hashes</h3>
-<div class="p4-viz"><div class="viz-log"><div class="viz-log-text">if (hash == published) {<br>&nbsp;&nbsp;install();<br>} <span class="u-c-7fbce4">// it matches</span></div><div class="u-mt9"><span class="viz-teal-pill">✓ It matches</span></div></div></div>
-<p>The code is public, and every release publishes a File Check Code you can compare yourself. <a class="more" href="verify.html">Verify a download</a></p></div>
-<div class="p4 rv"><h3>Plain-Language Receipts &amp; the Local Record</h3>
-<div class="p4-viz"><div class="viz-slip u-slip230"><strong class="u-c-text">Log file</strong><br>✓ Sarah connected — 10:02<br>✓ Viewed the screen — 10:04<br>✓ Session ended — 10:07</div></div>
-<p>Every session leaves a receipt and a record on your device, in plain words. Nothing is sent anywhere.</p></div>
+<div class="p4 rv"><h3>Open-Source Code &amp; SHA-256 File Check Codes</h3>
+<div class="p4-viz"><div class="viz-log" aria-hidden="true"><div class="viz-log-text">if (hash == published) {<br>&nbsp;&nbsp;install();<br>} <span class="u-c-7fbce4">// it matches</span></div><div class="u-mt9"><span class="viz-teal-pill">✓ It matches</span></div></div></div>
+<p>The code is public. When the first release ships, it will come with a SHA-256 File Check Code you can compare yourself. <a class="more" href="verify.html">How to verify a download</a></p></div>
+<div class="p4 rv"><h3>Plain-Language Activity Record</h3>
+<div class="p4-viz"><div class="viz-slip u-slip230" aria-hidden="true"><strong class="u-c-text">Activity Record</strong><br>✓ Sarah connected — 10:02<br>✓ Viewed the screen — 10:04<br>✓ Session ended — 10:07</div></div>
+<p>Every session is written into the Activity Record on your device, in plain words. Nothing is sent anywhere.</p></div>
 </div>
 </div></section>
 
@@ -69,7 +70,7 @@
 </div>
 <div class="cards reveal">
 <div class="card rv"><h3>You are always the boss</h3><p>You choose who may connect and what each helper may do. Helpers you allow can ask to connect — you stay in charge of every session, and you can remove a helper at any time.</p></div>
-<div class="card rv"><h3>One-click stop</h3><p>STOP ends a session instantly — one click, or the STOP hotkey (Ctrl+Alt+Shift+F9), with no confirmation step in the way. Ending a session cuts the helper's input first, then closes the connection.</p></div>
+<div class="card rv"><h3>One-click stop</h3><p>STOP ends a session instantly — one click, or the STOP hotkey (Ctrl+Alt+Shift+F9), with no confirmation step in the way. STOP is the emergency halt: it works whoever has control.</p></div>
 <div class="card rv"><h3>DeskGuest never presses Yes for you</h3><p>When a job reaches a Windows permission popup — the system's own "allow this change?" prompt — the session waits. That Yes must come from a person at the computer. DeskGuest will never click it through, for any helper, ever. If someone claiming to help you says otherwise, that is a scam signal: stop the session.</p></div>
 <div class="card rv"><h3>Pairing is your act</h3><p>An AI agent can never pair itself, mint its own code, or widen its own access. Pairing and permission changes are made by the device owner, in person, on the device.</p></div>
 </div>
@@ -77,12 +78,12 @@
 
 <section class="section section--navy u-p-88"><div class="wrap">
 <div class="sec-head reveal"><h2>No account. No DeskGuest cloud.</h2>
-<p>DeskGuest has no account to create and no password to remember. Your identity is a key made on your device — DeskGuest has no copy of it and cannot reset it for you, so your ways back in matter; there are several, and any one is enough.</p></div>
+<p>DeskGuest has no account to create and no password to remember. Your identity is a keypair made on your device. DeskGuest has no copy of it and cannot reset it for you. The <a href="features.html">Features page</a> lists the ways back in if you lose a device.</p></div>
 <div class="cards reveal">
-<div class="card rv"><h3>Connections without a middleman reading along</h3><p>Some connection paths use a third-party coordination service (for example Tailscale) to help your devices find each other. That service never holds your sessions or your records — your Activity Record stays on your device.</p></div>
-<div class="card rv"><h3>Records stay home</h3><p>Session records live on the device. Nothing in them is sent anywhere unless you export them.</p></div>
-<div class="card rv"><h3>Reports are yours to send</h3><p>Reporting from inside the app is in development: when it ships, a Report will include what happened on your device — scrubbed of passwords, keys, and tokens before anything is attached — and nothing will be sent until you tap Send. Today, reports are sent from the form on this website, in your own words.</p></div>
-<div class="card rv"><h3>Cameras are governed, not casual</h3><p>Where cameras are supported, watching one is written into the Activity Record, sound is off by default, and a workplace policy can turn viewing off entirely.</p></div>
+<div class="card rv"><h3>Connections without a middleman reading along</h3><p>Some connections use a hub you choose — your own, or one your workplace runs — to help your devices find each other. DeskGuest runs no hub of its own. That hub never holds your sessions or your records — your Activity Record stays on your device.</p></div>
+<div class="card rv"><h3>Records stay home</h3><p>Your Activity Record lives on the device. Nothing in it is sent anywhere unless you export it.</p></div>
+<div class="card rv"><h3>Reports are yours to send</h3><p>Reporting from inside the app is in development: when it ships, a Report will include what happened on your device — scrubbed of passwords, keys, and tokens before anything is attached — and nothing will be sent until you tap Send. Today, send a report from the <a href="report.html">report form</a>, in your own words.</p></div>
+<div class="card rv"><h3>Camera viewing</h3><p>In development. Where cameras are supported, watching one is written into the Activity Record, sound is off by default, and a workplace policy can turn viewing off entirely.</p></div>
 </div>
 <p class="u-mt26">Go deeper: <a class="u-c-emerald-soft" href="security.html">Security &amp; the threat model</a> · <a class="u-c-emerald-soft" href="privacy.html">Privacy</a> · <a class="u-c-emerald-soft" href="verify.html">Verify a download</a> · <a class="u-c-emerald-soft" href="scam.html">Is this a scam?</a></p>
 </div></section>
@@ -96,7 +97,7 @@
 <p class="socials"><a href="https://x.com/DeskGuestApp">DeskGuest on X</a> · <a href="https://www.facebook.com/profile.php?id=61596904264393">DeskGuest on Facebook</a></p>
 </div>
 <div><p class="fh">Product</p><nav aria-label="Product"><a href="features.html">Features</a><a href="about.html">About</a><a href="ai.html">AI Agents</a><a href="how-it-works.html">How It Works</a><a href="quick-fix.html">Quick Fix</a><a href="rooms.html">Rooms &amp; Collaboration</a><a href="download.html">Download</a></nav></div>
-<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Help &amp; Docs</a></nav></div>
+<div><p class="fh">Help</p><nav aria-label="Help"><a href="support.html">Help &amp; Support</a><a href="report.html">Report a bug</a><a href="mailto:support@deskguest.app">support@deskguest.app</a><a href="help.html">Documentation</a></nav></div>
 <div><p class="fh">For Work</p><nav aria-label="For Work"><a href="workplaces.html">For Workplaces</a><a href="it.html">For IT</a></nav></div>
 <div><p class="fh">Trust</p><nav aria-label="Trust">
 <a href="trust.html">Trust &amp; Security</a><a href="security.html">Security &amp; the threat model</a><a href="privacy.html">Privacy</a><a href="terms.html">Terms of Service</a><a href="verify.html">Verify a download</a><a href="scam.html">Is this a scam?</a><a href="https://github.com/DeskGuest-App/DeskGuest">DeskGuest on GitHub</a>
@@ -104,7 +105,7 @@
 </div>
 <p class="fineprint">DeskGuest is free. No account, and DeskGuest itself runs no cloud — see the
 <a href="trust.html">Trust &amp; Security</a> page for exactly what that means.
-We've made sure DeskGuest works on Windows 11 and the Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a> for the full picture.</p>
+DeskGuest is pre-release (v0.0.1 release candidate), tested on Windows 11 and a Samsung Galaxy S25 Ultra; see <a href="download.html">Download</a>.</p>
 </div></footer>
 <script src="site.js"></script>
 </body>
