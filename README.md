@@ -6,7 +6,7 @@
   <a href="https://github.com/DeskGuest-App/DeskGuest/actions/workflows/windows-ci.yml"><img alt="Windows CI" src="https://github.com/DeskGuest-App/DeskGuest/actions/workflows/windows-ci.yml/badge.svg"></a>
   <a href="https://github.com/DeskGuest-App/DeskGuest/actions/workflows/android-ci.yml"><img alt="Android CI" src="https://github.com/DeskGuest-App/DeskGuest/actions/workflows/android-ci.yml/badge.svg"></a>
   <img alt="License: Apache-2.0" src="https://img.shields.io/badge/license-Apache--2.0-2F8BC9">
-  <img alt="Status: in development" src="https://img.shields.io/badge/status-in%20development-E5A93B">
+  <img alt="Status: launching Q1 2027" src="https://img.shields.io/badge/status-launching%20Q1%202027-E5A93B">
 </p>
 
 <p align="center">
@@ -19,7 +19,7 @@
 </p>
 
 <p align="center">
-  <strong>Status: in development — downloads aren't open yet.</strong> When they open, they'll live on <a href="https://deskguest.app/download">the download page</a> and in this repo's releases, always with a File Check Code (SHA-256) to verify — and nowhere else. DeskGuest is not in any app store.
+  <strong>Status: launching Q1 2027 — downloads aren't open yet.</strong> When they open, they'll live on <a href="https://deskguest.app/download">the download page</a> and in this repo's releases, always with a File Check Code (SHA-256) to verify — and nowhere else. DeskGuest is not in any app store.
 </p>
 
 <p align="center">
